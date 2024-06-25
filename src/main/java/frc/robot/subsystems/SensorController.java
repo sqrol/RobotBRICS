@@ -26,9 +26,8 @@ public class SensorController implements Runnable{
     private boolean plus360once = false;
     private boolean minus360once = false;
 
-    private boolean blackLineFlag = false; 
-    private boolean direction = false; 
-    public boolean glideExit = false;
+    private boolean blackLineFlag, direction = false;  
+    private boolean glideStop = false;
 
     private double currentGlidePosition = 0;
 
@@ -215,30 +214,31 @@ public class SensorController implements Runnable{
 
     private void setGlidePosition(double position) {
         boolean blackLineDetect = getCobraVoltage() > 2.0;
-        double glideServoSpeed = Functions.TransitionFunction(position - this.currentGlidePosition, speedForGlideServo);
+        double glideServoSpeed = Functions.TransitionFunction(position - currentGlidePosition, speedForGlideServo);
 
-        this.direction = position > this.currentGlidePosition;
+        glideStop = false;
 
-        if (position != this.currentGlidePosition) {
+        direction = position > currentGlidePosition;
 
+        if (position != currentGlidePosition) {
             Main.motorControllerMap.put("glideServoSpeed", glideServoSpeed);
-
-            this.glideExit = false;
+            glideStop = false;
         } else {
-            this.glideExit = true;
+            glideStop = true;
         }
 
-        if (blackLineDetect && !this.blackLineFlag) {
-            if (this.direction) {
-                this.currentGlidePosition++; 
+        if (blackLineDetect && !blackLineFlag) {
+            if (direction) {
+                currentGlidePosition++; 
             } else {
-                this.currentGlidePosition--;
+                currentGlidePosition--;
             }
-            this.blackLineFlag = true;
+            blackLineFlag = true;
         }
 
-        if (!blackLineDetect && this.blackLineFlag) {
-            this.blackLineFlag = false;
+        if (!blackLineDetect && blackLineFlag) {
+            blackLineFlag = false;
         }
+        Main.switchMap.put("glideStop", glideStop);
     }
 }

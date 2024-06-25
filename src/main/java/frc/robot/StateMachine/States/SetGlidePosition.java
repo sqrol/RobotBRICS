@@ -24,12 +24,12 @@ public class SetGlidePosition implements IState{
 
     @Override
     public void finilize() {
-        Main.sensorsMap.put("currentGlidePos", 0.0);
+        Main.sensorsMap.put("glideServoSpeed", 0.0);
     }
 
     @Override
     public boolean isFinished() {
-        return Main.sensorsMap.get("currentGlidePos") == targetPosition;
+        return Main.switchMap.get("glideStop");
     }
     
 }

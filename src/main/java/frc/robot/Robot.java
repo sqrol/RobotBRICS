@@ -13,19 +13,19 @@ import frc.robot.StateMachine.CoreEngine.CommandAdapter;
 
 public class Robot extends TimedRobot {
 
-  private Command adapter = new CommandAdapter(); 
+  private Command adapter = new CommandAdapter();
   private ReentrantLock mutex = new ReentrantLock();
-  
+
   @Override
   public void robotInit() {
-    
-    mutex.lock();
-    StateMachine.states.clear();
-    mutex.unlock();
-
-    mutex.lock();
-    initMaps();
-    mutex.unlock();
+    try {
+      StateMachine.states.clear();
+      Thread.sleep(10);
+      initMaps();
+      Thread.sleep(10);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
@@ -70,6 +70,10 @@ public class Robot extends TimedRobot {
     Main.switchMap.put("EMSButton", false);
     Main.switchMap.put("limitSwitch", false);
 
+    Main.switchMap.put("liftStop", false);
+    Main.switchMap.put("glideStop", false);
+    Main.switchMap.put("rotateStop", false);
+
     Main.sensorsMap.put("indicationMode", 1.0);
 
     Main.sensorsMap.put("cobraVoltage", 0.0);
@@ -90,9 +94,13 @@ public class Robot extends TimedRobot {
     Main.sensorsMap.put("srcGyro", 0.0);
 
     Main.sensorsMap.put("targetGlidePos", 0.0);
+    Main.sensorsMap.put("currentGlidePos", 0.0);
 
     Main.motorControllerMap.put("targetLiftPos", 0.0);
     Main.motorControllerMap.put("currentLiftPos", 0.0);
+    
+    Main.motorControllerMap.put("targetRotateDegree", 0.0);
+    Main.motorControllerMap.put("currentRotateDegree", 0.0);
 
     Main.motorControllerMap.put("encRight", 0.0);
     Main.motorControllerMap.put("encLeft", 0.0);
@@ -168,13 +176,17 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("updateTimeCamera", Main.sensorsMap.get("updateTimeCamera"));
 
     SmartDashboard.putNumber("targetGlidePos", Main.sensorsMap.get("targetGlidePos"));
+    SmartDashboard.putNumber("currentGlidePos", Main.sensorsMap.get("currentGlidePos"));
+    SmartDashboard.putNumber("targetLiftPos", Main.motorControllerMap.get("targetLiftPos"));
+    SmartDashboard.putNumber("currentLiftPos", Main.motorControllerMap.get("currentLiftPos"));
 
     SmartDashboard.putBoolean("EMS", Main.switchMap.get("EMSButton"));
     SmartDashboard.putBoolean("startButton", Main.switchMap.get("startButton"));
     SmartDashboard.putBoolean("limitSwitch", Main.switchMap.get("limitSwitch"));
-    
-    SmartDashboard.putNumber("targetLiftPos", Main.motorControllerMap.get("targetLiftPos"));
-    SmartDashboard.putNumber("currentLiftPos", Main.motorControllerMap.get("currentLiftPos"));
+
+    SmartDashboard.putBoolean("liftStop", Main.switchMap.get("liftStop"));
+    SmartDashboard.putBoolean("glideStop", Main.switchMap.get("glideStop"));
+    SmartDashboard.putBoolean("rotateStop", Main.switchMap.get("rotateStop"));
 
     SmartDashboard.putNumber("objectFind", Main.sensorsMap.get("objectFind"));
 

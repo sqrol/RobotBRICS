@@ -15,10 +15,10 @@ public class StateMachine {
 
     public void initStates() { 
         states.add(new Start());
-        states.add(new SetLiftPosition(50));
-        states.add(new SetLiftPosition(-1));
-        states.add(new SetLiftPosition(50));
-        states.add(new SetLiftPosition(-1));
+        states.add(new SetGlidePosition(10.0));
+        states.add(new SetGlidePosition(0));
+        // states.add(new SetGlidePosition(25));
+        // states.add(new SetGlidePosition(0));
     } 
 
     public void executeStates() {
@@ -31,8 +31,8 @@ public class StateMachine {
         currentState.execute(); 
         if (currentState.isFinished()) { 
             firstIteration = true;
-            StateMachine.index++;
             currentState.finilize();
+            StateMachine.index++;
         }
         iterationTime = Timer.getFPGATimestamp() - startTime;
     }    

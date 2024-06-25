@@ -17,14 +17,21 @@ public class MotorController implements Runnable {
     public static double motorsUpdateTime; 
     public double previousDegrees = 0;
     
+    private static boolean liftStop, rotateStop = false;
+
     private static final double[][] arrOfpercentForLift = { { 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 }, 
                                                                     { -1, 0, 15, 30, 40, 55, 70, 80, 90, 100 } };
 
     private static final double[][] arrOfPosForLift = { { -1, 0, 15, 30, 40, 55, 70, 80, 90, 100 }, 
                                                     { 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 } };
 
-    private static final double[][] speedForLift = { { 0, 2, 8, 100, 200, 350 },
-                                                      { 0, 4, 8, 24, 48, 72 } };
+    private static final double[][] speedForLift = { { 0, 20, 50, 70, 100, 330, 500, 700, 1000 },
+                                                      { 0, 2, 5, 7, 20, 39, 55, 70, 80 } };
+
+    private static final double[][] arrOfPosForRotate = { { -1, 500, 1500, 2000 }, { -1, 45, 90, 110 } };
+
+    private static final double[][] speedForRotate =  { { 0, 0.5, 2, 10, 17, 26, 39, 50, 62, 70 }, 
+                                                        { 0, 2, 5, 20, 35, 47, 60, 70, 77, 85 } };
     @Override
     public void run() {
         while (!Thread.interrupted()) {
@@ -88,11 +95,17 @@ public class MotorController implements Runnable {
                 setServoGrab(Main.motorControllerMap.get("servoGrab"));
                 setServoGripRotate(Main.motorControllerMap.get("servoGripRotate"));    
                 setGlideServoSpeed(Main.motorControllerMap.get("glideServoSpeed"));
+
+                if(Main.motorControllerMap.get("targetRotateDegree") != 0.0) {
+                    SetRotatePosition(Main.motorControllerMap.get("targetRotateDegree"));
+                }
+                Main.switchMap.put("rotateStop", rotateStop);
                 
                 if(Main.motorControllerMap.get("targetLiftPos") != 0.0) {
                     setLiftPosition(Main.motorControllerMap.get("targetLiftPos"));
                 }
-                
+                Main.switchMap.put("liftStop", liftStop);
+
                 Main.motorControllerMap.put("updateTime", motorsUpdateTime);
 
                 Thread.sleep(20);
@@ -124,31 +137,67 @@ public class MotorController implements Runnable {
     private final ServoContinuous SERVO_GLIDE = new ServoContinuous(Constants.SERVO_GLIDE);
 
     double liftCurrentPosition = 0; // Первоначальная позиция лифта
-
-    private boolean setLiftPosition(double pos) {
+    
+    private void setLiftPosition(double pos) {
 
         double currentPos = -Main.motorControllerMap.get("encLift");
+
         double percentPos = Functions.TransitionFunction(currentPos, arrOfpercentForLift);
         double encPos = Functions.TransitionFunction(pos, arrOfPosForLift);
+
         double speed = Functions.TransitionFunction(currentPos - encPos, speedForLift);
-        boolean liftStop = Functions.BooleanInRange(currentPos - encPos, -5, 5);
+
+        liftStop = Functions.BooleanInRange(currentPos - encPos, -5, 5);
         
         Main.motorControllerMap.put("currentLiftPos", percentPos);
 
         if (Main.switchMap.get("limitSwitch") && speed > 0) {
             Main.motorControllerMap.put("liftSpeed", 0.0);
             Main.motorControllerMap.put("resetEncLift", 1.0);
-            return true;
+            liftStop = true;
         } else if (speed < 0 && currentPos < -3000) {
             Main.motorControllerMap.put("liftSpeed", 0.0);
-            return true;
+            liftStop = true;
         } else if (liftStop && !Main.switchMap.get("limitSwitch")) {
             Main.motorControllerMap.put("liftSpeed", 0.0);
-            return true; 
         } else {
             Main.motorControllerMap.put("liftSpeed", speed);
-            return false;
+            liftStop = false;
         }  
+    }
+    
+    private void SetRotatePosition(double degree) {
+        
+        double currentRotatePos = -Main.motorControllerMap.get("encRotate");
+        
+        
+        double rotateDegree = Functions.TransitionFunction(currentRotatePos, arrOfPosForRotate);
+        double speed = Functions.TransitionFunction(rotateDegree - degree, speedForRotate);
+        
+        rotateStop = Functions.BooleanInRange(degree - rotateDegree, -0.2, 0.2);
+
+        Main.motorControllerMap.put("currentRotateDegree", rotateDegree);
+        // SmartDashboard.putNumber("currentRotatePos", -Main.motorControllerMap.get("encRotate"));
+        // SmartDashboard.putNumber("currentRotatePosition", rotateDegree);
+        // SmartDashboard.putNumber("rotateDiff", rotateDegree - degree);
+        // SmartDashboard.putNumber("rotateSpeedOut", speed);
+        // SmartDashboard.putBoolean("rotateStop", rotateStop);
+
+        if (rotateStop) {
+            Main.motorControllerMap.put("rotateSpeed", 0.0);
+            SmartDashboard.putNumber("rotateCheck", 3);
+            rotateStop = true;
+        } else {
+            SmartDashboard.putNumber("rotateCheck", 4);
+            Main.motorControllerMap.put("rotateSpeed", speed);
+        }
+
+        if ((speed > 0 && currentRotatePos > 1600) || (speed < 0 && currentRotatePos < -1600)) {
+            Main.motorControllerMap.put("rotateSpeed", 0.0);
+            SmartDashboard.putNumber("rotateCheck", 324);
+            rotateStop = true;
+        } 
+        
     }
 
     private void setAxisSpeed(double x, double z) {
@@ -186,7 +235,7 @@ public class MotorController implements Runnable {
             PID_ROTATE.reset();
             MOTOR_ROTATE.set(0);
         } else {
-            PID_ROTATE.calculate(ENC_ROTATE.getSpeed(), speed);
+            PID_ROTATE.calculate(-ENC_ROTATE.getSpeed(), speed);
             Main.motorControllerMap.put("rotatePID", PID_ROTATE.getOutput());
             MOTOR_ROTATE.set(Main.motorControllerMap.get("rotatePID"));
         }

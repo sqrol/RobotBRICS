@@ -12,12 +12,14 @@ public class Start implements IState {
     public void initialize() {
         Main.sensorsMap.put("resetGyro", 1.0);
         Main.motorControllerMap.put("resetEncs", 1.0);
-        // Main.motorControllerMap.put("resetPID", 1.0);
+        Main.motorControllerMap.put("resetPID", 1.0);
     }
 
     @Override
     public void execute() {
-        Main.motorControllerMap.put("liftSpeed", 30.0);
+        if(!Main.switchMap.get("limitSwitch")) {
+            Main.motorControllerMap.put("liftSpeed", 60.0);
+        }
         succesInit = Main.switchMap.get("limitSwitch");
     }
 
@@ -29,6 +31,6 @@ public class Start implements IState {
 
     @Override
     public boolean isFinished() {
-        return succesInit;
+        return succesInit && StateMachine.iterationTime > 0.5;
     }
 }
