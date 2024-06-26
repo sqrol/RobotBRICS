@@ -33,35 +33,36 @@ public class CameraController implements Runnable {
         // SmartDashboard.putNumber("GREEN2", 0.0);
         // SmartDashboard.putNumber("BLUE2", 0.0);
 
-        // cameraServer = CameraServer.getInstance(); // Этот метод автоматически обнаруживает камеру и начинает захватывать видеоизображение с нее
-        // camera = cameraServer.startAutomaticCapture();
-        // camera.setResolution(640, 480); // Устанавливаем разрешение изображения камеры на 640x480 пикселей
-        // camera.setFPS(30); // Устанавливаем частоту кадров на 30 fps
+        cameraServer = CameraServer.getInstance(); // Этот метод автоматически обнаруживает камеру и начинает захватывать видеоизображение с нее
+        camera = cameraServer.startAutomaticCapture();
+        camera.setResolution(640, 480); // Устанавливаем разрешение изображения камеры на 640x480 пикселей
+        camera.setFPS(30); // Устанавливаем частоту кадров на 30 fps
         // settingCameraParameters();
 
-        // cvSink = CameraServer.getInstance().getVideo(); // Этот объект позволяет получить видеопоток с камеры для дальнейшей обработки.
-        // outStream = CameraServer.getInstance().putVideo("OutImage", 640, 480); // Этот объект будет использоваться для вывода обработанного видеопотока
+        cvSink = CameraServer.getInstance().getVideo(); // Этот объект позволяет получить видеопоток с камеры для дальнейшей обработки.
+        outStream = CameraServer.getInstance().putVideo("OutImage", 640, 480); // Этот объект будет использоваться для вывода обработанного видеопотока
 
-        // while (true) {
-        //     double startTime = Timer.getFPGATimestamp();
-        //     try {
-        //         Mat source = new Mat();
+        while (true) {
+            double startTime = Timer.getFPGATimestamp();
+            try {
+                Mat source = new Mat();
 
-        //         if (cvSink.grabFrame(source) == 0) {
-        //             continue;
-        //         }
-        //         if (Main.sensorsMap.get("camTask") == 0) {
-        //             Main.sensorsMap.put("objectFind", CheckApple(source));
-        //         }
+                if (cvSink.grabFrame(source) == 0) {
+                    continue;
+                }
+                if (Main.sensorsMap.get("camTask") == 0) {
+                    
+                }
 
-        //         Main.sensorsMap.put("updateTimeCamera", cameraUpdateTime);
-        //         // outStream.putFrame(source);
-        //     } catch (Exception e) {
-        //         System.err.println("!!!An error occurred in CameraController: " + e.getMessage());
-        //         e.printStackTrace();
-        //     }
-        //     cameraUpdateTime = Timer.getFPGATimestamp() - startTime;
-        // }
+                Main.sensorsMap.put("updateTimeCamera", cameraUpdateTime);
+                // outStream.putFrame(source);
+                source.release();
+            } catch (Exception e) {
+                System.err.println("!!!An error occurred in CameraController: " + e.getMessage());
+                e.printStackTrace();
+            }
+            cameraUpdateTime = Timer.getFPGATimestamp() - startTime;
+        }
     }
 
     public static void settingCameraParameters() {

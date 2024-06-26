@@ -1,8 +1,8 @@
 package frc.robot.StateMachine.States;
 
 import frc.robot.Main;
-import frc.robot.Maths.Common.Functions;
 import frc.robot.StateMachine.CoreEngine.IState;
+import frc.robot.StateMachine.CoreEngine.StateMachine;
 
 public class SetLiftPosition implements IState{
 
@@ -26,12 +26,12 @@ public class SetLiftPosition implements IState{
     @Override
     public void finilize() {
         Main.switchMap.put("liftStop", false);
+        Main.motorControllerMap.put("liftSpeed", 0.0);
     }
 
     @Override
     public boolean isFinished() {
-        
-        return Main.switchMap.get("liftStop");
+        return Main.switchMap.get("liftStop") && StateMachine.iterationTime > 2;
     }
     
 }

@@ -4,7 +4,7 @@ import frc.robot.Main;
 import frc.robot.StateMachine.CoreEngine.IState;
 import frc.robot.StateMachine.CoreEngine.StateMachine;
 
-public class Start implements IState {
+public class StartPos implements IState {
 
     private boolean succesInit = false;
 
@@ -21,6 +21,10 @@ public class Start implements IState {
             Main.motorControllerMap.put("liftSpeed", 60.0);
         }
         succesInit = Main.switchMap.get("limitSwitch");
+
+        // Main.motorControllerMap.put("speedX", -100.0);
+        // Main.motorControllerMap.put("speedZ", 0.0);
+
     }
 
     @Override

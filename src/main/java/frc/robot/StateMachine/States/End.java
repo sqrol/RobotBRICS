@@ -3,7 +3,7 @@ package frc.robot.StateMachine.States;
 import frc.robot.Main;
 import frc.robot.StateMachine.CoreEngine.IState;
 
-public class Finish implements IState {
+public class End implements IState {
 
     @Override
     public void initialize() {

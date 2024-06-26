@@ -1,7 +1,5 @@
 package frc.robot;
 
-import java.util.concurrent.locks.ReentrantLock;
-
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -14,7 +12,6 @@ import frc.robot.StateMachine.CoreEngine.CommandAdapter;
 public class Robot extends TimedRobot {
 
   private Command adapter = new CommandAdapter();
-  private ReentrantLock mutex = new ReentrantLock();
 
   @Override
   public void robotInit() {
@@ -74,6 +71,8 @@ public class Robot extends TimedRobot {
     Main.switchMap.put("glideStop", false);
     Main.switchMap.put("rotateStop", false);
 
+    Main.switchMap.put("resizeForGlide", false);
+
     Main.sensorsMap.put("indicationMode", 1.0);
 
     Main.sensorsMap.put("cobraVoltage", 0.0);
@@ -128,7 +127,9 @@ public class Robot extends TimedRobot {
     Main.motorControllerMap.put("targetLiftPos", 0.0);
 
     Main.motorControllerMap.put("servoGrab", 40.0);
-    Main.motorControllerMap.put("servoGripRotate", 60.0);
+    Main.motorControllerMap.put("grabServoAngle", 0.0);
+
+    Main.motorControllerMap.put("servoGripRotate", 79.0);
     Main.motorControllerMap.put("glideServoSpeed", 0.0);
 
     Main.motorControllerMap.put("speedX", 0.0);

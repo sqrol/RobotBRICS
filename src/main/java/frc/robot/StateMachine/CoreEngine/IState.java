@@ -5,5 +5,4 @@ public interface IState { //required stages for states
     void execute();
     void finilize();
     boolean isFinished();
-    
 }

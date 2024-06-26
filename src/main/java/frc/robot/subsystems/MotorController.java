@@ -20,13 +20,13 @@ public class MotorController implements Runnable {
     private static boolean liftStop, rotateStop = false;
 
     private static final double[][] arrOfpercentForLift = { { 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 }, 
-                                                                    { -1, 0, 15, 30, 40, 55, 70, 80, 90, 100 } };
+                                                                { 0, 4, 15, 30, 40, 55, 70, 80, 90, 100 } };
 
-    private static final double[][] arrOfPosForLift = { { -1, 0, 15, 30, 40, 55, 70, 80, 90, 100 }, 
-                                                    { 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 } };
+    private static final double[][] arrOfPosForLift = { { 0, 4, 15, 30, 40, 50, 60, 70, 80, 90, 100 }, 
+                                                    {-50, 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 } };
 
-    private static final double[][] speedForLift = { { 0, 20, 50, 70, 100, 330, 500, 700, 1000 },
-                                                      { 0, 2, 5, 7, 20, 39, 55, 70, 80 } };
+    private static final double[][] speedForLift = { { 0, 5, 20, 50, 70, 100, 330, 500, 700, 1000 },
+                                                      { 0, 1.2, 2, 5, 7, 20, 39, 55, 70, 80 } };
 
     private static final double[][] arrOfPosForRotate = { { -1, 500, 1500, 2000 }, { -1, 45, 90, 110 } };
 
@@ -37,6 +37,18 @@ public class MotorController implements Runnable {
         while (!Thread.interrupted()) {
             double startTime = Timer.getFPGATimestamp();
             try {
+
+                if(Main.switchMap.get("EMSButton")) {
+                    setRightMotorSpeed(0.0);
+                    setLeftMotorSpeed(0.0);
+                    setRotateMotorSpeed(0.0);
+                    setLiftMotorSpeed(0.0);
+
+                    // getServoGlide().setDisabled();
+                    // getServoGrab().setDisabled();
+                    // getServoGripRotate().setDisabled(); 
+                }
+
                 if(Main.motorControllerMap.get("resetPID") == 1.0) {
                     resetPIDRight();
                     resetPIDLeft();
@@ -88,10 +100,14 @@ public class MotorController implements Runnable {
                 Main.motorControllerMap.put("encRotate", ENC_ROTATE.getEncoderDistance());
                 Main.motorControllerMap.put("encLift", ENC_LIFT.getEncoderDistance());
 
+                //DRIVE
                 setAxisSpeed(Main.motorControllerMap.get("speedX"), Main.motorControllerMap.get("speedZ"));
+
+                //OMS
                 setRotateMotorSpeed(Main.motorControllerMap.get("rotateSpeed"));
                 setLiftMotorSpeed(Main.motorControllerMap.get("liftSpeed"));
 
+                //SERVO
                 setServoGrab(Main.motorControllerMap.get("servoGrab"));
                 setServoGripRotate(Main.motorControllerMap.get("servoGripRotate"));    
                 setGlideServoSpeed(Main.motorControllerMap.get("glideServoSpeed"));
@@ -101,14 +117,12 @@ public class MotorController implements Runnable {
                 }
                 Main.switchMap.put("rotateStop", rotateStop);
                 
-                if(Main.motorControllerMap.get("targetLiftPos") != 0.0) {
-                    setLiftPosition(Main.motorControllerMap.get("targetLiftPos"));
-                }
-                Main.switchMap.put("liftStop", liftStop);
-
+                setLiftPosition(Main.motorControllerMap.get("targetLiftPos"));
+                
+                Main.motorControllerMap.put("servoGrabAngle", getServoGrabAngle());
                 Main.motorControllerMap.put("updateTime", motorsUpdateTime);
 
-                Thread.sleep(20);
+                Thread.sleep(5);
             } catch (Exception e) {
                 System.err.println("!!!An error occurred in MotorController: " + e.getMessage());
                 e.printStackTrace();
@@ -127,27 +141,21 @@ public class MotorController implements Runnable {
     private final TitanQuadEncoder ENC_ROTATE = new TitanQuadEncoder(MOTOR_ROTATE, Constants.ENC_ROTATE, Constants.DIST_PER_TICK);
     private final TitanQuadEncoder ENC_LIFT = new TitanQuadEncoder(MOTOR_LIFT, Constants.ENC_LIFT, Constants.DIST_PER_TICK);
 
-    private final PID PID_RIGHT = new PID(0.051, 0.43, 0.0, -100, 100); 
-    private final PID PID_LEFT = new PID(0.051, 0.43, 0.0, -100, 100); 
+    private final PID PID_RIGHT = new PID(0.0112, 1.34, 0.0, -100, 100); 
+    private final PID PID_LEFT = new PID(0.0112, 1.34, 0.0, -100, 100);  // 0.067, 0.43, 0.0, -100, 100
     private final PID PID_ROTATE = new PID(0.051, 0.43, 0.0, -100, 100); 
     private final PID PID_LIFT = new PID(0.051, 0.43, 0.0, -100, 100);
 
     private final Servo SERVO_GRAB = new Servo(Constants.SERVO_GRAB);
     private final Servo SERVO_GRIP_ROTATE = new Servo(Constants.SERVO_GRIP_ROTATE);
     private final ServoContinuous SERVO_GLIDE = new ServoContinuous(Constants.SERVO_GLIDE);
-
-    double liftCurrentPosition = 0; // Первоначальная позиция лифта
     
     private void setLiftPosition(double pos) {
-
         double currentPos = -Main.motorControllerMap.get("encLift");
-
         double percentPos = Functions.TransitionFunction(currentPos, arrOfpercentForLift);
         double encPos = Functions.TransitionFunction(pos, arrOfPosForLift);
-
         double speed = Functions.TransitionFunction(currentPos - encPos, speedForLift);
-
-        liftStop = Functions.BooleanInRange(currentPos - encPos, -5, 5);
+        liftStop = Functions.BooleanInRange(currentPos - encPos, -1, 1);
         
         Main.motorControllerMap.put("currentLiftPos", percentPos);
 
@@ -163,13 +171,21 @@ public class MotorController implements Runnable {
         } else {
             Main.motorControllerMap.put("liftSpeed", speed);
             liftStop = false;
-        }  
+        }
+
+        Main.switchMap.put("liftStop", liftStop);
+    }
+
+    private void setDisForServo() {
+        try {
+            SERVO_GRAB.setDisabled();
+        } catch (Exception e) {
+        }
     }
     
     private void SetRotatePosition(double degree) {
         
         double currentRotatePos = -Main.motorControllerMap.get("encRotate");
-        
         
         double rotateDegree = Functions.TransitionFunction(currentRotatePos, arrOfPosForRotate);
         double speed = Functions.TransitionFunction(rotateDegree - degree, speedForRotate);
@@ -177,11 +193,6 @@ public class MotorController implements Runnable {
         rotateStop = Functions.BooleanInRange(degree - rotateDegree, -0.2, 0.2);
 
         Main.motorControllerMap.put("currentRotateDegree", rotateDegree);
-        // SmartDashboard.putNumber("currentRotatePos", -Main.motorControllerMap.get("encRotate"));
-        // SmartDashboard.putNumber("currentRotatePosition", rotateDegree);
-        // SmartDashboard.putNumber("rotateDiff", rotateDegree - degree);
-        // SmartDashboard.putNumber("rotateSpeedOut", speed);
-        // SmartDashboard.putBoolean("rotateStop", rotateStop);
 
         if (rotateStop) {
             Main.motorControllerMap.put("rotateSpeed", 0.0);
@@ -197,7 +208,6 @@ public class MotorController implements Runnable {
             SmartDashboard.putNumber("rotateCheck", 324);
             rotateStop = true;
         } 
-        
     }
 
     private void setAxisSpeed(double x, double z) {
@@ -213,7 +223,7 @@ public class MotorController implements Runnable {
             PID_RIGHT.reset();
             MOTOR_RIGHT.set(0);
         } else {
-            PID_RIGHT.calculate(ENC_RIGHT.getSpeed(), speed);
+            PID_RIGHT.calculate(-ENC_RIGHT.getSpeed(), speed);
             Main.motorControllerMap.put("rightPID", PID_RIGHT.getOutput());
             MOTOR_RIGHT.set(Main.motorControllerMap.get("rightPID"));
         }
@@ -284,6 +294,18 @@ public class MotorController implements Runnable {
         PID_LIFT.reset();
     }
 
+    private Servo getServoGrab() {
+        return SERVO_GRAB;
+    }
+
+    private Servo getServoGripRotate() {
+        return SERVO_GRIP_ROTATE;
+    }
+
+    private ServoContinuous getServoGlide() {
+        return SERVO_GLIDE;
+    }
+
     private void setServoGrab(double angle) {
         try {
             SERVO_GRAB.setAngle(angle);
@@ -293,11 +315,15 @@ public class MotorController implements Runnable {
         } 
     }
 
+    private double getServoGrabAngle() {
+        return SERVO_GRAB.getAngle();
+    }
+
     private void setServoGripRotate(double angle) {
         try {
             SERVO_GRIP_ROTATE.setAngle(angle);
         } catch (Exception e) {
-            System.out.println("Error in setServoGripRotate");
+            System.out.println("Error in setServoGripRotate: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -306,7 +332,7 @@ public class MotorController implements Runnable {
         try {
             SERVO_GLIDE.set(speed);
         } catch (Exception e) {
-            System.out.println("Error in setGlideServoSpeed");
+            System.out.println("Error in setGlideServoSpeed: " + e.getMessage());
             e.printStackTrace();
         }  
     }

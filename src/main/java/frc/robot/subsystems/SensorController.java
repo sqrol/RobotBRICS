@@ -44,10 +44,9 @@ public class SensorController implements Runnable{
 
     private static final DigitalOutput GREEN_LED = new DigitalOutput(Constants.GREEN_LED);
     private static final DigitalOutput RED_LED = new DigitalOutput(Constants.RED_LED);
- 
-    // соники крашат весь проект
-    // private static final Ultrasonic SONIC_RIGHT = new Ultrasonic(Constants.SONIC_PING_RIGHT, Constants.SONIC_ECHO_RIGHT);
-    // private static final Ultrasonic SONIC_LEFT = new Ultrasonic(Constants.SONIC_PING_LEFT, Constants.SONIC_ECHO_RIGHT);
+    
+    private static final Ultrasonic SONIC_RIGHT = new Ultrasonic(Constants.SONIC_PING_RIGHT, Constants.SONIC_ECHO_RIGHT);
+    private static final Ultrasonic SONIC_LEFT = new Ultrasonic(Constants.SONIC_PING_LEFT, Constants.SONIC_ECHO_LEFT);
     
     private static final double[][] speedForGlideServo = { { 0, 1, 2, 4, 6, 8, 10 }, 
                                                     { 0, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5} };
@@ -106,8 +105,8 @@ public class SensorController implements Runnable{
                 Main.sensorsMap.put("sharpLeft", getLeftSharp());
                 Main.sensorsMap.put("sharpRight", getRightSharp());
 
-                // Main.sensorsMap.put("sonicLeft", getLeftSonic());
-                // Main.sensorsMap.put("sonicRight", getRightSonic());
+                Main.sensorsMap.put("sonicLeft", getLeftSonic());
+                Main.sensorsMap.put("sonicRight", getRightSonic());
 
                 Main.sensorsMap.put("srcGyro", newGyroThread);
                 Main.sensorsMap.put("posZ", newGyroThread);
@@ -136,18 +135,18 @@ public class SensorController implements Runnable{
         return GYRO.getAngle();
     }
 
-    // private double getLeftSonic() {
-    //     SONIC_LEFT.ping();
-    //     Timer.delay(0.005);
-    //     return SONIC_LEFT.getRangeMM() / 10;
-    // }
+    private double getLeftSonic() {
+        SONIC_LEFT.ping();
+        Timer.delay(0.005);
+        return SONIC_LEFT.getRangeMM() / 10;
+    }
 
-    // private double getRightSonic() {
-    //     SONIC_RIGHT.ping();
-    //     Timer.delay(0.005);
-    //     // return RIGHT_SONIC_FILTER.Filter(RIGHT_SONIC_FILTER.Filter(SONIC_RIGHT.getRangeMM() / 10));
-    //     return SONIC_RIGHT.getRangeMM() / 10;
-    // }
+    private double getRightSonic() {
+        SONIC_RIGHT.ping();
+        Timer.delay(0.005);
+        // return RIGHT_SONIC_FILTER.Filter(RIGHT_SONIC_FILTER.Filter(SONIC_RIGHT.getRangeMM() / 10));
+        return SONIC_RIGHT.getRangeMM() / 10;
+    }
 
     private double getLeftSharp() {
         return (LEFT_SHARP_FILTER.Filter((Math.pow(SHARP_LEFT.getAverageVoltage(), -1.2045) * 27.726)));

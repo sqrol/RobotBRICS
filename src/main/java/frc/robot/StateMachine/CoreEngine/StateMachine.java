@@ -6,20 +6,23 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.StateMachine.States.*;
 
 public class StateMachine { 
-    private static double startTime;
+    private static double startTime = 0;;
     public static IState currentState;
     public static boolean firstIteration = true;
     public static double iterationTime;
     public static int index = 0;
     public static ArrayList<IState> states = new ArrayList<>();
 
+    public StateMachine() {
+        StateMachine.firstIteration = true;
+    }
+
     public void initStates() { 
-        states.add(new Start());
-        states.add(new SetGlidePosition(10.0));
-        states.add(new SetGlidePosition(0));
-        // states.add(new SetGlidePosition(25));
-        // states.add(new SetGlidePosition(0));
-    } 
+        states.add(new StartPos());
+        states.add(new SimpleDrive(-100, 0));
+        states.add(new SimpleDrive(100, 0));
+        states.add(new End());
+    }
 
     public void executeStates() {
         if (firstIteration) { 
@@ -30,9 +33,9 @@ public class StateMachine {
         }
         currentState.execute(); 
         if (currentState.isFinished()) { 
-            firstIteration = true;
             currentState.finilize();
             StateMachine.index++;
+            firstIteration = true;
         }
         iterationTime = Timer.getFPGATimestamp() - startTime;
     }    

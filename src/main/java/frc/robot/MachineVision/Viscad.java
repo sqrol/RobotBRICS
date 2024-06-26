@@ -7,12 +7,18 @@ import org.opencv.imgproc.Moments;
 import java.util.*;
 
 public class Viscad {
+    public static Mat ConvertBGR2HSV(Mat src) {
+        Mat inImage = new Mat();
+        Imgproc.cvtColor(src, inImage, Imgproc.COLOR_BGR2HSV);
+
+        return inImage;
+    }
+    
     public static Mat RotateImage(Mat src, double deg) {
         Mat dst = new Mat(src.rows(), src.cols(), src.type());
         Point src_center = new Point(src.cols() / 2.0F, src.rows() / 2.0F);
         Mat rot_mat = Imgproc.getRotationMatrix2D(src_center, 360 - deg, 1.0);
         Imgproc.warpAffine(src, dst, rot_mat, src.size());
-
         rot_mat.release();
 
         return dst;
@@ -35,18 +41,21 @@ public class Viscad {
     public static Mat BinaryAnd(Mat first, Mat second) {
         Mat dst = new Mat();
         Core.bitwise_and(first, second, dst);
+
         return dst;
     }
 
     public static Mat BinaryOr(Mat first, Mat second) {
         Mat dst = new Mat();
         Core.bitwise_or(first, second, dst);
+
         return dst;
     }
 
     public static Mat BinaryNot(Mat src) {
         Mat dst = new Mat();
         Core.bitwise_not(src, dst);
+
         return dst;
     }
 
@@ -54,6 +63,7 @@ public class Viscad {
         Mat resizeImage = new Mat();
         Size sz = new Size(w, h);
         Imgproc.resize(src, resizeImage, sz);
+
         return resizeImage;
     }
 
@@ -62,15 +72,16 @@ public class Viscad {
         return src.submat(rect);
     }
 
-    public static Mat Blur(Mat src, int power)
+    public static Mat Blur(Mat src, int power) // !
     {
         Mat dst = new Mat();
         Imgproc.blur(src, dst, new Size(power, power));
+
         return dst;
     }
 
 
-    public static Mat ImageErdilCAD(Mat src, int power) {
+    public static Mat ImageErdilCAD(Mat src, int power) { // !
         Mat dst = new Mat();
         src.copyTo(dst);
 
@@ -92,51 +103,70 @@ public class Viscad {
         return dst2;
     }
 
-
-
-    public static Mat Dilate(Mat src, int power)
-    {
+    public static Mat Erode(Mat src, int power) {
         Mat dst2 = new Mat();
         src.copyTo(dst2);
 
         Mat element1 = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,
                 new Size(2 * power + 1, 2 * power + 1));
+        Imgproc.erode(src, dst2, element1);
+        element1.release();
+
+        return dst2;
+    }
+
+    public static Mat Dilate(Mat src, int power) // !
+    {
+        Mat dst2 = new Mat();
+        src.copyTo(dst2);
+        Mat element1 = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(2 * power + 1, 2 * power + 1));
         Imgproc.dilate(src, dst2, element1);
         element1.release();
 
         return dst2;
     }
 
-    public static List<Rect> ParticleAnalysis(Mat src, Mat dst)
-    {
+    public static List<Rect> ParticleAnalysis(Mat src, Mat dst) {
         Mat origCopy = src.clone();
-
+    
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
         Mat hierarchy = new Mat();
-
+    
         // Find the contours in the image
-        Imgproc.findContours( origCopy, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
-
+        Imgproc.findContours(origCopy, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
+    
+        // Check if contours are empty
+        if (contours.isEmpty()) {
+            origCopy.release();
+            hierarchy.release();
+            return Collections.emptyList();
+        }
+    
         List<Rect> listOfBoxes = new ArrayList<>();
         List<Double> listOfAreas = new ArrayList<>();
-
-        for (MatOfPoint cont : contours)
-        {
+    
+        for (MatOfPoint cont : contours) {
             Rect bound = Imgproc.boundingRect(cont);
             listOfBoxes.add(bound);
             listOfAreas.add(Imgproc.contourArea(cont));
         }
-
-        ArrayList<Rect> sortedList = new ArrayList(listOfBoxes);
-        if (listOfBoxes.size() > 1)
-            Collections.sort(sortedList, (left, right) -> ((int)listOfAreas.get(listOfBoxes.indexOf(right)).doubleValue() - (int)listOfAreas.get(listOfBoxes.indexOf(left)).doubleValue()));
-
+    
+        ArrayList<Rect> sortedList = new ArrayList<>(listOfBoxes);
+        if (listOfBoxes.size() > 1) {
+            Collections.sort(sortedList, (left, right) -> 
+                Double.compare(
+                    listOfAreas.get(listOfBoxes.indexOf(right)), 
+                    listOfAreas.get(listOfBoxes.indexOf(left))
+                )
+            );
+        }
+    
         origCopy.release();
         hierarchy.release();
-
+    
         return sortedList;
     }
-
+  
     public static List<Rect> ParticleAnalysis(Mat src)
     {
         Mat deleteIt = new Mat();
@@ -155,16 +185,19 @@ public class Viscad {
         Mat imageROI = src.submat(cont);
         int c = ImageTrueArea(imageROI);
         imageROI.release();
+
         return c;
     }
 
     public static Point CenterOfMass(MatOfPoint contour) {
         Moments moments = Imgproc.moments(contour);
+
         return new Point(moments.m10 / moments.m00, moments.m01 / moments.m00);
     }
 
     public static Point CenterOfMass(Mat src) {
         Moments moments = Imgproc.moments(src);
+
         return new Point(moments.m10 / moments.m00, moments.m01 / moments.m00);
     }
 
@@ -184,6 +217,7 @@ public class Viscad {
         }
 
         hierarchy.release();
+
         return biggestBlob;
     }
 
@@ -210,20 +244,28 @@ public class Viscad {
 
         Mat out = new Mat();
         Core.merge(new ArrayList<Mat>(Arrays.asList(new Mat[]{dstOut.get(0), dstOut.get(1), bright})), out);
-        if (outBGR)
-        {
+        if (outBGR) {
             Mat newOut = new Mat();
             Imgproc.cvtColor(out, newOut, Imgproc.COLOR_HSV2BGR);
+            hsvCut.release();
+            hsvOut.release();
+            bright.release();
+            out.release();
             return newOut;
-        }
+        } 
+
+        hsvCut.release();
+        hsvOut.release();
+        bright.release();
+
         return out;
     }
 
     public static List<MatOfPoint2f> RemakeContours(List<MatOfPoint> contours, float k)
     {
         List<MatOfPoint2f> newContours = new ArrayList<MatOfPoint2f>();
-        for (MatOfPoint con : contours)
-        {
+        
+        for (MatOfPoint con : contours) {
             MatOfPoint2f c2f = new MatOfPoint2f(con.toArray());
             double conPerimeter = Imgproc.arcLength(c2f, true);
             float epsilon = k * (float)conPerimeter; // 0.023
@@ -231,6 +273,7 @@ public class Viscad {
             Imgproc.approxPolyDP(c2f, newCon, epsilon, true);
             newContours.add(newCon);
             c2f.release();
+            newCon.release();
         }
         return newContours;
     }

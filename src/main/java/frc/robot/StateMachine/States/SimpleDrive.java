@@ -1,7 +1,5 @@
 package frc.robot.StateMachine.States;
 
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Main;
 import frc.robot.Maths.Common.Functions;
 import frc.robot.StateMachine.CoreEngine.IState;
@@ -15,8 +13,8 @@ public class SimpleDrive implements IState{
 
     private boolean finishX, finishZ = false;
     
-    private double[][] speedXArray = { { 0, 0.7, 1.4, 3, 5, 10, 12, 14, 18, 35, 50, 100}, 
-                                       { 0, 1, 2, 3, 8, 15, 30, 45, 50, 65, 75, 95} };
+    private double[][] speedXArray = { { 0, 2, 6, 18, 30, 50, 60}, 
+                                       { 0, 10, 20, 30, 65, 75, 95} };
 
     private double[][] speedZArray = { { 0.1, 0.5, 1.5, 2, 3, 6, 12, 26, 32, 50 }, 
                                        { 10, 15, 17, 20, 25, 30, 40, 53, 60, 70 } };
@@ -50,7 +48,7 @@ public class SimpleDrive implements IState{
 
             double gyro = Main.sensorsMap.get("srcGyro");
     
-            posX = ((currentRight + currentLeft) / 2) / 48;
+            posX = ((currentRight - currentLeft) / 2) / 48;
     
             double[] polar = Functions.ReImToPolar(posX, 0);
             double[] decard = Functions.PolarToReIm(polar[0], (polar[1] + Math.toRadians(gyro))); 
@@ -58,7 +56,7 @@ public class SimpleDrive implements IState{
             double diffX = XPosition - decard[0];
             
             speedX = Functions.TransitionFunction(diffX, speedXArray);
-            speedZ = Functions.TransitionFunction(-gyro, speedZArray);
+            speedZ = Functions.TransitionFunction(gyro, speedZArray);
 
             finishX = Functions.BooleanInRange(diffX, -0.5, 0.5); 
             finishZ = Functions.BooleanInRange(speedZ, -0.2, 0.2); 
