@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
+// import com.studica.frc.Cobra;
 
 import frc.robot.Constants;
 import frc.robot.Main;
@@ -47,6 +48,10 @@ public class SensorController implements Runnable{
     
     private static final Ultrasonic SONIC_RIGHT = new Ultrasonic(Constants.SONIC_PING_RIGHT, Constants.SONIC_ECHO_RIGHT);
     private static final Ultrasonic SONIC_LEFT = new Ultrasonic(Constants.SONIC_PING_LEFT, Constants.SONIC_ECHO_LEFT);
+
+    // // Новый вызов датчика Cobra (Опять же если Софа начнет не считать меня пустым местом) 
+    // // Данный датчик подключается в порт I2C контроллера VMX
+    // private static final Cobra cobra = new Cobra();
     
     private static final double[][] speedForGlideServo = { { 0, 1, 2, 4, 6, 8, 10 }, 
                                                     { 0, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5} };
@@ -121,6 +126,10 @@ public class SensorController implements Runnable{
                 Main.sensorsMap.put("currentGlidePos", currentGlidePosition);
 
                 Main.sensorsMap.put("updateTimeSensors", sensorsUpdateTime);
+
+                // // Обработка значений с нового датчика черной линии
+                // Main.sensorsMap.put("cobraSignal0", (double)getCobraSignal0());
+                // Main.sensorsMap.put("cobraSignal1", (double)getCobraSignal1());
 
                 Thread.sleep(20);
             } catch (Exception e) {
@@ -211,7 +220,7 @@ public class SensorController implements Runnable{
         }
     }
 
-    private void setGlidePosition(double position) {
+    private void setGlidePosition(double position) { // Почему это тут? Он должен быть в MotorController!
         boolean blackLineDetect = getCobraVoltage() > 2.0;
         double glideServoSpeed = Functions.TransitionFunction(position - currentGlidePosition, speedForGlideServo);
 
@@ -240,4 +249,28 @@ public class SensorController implements Runnable{
         }
         Main.switchMap.put("glideStop", glideStop);
     }
+
+    // public float getCobraSignal0()
+    // {
+    //     try 
+    //     {
+    //         return cobra.getRawValue(0);
+    //     } 
+    //     catch (Exception e) 
+    //     {
+    //         return 0;
+    //     }
+    // }
+
+    // public float getCobraSignal1()
+    // {
+    //     try 
+    //     {
+    //         return cobra.getRawValue(1);
+    //     } 
+    //     catch (Exception e) 
+    //     {
+    //         return 0;
+    //     }
+    // }
 }

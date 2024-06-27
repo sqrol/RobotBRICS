@@ -136,6 +136,9 @@ public class Robot extends TimedRobot {
     Main.motorControllerMap.put("rotateSpeed", 0.0);
     Main.motorControllerMap.put("liftSpeed", 0.0);
 
+    Main.sensorsMap.put("cobraSignal0", 0.0);
+    Main.sensorsMap.put("cobraSignal1", 0.0);
+
     Main.motorControllerMap.put("posX", 0.0);
     Main.motorControllerMap.put("updateTime", MotorController.motorsUpdateTime);
   }

@@ -16,6 +16,11 @@ public class MotorController implements Runnable {
 
     public static double motorsUpdateTime; 
     public double previousDegrees = 0;
+
+    // Переменные для функции setGlidePosition()
+    private boolean lastA;
+    private boolean lastB;
+    private int glidePosition;
     
     private static boolean liftStop, rotateStop = false;
 
@@ -32,6 +37,10 @@ public class MotorController implements Runnable {
 
     private static final double[][] speedForRotate =  { { 0, 0.5, 2, 10, 17, 26, 39, 50, 62, 70 }, 
                                                         { 0, 2, 5, 20, 35, 47, 60, 70, 77, 85 } };
+
+    private static final double[][] speedForGlideServo = { { 0, 1, 2, 4, 6, 8, 10 }, 
+    { 0, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5} };
+
     @Override
     public void run() {
         while (!Thread.interrupted()) {
@@ -299,5 +308,38 @@ public class MotorController implements Runnable {
             System.out.println("Error in setGlideServoSpeed: " + e.getMessage());
             e.printStackTrace();
         }  
+    }
+
+    // Если Софа все же перестанет забивать хуй (это пиздец! как с ней общаться?)
+    // на мои просьбы переделать проводку датчика черной линии новый метод для работы с Glide
+
+    private void countGlidePosition() { // Я думаю его просто можно засунуть в основной поток чтобы он работал постоянно
+        // Получение значений с датчика черной линии
+        boolean currentA = Main.sensorsMap.get("cobraSignal0") > 2.0; 
+        boolean currentB = Main.sensorsMap.get("cobraSignal1") > 2.0; 
+
+        // Сравниваем с предыдущими значениями для определения направления
+        if (currentA != lastA || currentB != lastB) {
+            if (lastA == currentA && lastB != currentB) {
+                glidePosition += (currentA == currentB) ? 1 : -1;
+            } else if (lastB == currentB && lastA != currentA) {
+                glidePosition += (currentA == currentB) ? 1 : -1;
+            }
+        }
+
+        // Обновляем предыдущие значения
+        lastA = currentA;
+        lastB = currentB;
+    }
+
+    private boolean setGlidePosition(int targetGlidePosition) {
+
+        double glideCurrentDiff = this.glidePosition - targetGlidePosition;
+        double glideServoSpeed = Functions.TransitionFunction(glideCurrentDiff, speedForGlideServo);
+        boolean glideStop = targetGlidePosition == this.glidePosition;
+
+        setGlideServoSpeed(glideServoSpeed);
+
+        return glideStop;
     }
 }
