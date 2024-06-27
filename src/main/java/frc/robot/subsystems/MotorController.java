@@ -23,7 +23,7 @@ public class MotorController implements Runnable {
                                                                 { 0, 4, 15, 30, 40, 55, 70, 80, 90, 100 } };
 
     private static final double[][] arrOfPosForLift = { { 0, 4, 15, 30, 40, 50, 60, 70, 80, 90, 100 }, 
-                                                    {-50, 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 } };
+                                                        {-50, 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 } };
 
     private static final double[][] speedForLift = { { 0, 5, 20, 50, 70, 100, 330, 500, 700, 1000 },
                                                       { 0, 1.2, 2, 5, 7, 20, 39, 55, 70, 80 } };
@@ -44,82 +44,34 @@ public class MotorController implements Runnable {
                     setRotateMotorSpeed(0.0);
                     setLiftMotorSpeed(0.0);
 
-                    // getServoGlide().setDisabled();
-                    // getServoGrab().setDisabled();
-                    // getServoGripRotate().setDisabled(); 
+                    SERVO_GLIDE.setDisabled();
+                    SERVO_GRAB.setDisabled();
+                    SERVO_GRIP_ROTATE.setDisabled(); 
+
+                } else {
+
+                    setAxisSpeed(Main.motorControllerMap.get("speedX"), Main.motorControllerMap.get("speedZ"));
+                    setRotateMotorSpeed(Main.motorControllerMap.get("rotateSpeed"));
+                    setLiftMotorSpeed(Main.motorControllerMap.get("liftSpeed"));
+                    setServoGrab(Main.motorControllerMap.get("servoGrab"));
+                    setServoGripRotate(Main.motorControllerMap.get("servoGripRotate"));    
+                    setGlideServoSpeed(Main.motorControllerMap.get("glideServoSpeed"));
+                    
                 }
 
-                if(Main.motorControllerMap.get("resetPID") == 1.0) {
-                    resetPIDRight();
-                    resetPIDLeft();
-                    resetPIDRotate();
-                    resetPIDLift();
-                    Main.motorControllerMap.put("resetPID", 0.0);
-                }
+                encodersValueResetHandler(); // Работа со сбросом энкодеров
 
-                if (Main.motorControllerMap.get("resetEncs") == 1.0) {
-                    resetEncRight();
-                    resetEncLeft();
-                    resetEncRotate();
-                    resetEncLift();
-                    Main.motorControllerMap.put("resetEncs", 0.0);
-                }
+                encodersValueHandler(); // Работа со значениями энкодера
 
-                if(Main.motorControllerMap.get("resetEncRight") == 1.0) {
-                    resetEncRight();
-                    Main.motorControllerMap.put("resetEncRight", 0.0);
-                }
-
-                if(Main.motorControllerMap.get("resetEncRight") == 1.0) {
-                    resetEncRight();
-                    Main.motorControllerMap.put("resetEncRight", 0.0);
-                }
-
-                if(Main.motorControllerMap.get("resetEncLeft") == 1.0) {
-                    resetEncLeft();
-                    Main.motorControllerMap.put("resetEncLeft", 0.0);
-                }
-
-                if(Main.motorControllerMap.get("resetEncRotate") == 1.0) {
-                    resetEncRotate();
-                    Main.motorControllerMap.put("resetEncRotate", 0.0);
-                }
-
-                if(Main.motorControllerMap.get("resetEncLift") == 1.0) {
-                    resetEncLift();
-                    Main.motorControllerMap.put("resetEncLift", 0.0);
-                }
-
-                Main.motorControllerMap.put("rpmRight", ENC_RIGHT.getSpeed());
-                Main.motorControllerMap.put("rpmLeft", ENC_LEFT.getSpeed());
-                Main.motorControllerMap.put("rpmRotate", ENC_ROTATE.getSpeed());
-                Main.motorControllerMap.put("rpmLift", ENC_LIFT.getSpeed());
-
-                Main.motorControllerMap.put("encRight", ENC_RIGHT.getEncoderDistance()); 
-                Main.motorControllerMap.put("encLeft", ENC_LEFT.getEncoderDistance());
-                Main.motorControllerMap.put("encRotate", ENC_ROTATE.getEncoderDistance());
-                Main.motorControllerMap.put("encLift", ENC_LIFT.getEncoderDistance());
-
-                //DRIVE
-                setAxisSpeed(Main.motorControllerMap.get("speedX"), Main.motorControllerMap.get("speedZ"));
-
-                //OMS
-                setRotateMotorSpeed(Main.motorControllerMap.get("rotateSpeed"));
-                setLiftMotorSpeed(Main.motorControllerMap.get("liftSpeed"));
-
-                //SERVO
-                setServoGrab(Main.motorControllerMap.get("servoGrab"));
-                setServoGripRotate(Main.motorControllerMap.get("servoGripRotate"));    
-                setGlideServoSpeed(Main.motorControllerMap.get("glideServoSpeed"));
-
-                if(Main.motorControllerMap.get("targetRotateDegree") != 0.0) {
+                if(Main.motorControllerMap.get("targetRotateDegree") != 0.0) {  // Не понимаю зачем здесь условие? Добавь это условию в саму функцию!
                     SetRotatePosition(Main.motorControllerMap.get("targetRotateDegree"));
                 }
-                Main.switchMap.put("rotateStop", rotateStop);
+
+                Main.switchMap.put("rotateStop", rotateStop); // Тоже самое! Добавь это в саму функцию!
                 
                 setLiftPosition(Main.motorControllerMap.get("targetLiftPos"));
                 
-                Main.motorControllerMap.put("servoGrabAngle", getServoGrabAngle());
+                Main.motorControllerMap.put("servoGrabAngle", getServoGrabAngle()); // Зачем?)
                 Main.motorControllerMap.put("updateTime", motorsUpdateTime);
 
                 Thread.sleep(5);
@@ -176,10 +128,50 @@ public class MotorController implements Runnable {
         Main.switchMap.put("liftStop", liftStop);
     }
 
-    private void setDisForServo() {
-        try {
-            SERVO_GRAB.setDisabled();
-        } catch (Exception e) {
+    private void encodersValueHandler() {
+        Main.motorControllerMap.put("rpmRight", ENC_RIGHT.getSpeed());
+        Main.motorControllerMap.put("rpmLeft", ENC_LEFT.getSpeed());
+        Main.motorControllerMap.put("rpmRotate", ENC_ROTATE.getSpeed());
+        Main.motorControllerMap.put("rpmLift", ENC_LIFT.getSpeed());
+
+        Main.motorControllerMap.put("encRight", ENC_RIGHT.getEncoderDistance()); 
+        Main.motorControllerMap.put("encLeft", ENC_LEFT.getEncoderDistance());
+        Main.motorControllerMap.put("encRotate", ENC_ROTATE.getEncoderDistance());
+        Main.motorControllerMap.put("encLift", ENC_LIFT.getEncoderDistance());
+    }
+
+    private void encodersValueResetHandler() {
+        // Зачем отдельный сброс для пидов?
+        if(Main.motorControllerMap.get("resetPID") == 1.0) {
+            resetPIDRight();
+            resetPIDLeft();
+            resetPIDRotate();
+            resetPIDLift();
+            Main.motorControllerMap.put("resetPID", 0.0);
+        }
+
+        if (Main.motorControllerMap.get("resetEncs") == 1.0) {
+            ENC_RIGHT.reset();
+            ENC_LEFT.reset();
+            ENC_ROTATE.reset();
+            ENC_LIFT.reset();
+            Main.motorControllerMap.put("resetEncs", 0.0);
+        }
+
+        if(Main.motorControllerMap.get("resetDriveEnc") == 1.0) {
+            ENC_RIGHT.reset();
+            ENC_LEFT.reset();
+            Main.motorControllerMap.put("resetDriveEnc", 0.0);
+        }
+
+        if(Main.motorControllerMap.get("resetEncRotate") == 1.0) {
+            ENC_ROTATE.reset();
+            Main.motorControllerMap.put("resetEncRotate", 0.0);
+        }
+
+        if(Main.motorControllerMap.get("resetEncLift") == 1.0) {
+            ENC_LIFT.reset();
+            Main.motorControllerMap.put("resetEncLift", 0.0);
         }
     }
     
@@ -262,22 +254,6 @@ public class MotorController implements Runnable {
         }
     }
 
-    private void resetEncRight() {
-        ENC_RIGHT.reset();
-    }
-
-    private void resetEncLeft() {
-        ENC_LEFT.reset();
-    }
-
-    private void resetEncRotate() {
-        ENC_ROTATE.reset();
-    }
-
-    private void resetEncLift() {
-        ENC_LIFT.reset();
-    }
-
     private void resetPIDRight() {
         PID_RIGHT.reset();
     }
@@ -292,18 +268,6 @@ public class MotorController implements Runnable {
 
     private void resetPIDLift() {
         PID_LIFT.reset();
-    }
-
-    private Servo getServoGrab() {
-        return SERVO_GRAB;
-    }
-
-    private Servo getServoGripRotate() {
-        return SERVO_GRIP_ROTATE;
-    }
-
-    private ServoContinuous getServoGlide() {
-        return SERVO_GLIDE;
     }
 
     private void setServoGrab(double angle) {
