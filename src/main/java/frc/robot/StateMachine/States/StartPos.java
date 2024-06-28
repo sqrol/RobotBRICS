@@ -1,5 +1,6 @@
 package frc.robot.StateMachine.States;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Main;
 import frc.robot.StateMachine.CoreEngine.IState;
 import frc.robot.StateMachine.CoreEngine.StateMachine;
@@ -22,6 +23,9 @@ public class StartPos implements IState {
             Main.motorControllerMap.put("liftSpeed", 60.0);
         }
         succesInit = Main.switchMap.get("limitSwitch");
+
+        Main.motorControllerMap.put("speedX", 50.0);
+        // Main.motorControllerMap.put("speedZ", 50.0);
     }
 
     @Override
@@ -32,6 +36,7 @@ public class StartPos implements IState {
 
     @Override
     public boolean isFinished() {
-        return succesInit && StateMachine.iterationTime > 0.5;
+        SmartDashboard.putNumber("STTime: ", StateMachine.iterationTime);
+        return succesInit && StateMachine.iterationTime > 5;
     }
 }
