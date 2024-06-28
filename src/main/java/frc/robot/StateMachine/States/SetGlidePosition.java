@@ -26,10 +26,7 @@ public class SetGlidePosition implements IState{
 
     @Override
     public void finilize() {
-        SmartDashboard.putNumber("FNILIZE SETGLIDEPOS", 123123);
         Main.motorControllerMap.put("glideServoSpeed", 0.0);
-        Main.sensorsMap.put("targetGlidePos", 0.0);
-        Main.switchMap.put("glideStop", false);
     }
 
     @Override

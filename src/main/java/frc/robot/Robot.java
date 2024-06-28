@@ -62,7 +62,7 @@ public class Robot extends TimedRobot {
   }
 
   private void initMaps() {
-
+    Main.sensorsMap.put("currentGlidePos", 0.0);
     Main.switchMap.put("startButton", false);
     Main.switchMap.put("EMSButton", false);
     Main.switchMap.put("limitSwitch", false);
@@ -93,7 +93,7 @@ public class Robot extends TimedRobot {
     Main.sensorsMap.put("srcGyro", 0.0);
 
     Main.sensorsMap.put("targetGlidePos", 0.0);
-    Main.sensorsMap.put("currentGlidePos", 0.0);
+    
 
     Main.motorControllerMap.put("targetLiftPos", 0.0);
     Main.motorControllerMap.put("currentLiftPos", 0.0);
@@ -192,6 +192,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("liftStop", Main.switchMap.get("liftStop"));
     SmartDashboard.putBoolean("glideStop", Main.switchMap.get("glideStop"));
     SmartDashboard.putBoolean("rotateStop", Main.switchMap.get("rotateStop"));
+
+    SmartDashboard.putNumber("glideServoSpeed", Main.motorControllerMap.get("glideServoSpeed"));
 
     SmartDashboard.putNumber("objectFind", Main.sensorsMap.get("objectFind"));
 

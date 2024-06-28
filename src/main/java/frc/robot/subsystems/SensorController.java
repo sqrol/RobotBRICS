@@ -38,8 +38,8 @@ public class SensorController implements Runnable{
     private static final DigitalInput START_BUTTON = new DigitalInput(Constants.START_BUTTON);
     private static final DigitalInput EMS_BUTTON = new DigitalInput(Constants.EMS_BUTTON);
 
-    private static final DigitalOutput GREEN_LED = new DigitalOutput(Constants.GREEN_LED);
-    private static final DigitalOutput RED_LED = new DigitalOutput(Constants.RED_LED);
+    private static DigitalOutput GREEN_LED = new DigitalOutput(Constants.GREEN_LED);
+    private static DigitalOutput RED_LED = new DigitalOutput(Constants.RED_LED);
     
     private static final Ultrasonic SONIC_RIGHT = new Ultrasonic(Constants.SONIC_PING_RIGHT, Constants.SONIC_ECHO_RIGHT);
     private static final Ultrasonic SONIC_LEFT = new Ultrasonic(Constants.SONIC_PING_LEFT, Constants.SONIC_ECHO_LEFT);
@@ -55,6 +55,15 @@ public class SensorController implements Runnable{
 
     @Override
     public void run() {
+
+        try {
+            // GREEN_LED = new DigitalOutput(Constants.GREEN_LED);
+            // RED_LED = new DigitalOutput(Constants.RED_LED);
+            
+        } catch (Exception e) {
+            //TODO: handle exception
+        }
+
         while (!Thread.interrupted()) {
             double startTime = Timer.getFPGATimestamp();
             try {
@@ -170,6 +179,7 @@ public class SensorController implements Runnable{
 
     private void setGreenLED(boolean state) {
         try {
+            GREEN_LED.disablePWM();
             GREEN_LED.set(state);
         } catch (Exception e) {
             e.printStackTrace();
@@ -178,11 +188,14 @@ public class SensorController implements Runnable{
 
     private void setRedLED(boolean state) {
         try {
+            RED_LED.disablePWM();
             RED_LED.set(state);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    
 
     /**
      * Устанавливает индикацию в соответствии с выбранным режимом

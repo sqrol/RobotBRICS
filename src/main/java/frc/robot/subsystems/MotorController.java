@@ -25,7 +25,7 @@ public class MotorController implements Runnable {
     private boolean blackLineFlag, direction = false;  
     private boolean glideStop = false;
 
-    private double currentGlidePosition = 0;
+    private static double currentGlidePosition = 0;
     
     private static boolean liftStop, rotateStop = false;
 
@@ -33,7 +33,7 @@ public class MotorController implements Runnable {
                                                                 { 0, 4, 15, 30, 40, 55, 70, 80, 90, 100 } };
 
     private static final double[][] arrOfPosForLift = { { 0, 4, 15, 30, 40, 50, 60, 70, 80, 90, 100 }, 
-                                                        {-50, 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 } };
+                                                        { 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 } };
 
     private static final double[][] speedForLift = { { 0, 5, 20, 50, 70, 100, 330, 500, 700, 1000 },
                                                       { 0, 1.2, 2, 5, 7, 20, 39, 55, 70, 80 } };
@@ -63,35 +63,25 @@ public class MotorController implements Runnable {
                     SERVO_GRIP_ROTATE.setDisabled(); 
 
                 } else {
-
                     setAxisSpeed(Main.motorControllerMap.get("speedX"), Main.motorControllerMap.get("speedZ"));
                     setRotateMotorSpeed(Main.motorControllerMap.get("rotateSpeed"));
                     setLiftMotorSpeed(Main.motorControllerMap.get("liftSpeed"));
-                    setServoGrab(Main.motorControllerMap.get("servoGrab"));
-                    setServoGripRotate(Main.motorControllerMap.get("servoGripRotate"));    
                     setGlideServoSpeed(Main.motorControllerMap.get("glideServoSpeed"));
+
+                    setServoGrab(Main.motorControllerMap.get("servoGrab"));
+                    setServoGripRotate(Main.motorControllerMap.get("servoGripRotate"));   
+                    
+                    setRotatePosition(Main.motorControllerMap.get("targetRotateDegree"));
+                    setLiftPosition(Main.motorControllerMap.get("targetLiftPos"));
                     
                 }
 
                 encodersValueResetHandler(); // Работа со сбросом энкодеров
 
                 encodersValueHandler(); // Работа со значениями энкодера
-
-                if(Main.motorControllerMap.get("targetRotateDegree") != 0.0) {  // Не понимаю зачем здесь условие? Добавь это условию в саму функцию!
-                    SetRotatePosition(Main.motorControllerMap.get("targetRotateDegree"));
-                }
-
-                Main.switchMap.put("rotateStop", rotateStop); // Тоже самое! Добавь это в саму функцию!
-                
-                setLiftPosition(Main.motorControllerMap.get("targetLiftPos"));
-                
-                
-                // setGlidePosition(Main.sensorsMap.get("targetGlidePos"));
-                
-                Main.sensorsMap.put("currentGlidePos", currentGlidePosition);
-
-                Main.motorControllerMap.put("servoGrabAngle", getServoGrabAngle()); // Зачем?) 
-                Main.motorControllerMap.put("updateTime", motorsUpdateTime);         // для медленного захвата
+                setGlidePosition(Main.sensorsMap.get("targetGlidePos"));
+                Main.motorControllerMap.put("servoGrabAngle", getServoGrabAngle());
+                Main.motorControllerMap.put("updateTime", motorsUpdateTime);       
 
                 Thread.sleep(5);
             } catch (Exception e) {
@@ -126,7 +116,7 @@ public class MotorController implements Runnable {
         double percentPos = Functions.TransitionFunction(currentPos, arrOfpercentForLift);
         double encPos = Functions.TransitionFunction(pos, arrOfPosForLift);
         double speed = Functions.TransitionFunction(currentPos - encPos, speedForLift);
-        liftStop = Functions.BooleanInRange(currentPos - encPos, -1, 1);
+        liftStop = Functions.BooleanInRange(currentPos - encPos, -0.2, 0.2);
         
         Main.motorControllerMap.put("currentLiftPos", percentPos);
 
@@ -145,6 +135,39 @@ public class MotorController implements Runnable {
         }
 
         Main.switchMap.put("liftStop", liftStop);
+    }
+
+    private void setGlidePosition(double position) { 
+        boolean blackLineDetect = Main.sensorsMap.get("cobraVoltage") > 2.0;
+        double glideServoSpeed = Functions.TransitionFunction(position - currentGlidePosition, speedForGlideServo);
+
+        glideStop = false;
+
+        direction = position > currentGlidePosition;
+
+        Main.sensorsMap.put("currentGlidePos", currentGlidePosition);
+
+        if (position != currentGlidePosition) {
+            Main.motorControllerMap.put("glideServoSpeed", glideServoSpeed);
+            glideStop = false;
+        } else {
+            glideStop = true;
+        }
+        
+        if (blackLineDetect && !blackLineFlag) {
+            if (direction) {
+                currentGlidePosition++; 
+            } else {
+                currentGlidePosition--;
+            }
+            blackLineFlag = true;
+        }
+
+        if (!blackLineDetect && blackLineFlag) {
+            blackLineFlag = false;
+        }
+        
+        Main.switchMap.put("glideStop", glideStop);
     }
 
     private void encodersValueHandler() {
@@ -194,7 +217,7 @@ public class MotorController implements Runnable {
         }
     }
 
-    private void SetRotatePosition(double degree) {
+    private void setRotatePosition(double degree) {
         
         double currentRotatePos = -Main.motorControllerMap.get("encRotate");
         
@@ -303,42 +326,14 @@ public class MotorController implements Runnable {
 
     private void setGlideServoSpeed(double speed) {
         try {
-            SERVO_GLIDE.set(speed);
+            SERVO_GLIDE.setSpeed(speed);
         } catch (Exception e) {
             System.out.println("Error in setGlideServoSpeed: " + e.getMessage());
             e.printStackTrace();
         }  
     }
 
-    private void setGlidePosition(double position) { 
-        boolean blackLineDetect = Main.sensorsMap.get("cobraVoltage") > 2.0;
-        double glideServoSpeed = Functions.TransitionFunction(position - currentGlidePosition, speedForGlideServo);
-
-        glideStop = false;
-
-        direction = position > currentGlidePosition;
-
-        if (position != currentGlidePosition) {
-            Main.motorControllerMap.put("glideServoSpeed", glideServoSpeed);
-            glideStop = false;
-        } else {
-            glideStop = true;
-        }
-        
-        if (blackLineDetect && !blackLineFlag) {
-            if (direction) {
-                currentGlidePosition++; 
-            } else {
-                currentGlidePosition--;
-            }
-            blackLineFlag = true;
-        }
-
-        if (!blackLineDetect && blackLineFlag) {
-            blackLineFlag = false;
-        }
-        Main.switchMap.put("glideStop", glideStop);
-    }
+    
 
     // Если Софа все же перестанет забивать хуй (это пиздец! как с ней общаться?)
     // на мои просьбы переделать проводку датчика черной линии новый метод для работы с Glide
@@ -362,14 +357,14 @@ public class MotorController implements Runnable {
         lastB = currentB;
     }
 
-    private boolean setGlidePosition(int targetGlidePosition) {
+    // private boolean setGlidePosition(int targetGlidePosition) {
 
-        double glideCurrentDiff = glidePosition - targetGlidePosition;
-        double glideServoSpeed = Functions.TransitionFunction(glideCurrentDiff, speedForGlideServo);
-        boolean glideStop = targetGlidePosition == glidePosition;
+    //     double glideCurrentDiff = glidePosition - targetGlidePosition;
+    //     double glideServoSpeed = Functions.TransitionFunction(glideCurrentDiff, speedForGlideServo);
+    //     boolean glideStop = targetGlidePosition == glidePosition;
 
-        setGlideServoSpeed(glideServoSpeed);
+    //     setGlideServoSpeed(glideServoSpeed);
 
-        return glideStop;
-    }
+    //     return glideStop;
+    // }
 }

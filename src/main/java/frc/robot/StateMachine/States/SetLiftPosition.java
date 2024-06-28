@@ -31,7 +31,7 @@ public class SetLiftPosition implements IState{
 
     @Override
     public boolean isFinished() {
-        return Main.switchMap.get("liftStop") && StateMachine.iterationTime > 2;
+        return Main.switchMap.get("liftStop") && StateMachine.iterationTime > 1;
     }
     
 }

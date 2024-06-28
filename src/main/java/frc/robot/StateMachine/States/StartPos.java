@@ -24,7 +24,7 @@ public class StartPos implements IState {
         }
         succesInit = Main.switchMap.get("limitSwitch");
 
-        Main.motorControllerMap.put("speedX", 50.0);
+        // Main.motorControllerMap.put("speedX", 50.0);
         // Main.motorControllerMap.put("speedZ", 50.0);
     }
 
@@ -36,7 +36,7 @@ public class StartPos implements IState {
 
     @Override
     public boolean isFinished() {
-        SmartDashboard.putNumber("STTime: ", StateMachine.iterationTime);
-        return succesInit && StateMachine.iterationTime > 5;
+        return succesInit && StateMachine.iterationTime > 0.5;
+        // return false;
     }
 }

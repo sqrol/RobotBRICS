@@ -18,16 +18,9 @@ public class StateMachine {
     }
 
     public void initStates() { 
+    
         states.add(new StartPos());
-        states.add(new StartPos());
-        states.add(new StartPos());
-        states.add(new StartPos());
-        states.add(new StartPos());
-        states.add(new StartPos());
-        states.add(new StartPos());
-        states.add(new End());
-
-        states.add(new SetGlidePosition(9));
+        states.add(new SetGlidePosition(21));
         states.add(new SetGlidePosition(0));
         states.add(new End());
     }
