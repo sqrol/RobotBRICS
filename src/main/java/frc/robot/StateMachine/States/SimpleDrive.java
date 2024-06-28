@@ -31,9 +31,8 @@ public class SimpleDrive implements IState{
 
     @Override
     public void initialize() {
+        Main.motorControllerMap.put("resetDriveEncs", 1.0);
         Main.motorControllerMap.put("resetGyro", 1.0);
-        Main.motorControllerMap.put("resetEncRight", 1.0);
-        Main.motorControllerMap.put("resetEncLeft", 1.0);
     }
 
     @Override
@@ -77,6 +76,7 @@ public class SimpleDrive implements IState{
     @Override
     public void finilize() {    
         Main.sensorsMap.put("resetGyro", 1.0);
+        Main.motorControllerMap.put("resetDriveEncs", 1.0);
     }
 
     @Override

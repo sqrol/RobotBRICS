@@ -17,7 +17,9 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     try {
       StateMachine.states.clear();
+      Thread.sleep(10);
       initMaps();
+      Thread.sleep(10);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -105,7 +107,7 @@ public class Robot extends TimedRobot {
     Main.motorControllerMap.put("encLift", 0.0);
     Main.motorControllerMap.put("resetEncs", 0.0);
 
-    Main.motorControllerMap.put("resetDriveEnc", 0.0);
+    Main.motorControllerMap.put("resetDriveEncs", 0.0);
     Main.motorControllerMap.put("resetEncRight", 0.0);
     Main.motorControllerMap.put("resetEncLeft", 0.0);
     Main.motorControllerMap.put("resetEncRotate", 0.0);

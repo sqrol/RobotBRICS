@@ -13,6 +13,7 @@ public class StartPos implements IState {
         Main.sensorsMap.put("resetGyro", 1.0);
         Main.motorControllerMap.put("resetEncs", 1.0);
         Main.motorControllerMap.put("resetPID", 1.0);
+        Main.motorControllerMap.put("glideServoSpeed", 0.0);
     }
 
     @Override
@@ -21,10 +22,6 @@ public class StartPos implements IState {
             Main.motorControllerMap.put("liftSpeed", 60.0);
         }
         succesInit = Main.switchMap.get("limitSwitch");
-
-        // Main.motorControllerMap.put("speedX", -100.0);
-        // Main.motorControllerMap.put("speedZ", 0.0);
-
     }
 
     @Override

@@ -21,6 +21,11 @@ public class MotorController implements Runnable {
     private boolean lastA;
     private boolean lastB;
     private int glidePosition;
+
+    private boolean blackLineFlag, direction = false;  
+    private boolean glideStop = false;
+
+    private double currentGlidePosition = 0;
     
     private static boolean liftStop, rotateStop = false;
 
@@ -39,7 +44,7 @@ public class MotorController implements Runnable {
                                                         { 0, 2, 5, 20, 35, 47, 60, 70, 77, 85 } };
 
     private static final double[][] speedForGlideServo = { { 0, 1, 2, 4, 6, 8, 10 }, 
-    { 0, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5} };
+                                                        { 0, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5} };
 
     @Override
     public void run() {
@@ -80,8 +85,13 @@ public class MotorController implements Runnable {
                 
                 setLiftPosition(Main.motorControllerMap.get("targetLiftPos"));
                 
-                Main.motorControllerMap.put("servoGrabAngle", getServoGrabAngle()); // Зачем?)
-                Main.motorControllerMap.put("updateTime", motorsUpdateTime);
+                
+                setGlidePosition(Main.sensorsMap.get("targetGlidePos"));
+                
+                Main.sensorsMap.put("currentGlidePos", currentGlidePosition);
+
+                Main.motorControllerMap.put("servoGrabAngle", getServoGrabAngle()); // Зачем?) 
+                Main.motorControllerMap.put("updateTime", motorsUpdateTime);         // для медленного захвата
 
                 Thread.sleep(5);
             } catch (Exception e) {
@@ -150,12 +160,12 @@ public class MotorController implements Runnable {
     }
 
     private void encodersValueResetHandler() {
-        // Зачем отдельный сброс для пидов?
+        // Зачем отдельный сброс для пидов? // вызывается в StartPos один раз
         if(Main.motorControllerMap.get("resetPID") == 1.0) {
-            resetPIDRight();
-            resetPIDLeft();
-            resetPIDRotate();
-            resetPIDLift();
+            PID_RIGHT.reset();
+            PID_LEFT.reset();
+            PID_ROTATE.reset();
+            PID_LIFT.reset();
             Main.motorControllerMap.put("resetPID", 0.0);
         }
 
@@ -167,10 +177,10 @@ public class MotorController implements Runnable {
             Main.motorControllerMap.put("resetEncs", 0.0);
         }
 
-        if(Main.motorControllerMap.get("resetDriveEnc") == 1.0) {
+        if(Main.motorControllerMap.get("resetDriveEncs") == 1.0) {
             ENC_RIGHT.reset();
             ENC_LEFT.reset();
-            Main.motorControllerMap.put("resetDriveEnc", 0.0);
+            Main.motorControllerMap.put("resetDriveEncs", 0.0);
         }
 
         if(Main.motorControllerMap.get("resetEncRotate") == 1.0) {
@@ -183,7 +193,7 @@ public class MotorController implements Runnable {
             Main.motorControllerMap.put("resetEncLift", 0.0);
         }
     }
-    
+
     private void SetRotatePosition(double degree) {
         
         double currentRotatePos = -Main.motorControllerMap.get("encRotate");
@@ -209,6 +219,7 @@ public class MotorController implements Runnable {
             SmartDashboard.putNumber("rotateCheck", 324);
             rotateStop = true;
         } 
+        Main.switchMap.put("rotateStop", rotateStop);
     }
 
     private void setAxisSpeed(double x, double z) {
@@ -263,22 +274,6 @@ public class MotorController implements Runnable {
         }
     }
 
-    private void resetPIDRight() {
-        PID_RIGHT.reset();
-    }
-
-    private void resetPIDLeft() {
-        PID_LEFT.reset();
-    }
-
-    private void resetPIDRotate() {
-        PID_ROTATE.reset();
-    }
-
-    private void resetPIDLift() {
-        PID_LIFT.reset();
-    }
-
     private void setServoGrab(double angle) {
         try {
             SERVO_GRAB.setAngle(angle);
@@ -310,6 +305,36 @@ public class MotorController implements Runnable {
         }  
     }
 
+    private void setGlidePosition(double position) { 
+        boolean blackLineDetect = Main.sensorsMap.get("cobraVoltage") > 2.0;
+        double glideServoSpeed = Functions.TransitionFunction(position - currentGlidePosition, speedForGlideServo);
+
+        glideStop = false;
+
+        direction = position > currentGlidePosition;
+
+        if (position != currentGlidePosition) {
+            Main.motorControllerMap.put("glideServoSpeed", glideServoSpeed);
+            glideStop = false;
+        } else {
+            glideStop = true;
+        }
+        
+        if (blackLineDetect && !blackLineFlag) {
+            if (direction) {
+                currentGlidePosition++; 
+            } else {
+                currentGlidePosition--;
+            }
+            blackLineFlag = true;
+        }
+
+        if (!blackLineDetect && blackLineFlag) {
+            blackLineFlag = false;
+        }
+        Main.switchMap.put("glideStop", glideStop);
+    }
+
     // Если Софа все же перестанет забивать хуй (это пиздец! как с ней общаться?)
     // на мои просьбы переделать проводку датчика черной линии новый метод для работы с Glide
 
@@ -334,9 +359,9 @@ public class MotorController implements Runnable {
 
     private boolean setGlidePosition(int targetGlidePosition) {
 
-        double glideCurrentDiff = this.glidePosition - targetGlidePosition;
+        double glideCurrentDiff = glidePosition - targetGlidePosition;
         double glideServoSpeed = Functions.TransitionFunction(glideCurrentDiff, speedForGlideServo);
-        boolean glideStop = targetGlidePosition == this.glidePosition;
+        boolean glideStop = targetGlidePosition == glidePosition;
 
         setGlideServoSpeed(glideServoSpeed);
 

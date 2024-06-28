@@ -27,11 +27,6 @@ public class SensorController implements Runnable{
     private boolean plus360once = false;
     private boolean minus360once = false;
 
-    private boolean blackLineFlag, direction = false;  
-    private boolean glideStop = false;
-
-    private double currentGlidePosition = 0;
-
     private static final AHRS GYRO = new AHRS(SPI.Port.kMXP);
 
     private static final AnalogInput COBRA = new AnalogInput(Constants.COBRA);
@@ -51,10 +46,7 @@ public class SensorController implements Runnable{
 
     // // Новый вызов датчика Cobra (Опять же если Софа начнет не считать меня пустым местом) 
     // // Данный датчик подключается в порт I2C контроллера VMX
-    // private static final Cobra cobra = new Cobra();
-    
-    private static final double[][] speedForGlideServo = { { 0, 1, 2, 4, 6, 8, 10 }, 
-                                                    { 0, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5} };
+    // private static final Cobra COBRA = new Cobra();
 
     private static final MedianFilter RIGHT_SHARP_FILTER = new MedianFilter(5);
     private static final MedianFilter LEFT_SHARP_FILTER = new MedianFilter(5);
@@ -119,11 +111,6 @@ public class SensorController implements Runnable{
                 Main.switchMap.put("startButton", getStartButton());
                 Main.switchMap.put("EMSButton", getEMSButton());
                 Main.switchMap.put("limitSwitch", getLimitSwitch());
-
-                if(Main.sensorsMap.get("targetGlidePos") != 0.0) {
-                    setGlidePosition(Main.sensorsMap.get("targetGlidePos"));
-                }
-                Main.sensorsMap.put("currentGlidePos", currentGlidePosition);
 
                 Main.sensorsMap.put("updateTimeSensors", sensorsUpdateTime);
 
@@ -220,41 +207,13 @@ public class SensorController implements Runnable{
         }
     }
 
-    private void setGlidePosition(double position) { // Почему это тут? Он должен быть в MotorController!
-        boolean blackLineDetect = getCobraVoltage() > 2.0;
-        double glideServoSpeed = Functions.TransitionFunction(position - currentGlidePosition, speedForGlideServo);
-
-        glideStop = false;
-
-        direction = position > currentGlidePosition;
-
-        if (position != currentGlidePosition) {
-            Main.motorControllerMap.put("glideServoSpeed", glideServoSpeed);
-            glideStop = false;
-        } else {
-            glideStop = true;
-        }
-
-        if (blackLineDetect && !blackLineFlag) {
-            if (direction) {
-                currentGlidePosition++; 
-            } else {
-                currentGlidePosition--;
-            }
-            blackLineFlag = true;
-        }
-
-        if (!blackLineDetect && blackLineFlag) {
-            blackLineFlag = false;
-        }
-        Main.switchMap.put("glideStop", glideStop);
-    }
+    
 
     // public float getCobraSignal0()
     // {
     //     try 
     //     {
-    //         return cobra.getRawValue(0);
+    //         return COBRA.getRawValue(0);
     //     } 
     //     catch (Exception e) 
     //     {

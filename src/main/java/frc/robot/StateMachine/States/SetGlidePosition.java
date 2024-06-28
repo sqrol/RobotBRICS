@@ -1,5 +1,6 @@
 package frc.robot.StateMachine.States;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Main;
 import frc.robot.StateMachine.CoreEngine.IState;
 
@@ -15,6 +16,7 @@ public class SetGlidePosition implements IState{
     public void initialize() {
         Main.motorControllerMap.put("speedX", 0.0);
         Main.motorControllerMap.put("speedZ", 0.0);
+        Main.switchMap.put("glideStop", false);
     }
 
     @Override
@@ -24,7 +26,10 @@ public class SetGlidePosition implements IState{
 
     @Override
     public void finilize() {
-        Main.sensorsMap.put("glideServoSpeed", 0.0);
+        SmartDashboard.putNumber("FNILIZE SETGLIDEPOS", 123123);
+        Main.motorControllerMap.put("glideServoSpeed", 0.0);
+        Main.sensorsMap.put("targetGlidePos", 0.0);
+        Main.switchMap.put("glideStop", false);
     }
 
     @Override
