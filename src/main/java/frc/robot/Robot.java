@@ -140,6 +140,8 @@ public class Robot extends TimedRobot {
 
     Main.sensorsMap.put("cobraSignal0", 0.0);
     Main.sensorsMap.put("cobraSignal1", 0.0);
+    Main.sensorsMap.put("cobraSignal2", 0.0);
+    Main.sensorsMap.put("cobraSignal3", 0.0);
 
     Main.motorControllerMap.put("posX", 0.0);
     Main.motorControllerMap.put("updateTime", MotorController.motorsUpdateTime);
@@ -153,6 +155,11 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putNumber("sonicLeft", Main.sensorsMap.get("sonicLeft"));
     SmartDashboard.putNumber("sonicRight", Main.sensorsMap.get("sonicRight"));
+
+    SmartDashboard.putNumber("cobraSignal0", Main.sensorsMap.get("cobraSignal0"));
+    SmartDashboard.putNumber("cobraSignal1", Main.sensorsMap.get("cobraSignal1"));
+    SmartDashboard.putNumber("cobraSignal2", Main.sensorsMap.get("cobraSignal2"));
+    SmartDashboard.putNumber("cobraSignal3", Main.sensorsMap.get("cobraSignal3"));
 
     SmartDashboard.putBoolean("isResetZ", Main.sensorsMap.get("resetGyro") == 1.0);
     SmartDashboard.putBoolean("isResetEncs", Main.motorControllerMap.get("resetEncs") == 1.0);

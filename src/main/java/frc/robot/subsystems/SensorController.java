@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
-// import com.studica.frc.Cobra;
+import com.studica.frc.Cobra;
 
 import frc.robot.Constants;
 import frc.robot.Main;
@@ -44,9 +44,9 @@ public class SensorController implements Runnable{
     private static final Ultrasonic SONIC_RIGHT = new Ultrasonic(Constants.SONIC_PING_RIGHT, Constants.SONIC_ECHO_RIGHT);
     private static final Ultrasonic SONIC_LEFT = new Ultrasonic(Constants.SONIC_PING_LEFT, Constants.SONIC_ECHO_LEFT);
 
-    // // Новый вызов датчика Cobra (Опять же если Софа начнет не считать меня пустым местом) 
-    // // Данный датчик подключается в порт I2C контроллера VMX
-    // private static final Cobra COBRA = new Cobra();
+    // Новый вызов датчика Cobra (Опять же если Софа начнет не считать меня пустым местом) 
+    // Данный датчик подключается в порт I2C контроллера VMX
+    private static final Cobra cobra = new Cobra();
 
     private static final MedianFilter RIGHT_SHARP_FILTER = new MedianFilter(5);
     private static final MedianFilter LEFT_SHARP_FILTER = new MedianFilter(5);
@@ -124,8 +124,10 @@ public class SensorController implements Runnable{
                 Main.sensorsMap.put("updateTimeSensors", sensorsUpdateTime);
 
                 // // Обработка значений с нового датчика черной линии
-                // Main.sensorsMap.put("cobraSignal0", (double)getCobraSignal0());
-                // Main.sensorsMap.put("cobraSignal1", (double)getCobraSignal1());
+                Main.sensorsMap.put("cobraSignal0", (double)getCobraSignal0());
+                Main.sensorsMap.put("cobraSignal1", (double)getCobraSignal1());
+                Main.sensorsMap.put("cobraSignal2", (double)getCobraSignal2());
+                Main.sensorsMap.put("cobraSignal3", (double)getCobraSignal3());
 
                 Thread.sleep(20);
             } catch (Exception e) {
@@ -195,8 +197,6 @@ public class SensorController implements Runnable{
         }
     }
 
-    
-
     /**
      * Устанавливает индикацию в соответствии с выбранным режимом
      * @param mode 1.0 - WAITING, 2.0 - IN PROCESS, 3.0 - FINISHED, 4.0 - FOR CHECK
@@ -220,29 +220,51 @@ public class SensorController implements Runnable{
         }
     }
 
-    
+    public float getCobraSignal0()
+    {
+        try 
+        {
+            return cobra.getRawValue(0);
+        } 
+        catch (Exception e) 
+        {
+            return 0;
+        }
+    }
 
-    // public float getCobraSignal0()
-    // {
-    //     try 
-    //     {
-    //         return COBRA.getRawValue(0);
-    //     } 
-    //     catch (Exception e) 
-    //     {
-    //         return 0;
-    //     }
-    // }
+    public float getCobraSignal1()
+    {
+        try 
+        {
+            return cobra.getRawValue(1);
+        } 
+        catch (Exception e) 
+        {
+            return 0;
+        }
+    }
 
-    // public float getCobraSignal1()
-    // {
-    //     try 
-    //     {
-    //         return cobra.getRawValue(1);
-    //     } 
-    //     catch (Exception e) 
-    //     {
-    //         return 0;
-    //     }
-    // }
+    public float getCobraSignal2()
+    {
+        try 
+        {
+            return cobra.getRawValue(2);
+        } 
+        catch (Exception e) 
+        {
+            return 0;
+        }
+    }
+
+    public float getCobraSignal3()
+    {
+        try 
+        {
+            return cobra.getRawValue(3);
+        } 
+        catch (Exception e) 
+        {
+            return 0;
+        }
+    }
 }
