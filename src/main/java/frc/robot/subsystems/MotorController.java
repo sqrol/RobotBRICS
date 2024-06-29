@@ -18,9 +18,9 @@ public class MotorController implements Runnable {
     public double previousDegrees = 0;
 
     // Переменные для функции setGlidePosition()
-    private boolean lastA;
-    private boolean lastB;
-    private int glidePosition;
+    private static boolean lastStateA;
+    private static boolean lastStateB;
+    private static int glidePosition;
 
     private boolean blackLineFlag, direction = false;  
     private boolean glideStop = false;
@@ -44,7 +44,7 @@ public class MotorController implements Runnable {
                                                         { 0, 2, 5, 20, 35, 47, 60, 70, 77, 85 } };
 
     private static final double[][] speedForGlideServo = { { 0, 1, 2, 4, 6, 8, 10 }, 
-                                                        { 0, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5} };
+                                                        { 0, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18}};
 
     @Override
     public void run() {
@@ -66,22 +66,25 @@ public class MotorController implements Runnable {
                     setAxisSpeed(Main.motorControllerMap.get("speedX"), Main.motorControllerMap.get("speedZ"));
                     setRotateMotorSpeed(Main.motorControllerMap.get("rotateSpeed"));
                     setLiftMotorSpeed(Main.motorControllerMap.get("liftSpeed"));
-                    setGlideServoSpeed(Main.motorControllerMap.get("glideServoSpeed"));
 
                     setServoGrab(Main.motorControllerMap.get("servoGrab"));
                     setServoGripRotate(Main.motorControllerMap.get("servoGripRotate"));   
                     
                     setRotatePosition(Main.motorControllerMap.get("targetRotateDegree"));
                     setLiftPosition(Main.motorControllerMap.get("targetLiftPos"));
-                    
+
+                    Main.switchMap.put("glideStop", setGlidePosition(Main.sensorsMap.get("targetGlidePos")));
                 }
 
                 encodersValueResetHandler(); // Работа со сбросом энкодеров
 
                 encodersValueHandler(); // Работа со значениями энкодера
-                setGlidePosition(Main.sensorsMap.get("targetGlidePos"));
+
                 Main.motorControllerMap.put("servoGrabAngle", getServoGrabAngle());
-                Main.motorControllerMap.put("updateTime", motorsUpdateTime);       
+                Main.motorControllerMap.put("updateTime", motorsUpdateTime);      
+                
+                countGlidePosition();
+                SmartDashboard.putNumber("CountPos: ", glidePosition); 
 
                 Thread.sleep(5);
             } catch (Exception e) {
@@ -135,39 +138,6 @@ public class MotorController implements Runnable {
         }
 
         Main.switchMap.put("liftStop", liftStop);
-    }
-
-    private void setGlidePosition(double position) { 
-        boolean blackLineDetect = Main.sensorsMap.get("cobraVoltage") > 2.0;
-        double glideServoSpeed = Functions.TransitionFunction(position - currentGlidePosition, speedForGlideServo);
-
-        glideStop = false;
-
-        direction = position > currentGlidePosition;
-
-        Main.sensorsMap.put("currentGlidePos", currentGlidePosition);
-
-        if (position != currentGlidePosition) {
-            Main.motorControllerMap.put("glideServoSpeed", glideServoSpeed);
-            glideStop = false;
-        } else {
-            glideStop = true;
-        }
-        
-        if (blackLineDetect && !blackLineFlag) {
-            if (direction) {
-                currentGlidePosition++; 
-            } else {
-                currentGlidePosition--;
-            }
-            blackLineFlag = true;
-        }
-
-        if (!blackLineDetect && blackLineFlag) {
-            blackLineFlag = false;
-        }
-        
-        Main.switchMap.put("glideStop", glideStop);
     }
 
     private void encodersValueHandler() {
@@ -333,38 +303,46 @@ public class MotorController implements Runnable {
         }  
     }
 
-    
-
     // Если Софа все же перестанет забивать хуй (это пиздец! как с ней общаться?)
     // на мои просьбы переделать проводку датчика черной линии новый метод для работы с Glide
 
-    private void countGlidePosition() { // Я думаю его просто можно засунуть в основной поток чтобы он работал постоянно
+    private void countGlidePosition() {
         // Получение значений с датчика черной линии
-        boolean currentA = Main.sensorsMap.get("cobraSignal0") > 2.0; 
-        boolean currentB = Main.sensorsMap.get("cobraSignal1") > 2.0; 
+        boolean currentStateA = Main.sensorsMap.get("cobraSignal0") > 2000 && Main.sensorsMap.get("cobraSignal1") > 2000;
+        boolean currentStateB = Main.sensorsMap.get("cobraSignal2") > 2000 && Main.sensorsMap.get("cobraSignal3") > 2000;
 
-        // Сравниваем с предыдущими значениями для определения направления
-        if (currentA != lastA || currentB != lastB) {
-            if (lastA == currentA && lastB != currentB) {
-                glidePosition += (currentA == currentB) ? 1 : -1;
-            } else if (lastB == currentB && lastA != currentA) {
-                glidePosition += (currentA == currentB) ? 1 : -1;
+        if (currentStateA != lastStateA || currentStateB != lastStateB) {
+            if (currentStateA != lastStateA) {
+                if (currentStateA == currentStateB) {
+                    glidePosition++;
+                } else {
+                    glidePosition--;
+                }
+            }
+
+            if (currentStateB != lastStateB) {
+                if (currentStateA != currentStateB) {
+                    glidePosition++;
+                } else {
+                    glidePosition--;
+                }
             }
         }
 
         // Обновляем предыдущие значения
-        lastA = currentA;
-        lastB = currentB;
+        lastStateA = currentStateA;
+        lastStateB = currentStateB;
     }
 
-    // private boolean setGlidePosition(int targetGlidePosition) {
+    private boolean setGlidePosition(Double targetGlidePosition) {
 
-    //     double glideCurrentDiff = glidePosition - targetGlidePosition;
-    //     double glideServoSpeed = Functions.TransitionFunction(glideCurrentDiff, speedForGlideServo);
-    //     boolean glideStop = targetGlidePosition == glidePosition;
+        double glideCurrentDiff = glidePosition - targetGlidePosition;
+        double glideServoSpeed = Functions.TransitionFunction(glideCurrentDiff, speedForGlideServo);
+        boolean glideStop = targetGlidePosition == glidePosition;
 
-    //     setGlideServoSpeed(glideServoSpeed);
+        setGlideServoSpeed(-glideServoSpeed);
 
-    //     return glideStop;
-    // }
+        return glideStop;
+    }
+
 }
