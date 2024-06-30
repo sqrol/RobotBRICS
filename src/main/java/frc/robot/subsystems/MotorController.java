@@ -105,8 +105,8 @@ public class MotorController implements Runnable {
     private final TitanQuadEncoder ENC_ROTATE = new TitanQuadEncoder(MOTOR_ROTATE, Constants.ENC_ROTATE, Constants.DIST_PER_TICK);
     private final TitanQuadEncoder ENC_LIFT = new TitanQuadEncoder(MOTOR_LIFT, Constants.ENC_LIFT, Constants.DIST_PER_TICK);
 
-    private final PID PID_RIGHT = new PID(0.02, 1.74, 0.0, -100, 100); 
-    private final PID PID_LEFT = new PID(0.0112, 1.34, 0.0, -100, 100);  // 0.067, 0.43, 0.0, -100, 100
+    private final PID PID_RIGHT = new PID(0.051, 0.43, 0.0, -100, 100); 
+    private final PID PID_LEFT = new PID(0.051, 0.43, 0.0, -100, 100);  // 0.067, 0.43, 0.0, -100, 100
     private final PID PID_ROTATE = new PID(0.051, 0.43, 0.0, -100, 100); 
     private final PID PID_LIFT = new PID(0.051, 0.43, 0.0, -100, 100);
 
@@ -228,7 +228,7 @@ public class MotorController implements Runnable {
             PID_RIGHT.reset();
             MOTOR_RIGHT.set(0);
         } else {
-            PID_RIGHT.calculate(-ENC_RIGHT.getSpeed(), speed);
+            PID_RIGHT.calculate(-ENC_RIGHT.getSpeed() / 2.3, speed);
             Main.motorControllerMap.put("rightPID", PID_RIGHT.getOutput());
             MOTOR_RIGHT.set(Main.motorControllerMap.get("rightPID"));
         }
@@ -239,7 +239,7 @@ public class MotorController implements Runnable {
             PID_LEFT.reset();
             MOTOR_LEFT.set(0);
         } else {
-            PID_LEFT.calculate(-ENC_LEFT.getSpeed(), speed);
+            PID_LEFT.calculate(-ENC_LEFT.getSpeed() / 2.3, speed);
             Main.motorControllerMap.put("leftPID", PID_LEFT.getOutput());
             MOTOR_LEFT.set(Main.motorControllerMap.get("leftPID"));
         }
