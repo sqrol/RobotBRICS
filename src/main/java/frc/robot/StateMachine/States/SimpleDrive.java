@@ -80,6 +80,6 @@ public class SimpleDrive implements IState{
 
     @Override
     public boolean isFinished() {    
-        return finishX && finishZ;
+        return finishX && finishZ && StateMachine.iterationTime > 0.5;
     }    
 }
