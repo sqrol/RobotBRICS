@@ -1,6 +1,5 @@
 package frc.robot.StateMachine.CoreEngine;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class CommandAdapter extends CommandBase { // outter class for CommandsBase. Includes states of Command

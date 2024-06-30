@@ -13,14 +13,14 @@ public class SimpleDrive implements IState{
 
     private boolean finishX, finishZ = false;
     
-    private double[][] speedXArray = { { 0, 2, 6, 18, 30, 50, 60}, 
-                                       { 0, 10, 20, 30, 65, 75, 95} };
+    private double[][] speedXArray = { { 0, 1, 10, 12, 14, 18, 35, 50, 100}, 
+                                       { 0, 10, 15, 30, 45, 50, 65, 75, 95} };
 
     private double[][] speedZArray = { { 0.1, 0.5, 1.5, 2, 3, 6, 12, 26, 32, 50 }, 
-                                       { 10, 15, 17, 20, 25, 30, 40, 53, 60, 70 } };
+                                       { 3, 8, 12, 18, 25, 30, 40, 53, 60, 70 } };
 
-    private double[][] speedZArrayJustTurn = { { 0, 1, 5, 8, 10, 26, 41, 60, 90 }, 
-                                                 { 0, 2, 5, 10, 15, 20, 35, 45, 70 } };
+    private double[][] speedZArrayJustTurn = { { 0, 1, 5, 10, 26, 60, 75, 90 }, 
+                                               { 0, 2, 6, 12, 17, 35, 50, 70 } };
 
     private double[][] startKoefSpeedForX = { { 0.33, 0.66, 1 }, { 0.33, 0.66, 1 } };
 
@@ -62,7 +62,7 @@ public class SimpleDrive implements IState{
     
         } else {
             speedX = 0;
-            speedZ = Functions.TransitionFunction(ZPosition - gyro, speedZArrayJustTurn);
+            speedZ = Functions.TransitionFunction(ZPosition - Main.sensorsMap.get("posZ"), speedZArrayJustTurn);
             
             finishX = true;
             finishZ = Functions.BooleanInRange(speedZ, -0.3, 0.3); 
@@ -70,13 +70,12 @@ public class SimpleDrive implements IState{
 
         Main.motorControllerMap.put("posX", posX);
         Main.motorControllerMap.put("speedX", speedX * startKoef);
-        Main.motorControllerMap.put("speedZ", speedZ);
+        Main.motorControllerMap.put("speedZ", -speedZ);
     }
 
     @Override
-    public void finilize() {    
+    public void finilize() {   
         Main.sensorsMap.put("resetGyro", 1.0);
-        Main.motorControllerMap.put("resetDriveEncs", 1.0);
     }
 
     @Override

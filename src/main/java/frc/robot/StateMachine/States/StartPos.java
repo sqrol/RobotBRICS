@@ -21,12 +21,11 @@ public class StartPos implements IState {
     public void execute() {
         if(!Main.switchMap.get("limitSwitch")) {
             Main.motorControllerMap.put("liftSpeed", 60.0);
+        } else {
+            Main.motorControllerMap.put("liftSpeed", 0.0);
+            succesInit = Main.switchMap.get("limitSwitch");
         }
-        succesInit = Main.switchMap.get("limitSwitch");
-
-        Main.motorControllerMap.put("speedX", 50.0);
-        Main.motorControllerMap.put("speedZ", 0.0);
-    }
+    }    
 
     @Override
     public void finilize() {
@@ -36,7 +35,6 @@ public class StartPos implements IState {
 
     @Override
     public boolean isFinished() {
-        // return succesInit && StateMachine.iterationTime > 0.5;
-        return false;
+        return succesInit && StateMachine.iterationTime > 0.5;
     }
 }

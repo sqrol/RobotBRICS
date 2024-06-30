@@ -29,7 +29,7 @@ public class SensorController implements Runnable{
 
     private static final AHRS GYRO = new AHRS(SPI.Port.kMXP);
 
-    private static final AnalogInput COBRA = new AnalogInput(Constants.COBRA);
+    private static final Cobra COBRA = new Cobra();
 
     private static final AnalogInput SHARP_RIGHT = new AnalogInput(Constants.SHARP_RIGHT);
     private static final AnalogInput SHARP_LEFT = new AnalogInput(Constants.SHARP_LEFT);
@@ -46,7 +46,7 @@ public class SensorController implements Runnable{
 
     // Новый вызов датчика Cobra (Опять же если Софа начнет не считать меня пустым местом) 
     // Данный датчик подключается в порт I2C контроллера VMX
-    private static final Cobra cobra = new Cobra();
+    
 
     private static final MedianFilter RIGHT_SHARP_FILTER = new MedianFilter(5);
     private static final MedianFilter LEFT_SHARP_FILTER = new MedianFilter(5);
@@ -106,8 +106,6 @@ public class SensorController implements Runnable{
                 newGyroThread = outGyro;
                 lastGyro = gyro;
 
-                Main.sensorsMap.put("cobraVoltage", getCobraVoltage());
-
                 Main.sensorsMap.put("sharpLeft", getLeftSharp());
                 Main.sensorsMap.put("sharpRight", getRightSharp());
 
@@ -123,11 +121,11 @@ public class SensorController implements Runnable{
 
                 Main.sensorsMap.put("updateTimeSensors", sensorsUpdateTime);
 
-                // // Обработка значений с нового датчика черной линии
-                Main.sensorsMap.put("cobraSignal0", (double)getCobraSignal0());
-                Main.sensorsMap.put("cobraSignal1", (double)getCobraSignal1());
-                Main.sensorsMap.put("cobraSignal2", (double)getCobraSignal2());
-                Main.sensorsMap.put("cobraSignal3", (double)getCobraSignal3());
+                // Обработка значений с нового датчика черной линии
+                Main.sensorsMap.put("cobraSignal0", getCobraSignal0());
+                Main.sensorsMap.put("cobraSignal1", getCobraSignal1());
+                Main.sensorsMap.put("cobraSignal2", getCobraSignal2());
+                Main.sensorsMap.put("cobraSignal3", getCobraSignal3());
 
                 Thread.sleep(20);
             } catch (Exception e) {
@@ -161,10 +159,6 @@ public class SensorController implements Runnable{
 
     private double getRightSharp() {
         return (RIGHT_SHARP_FILTER.Filter((Math.pow(SHARP_RIGHT.getAverageVoltage(), -1.2045) * 27.726)));
-    }
-
-    private double getCobraVoltage() {
-        return COBRA.getAverageVoltage();
     }
 
     private boolean getLimitSwitch() {
@@ -220,50 +214,38 @@ public class SensorController implements Runnable{
         }
     }
 
-    public float getCobraSignal0()
-    {
-        try 
-        {
-            return cobra.getRawValue(0);
+    private double getCobraSignal0() {
+        try {
+            return COBRA.getRawValue(0);
         } 
-        catch (Exception e) 
-        {
+        catch (Exception e) {
             return 0;
         }
     }
 
-    public float getCobraSignal1()
-    {
-        try 
-        {
-            return cobra.getRawValue(1);
+    private double getCobraSignal1() {
+        try {
+            return COBRA.getRawValue(1);
         } 
-        catch (Exception e) 
-        {
+        catch (Exception e) {
             return 0;
         }
     }
 
-    public float getCobraSignal2()
-    {
-        try 
-        {
-            return cobra.getRawValue(2);
+    private double getCobraSignal2() {
+        try {
+            return COBRA.getRawValue(2);
         } 
-        catch (Exception e) 
-        {
+        catch (Exception e) {
             return 0;
         }
     }
 
-    public float getCobraSignal3()
-    {
-        try 
-        {
-            return cobra.getRawValue(3);
+    private double getCobraSignal3() {
+        try {
+            return COBRA.getRawValue(3);
         } 
-        catch (Exception e) 
-        {
+        catch (Exception e) {
             return 0;
         }
     }

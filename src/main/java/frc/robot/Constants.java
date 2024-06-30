@@ -23,7 +23,6 @@ public class Constants {
 
     public static final int SHARP_RIGHT                               = 0;
     public static final int SHARP_LEFT                                = 2;
-    public static final int COBRA                                     = 3;
 
     public static final int LIMIT_SWITCH                              = 0;
     public static final int START_BUTTON                              = 4;

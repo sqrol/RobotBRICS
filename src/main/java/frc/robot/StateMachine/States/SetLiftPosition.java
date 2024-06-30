@@ -1,5 +1,6 @@
 package frc.robot.StateMachine.States;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Main;
 import frc.robot.StateMachine.CoreEngine.IState;
 import frc.robot.StateMachine.CoreEngine.StateMachine;
@@ -21,6 +22,7 @@ public class SetLiftPosition implements IState{
     @Override
     public void execute() {
         Main.motorControllerMap.put("targetLiftPos", targetPosition);
+        
     }
 
     @Override
@@ -31,7 +33,6 @@ public class SetLiftPosition implements IState{
 
     @Override
     public boolean isFinished() {
-        return Main.switchMap.get("liftStop") && StateMachine.iterationTime > 1;
-    }
-    
+        return Main.switchMap.get("liftStop") && StateMachine.iterationTime > 0.5;
+    }  
 }

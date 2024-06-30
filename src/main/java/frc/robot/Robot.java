@@ -75,8 +75,6 @@ public class Robot extends TimedRobot {
 
     Main.sensorsMap.put("indicationMode", 1.0);
 
-    Main.sensorsMap.put("cobraVoltage", 0.0);
-
     Main.sensorsMap.put("sharpRight", 0.0);
     Main.sensorsMap.put("sharpLeft", 0.0);
 
@@ -93,7 +91,6 @@ public class Robot extends TimedRobot {
     Main.sensorsMap.put("srcGyro", 0.0);
 
     Main.sensorsMap.put("targetGlidePos", 0.0);
-    
 
     Main.motorControllerMap.put("targetLiftPos", 0.0);
     Main.motorControllerMap.put("currentLiftPos", 0.0);
@@ -149,7 +146,6 @@ public class Robot extends TimedRobot {
 
   private void sendSmartDashBoard() {
 
-    SmartDashboard.putNumber("cobraVoltage", Main.sensorsMap.get("cobraVoltage"));
     SmartDashboard.putNumber("sharpRight", Main.sensorsMap.get("sharpRight"));
     SmartDashboard.putNumber("sharpLeft", Main.sensorsMap.get("sharpLeft"));
 

@@ -17,12 +17,16 @@ public class MotorController implements Runnable {
     public static double motorsUpdateTime; 
     public double previousDegrees = 0;
 
-    // Переменные для функции setGlidePosition()
-    private static boolean lastStateA;
-    private static boolean lastStateB;
-    private static int glidePosition;
+    private double encRightResetValue = 0;
+    private double encLeftResetValue = 0;
+    private double encLiftResetValue = 0;
+    private double encRotateResetValue = 0;
 
-    private boolean blackLineFlag, direction = false;  
+    // Переменные для функции setGlidePosition()
+    private static boolean lastStateA = false;
+    private static boolean lastStateB = false;
+
+    private boolean direction = false;  
     private boolean glideStop = false;
 
     private static double currentGlidePosition = 0;
@@ -30,18 +34,18 @@ public class MotorController implements Runnable {
     private static boolean liftStop, rotateStop = false;
 
     private static final double[][] arrOfpercentForLift = { { 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 }, 
-                                                                { 0, 4, 15, 30, 40, 55, 70, 80, 90, 100 } };
+                                                                { 0, 4, 15, 30, 40, 50, 60, 70, 80, 90, 100 } };
 
     private static final double[][] arrOfPosForLift = { { 0, 4, 15, 30, 40, 50, 60, 70, 80, 90, 100 }, 
                                                         { 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 } };
 
-    private static final double[][] speedForLift = { { 0, 5, 20, 50, 70, 100, 330, 500, 700, 1000 },
-                                                      { 0, 1.2, 2, 5, 7, 20, 39, 55, 70, 80 } };
+    private static final double[][] speedForLift = { { 0, 30, 50, 100, 200, 330, 500, 700, 850, 1000 },
+                                                      { 0, 2, 5, 7, 15, 26, 34, 35, 50, 70 } };
 
-    private static final double[][] arrOfPosForRotate = { { -1, 500, 1500, 2000 }, { -1, 45, 90, 110 } };
+    private static final double[][] arrOfPosForRotate = { { 0, 500, 1500, 2000 }, { 0, 45, 90, 110 } };
 
-    private static final double[][] speedForRotate =  { { 0, 0.5, 2, 10, 17, 26, 39, 50, 62, 70 }, 
-                                                        { 0, 2, 5, 20, 35, 47, 60, 70, 77, 85 } };
+    private static final double[][] speedForRotate =  { { 0, 5, 10, 14, 17, 26, 39, 50, 62, 70 }, 
+                                                        { 0, 6, 15, 25, 35, 47, 60, 70, 77, 85 } };
 
     private static final double[][] speedForGlideServo = { { 0, 1, 2, 4, 6, 8, 10 }, 
                                                         { 0, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18}};
@@ -61,7 +65,6 @@ public class MotorController implements Runnable {
                     SERVO_GLIDE.setDisabled();
                     SERVO_GRAB.setDisabled();
                     SERVO_GRIP_ROTATE.setDisabled(); 
-
                 } else {
                     setAxisSpeed(Main.motorControllerMap.get("speedX"), Main.motorControllerMap.get("speedZ"));
                     setRotateMotorSpeed(Main.motorControllerMap.get("rotateSpeed"));
@@ -73,20 +76,20 @@ public class MotorController implements Runnable {
                     setRotatePosition(Main.motorControllerMap.get("targetRotateDegree"));
                     setLiftPosition(Main.motorControllerMap.get("targetLiftPos"));
 
-                    Main.switchMap.put("glideStop", setGlidePosition(Main.sensorsMap.get("targetGlidePos")));
+                    
+                    setGlidePosition(Main.sensorsMap.get("targetGlidePos"));
                 }
 
-                encodersValueResetHandler(); // Работа со сбросом энкодеров
+                encodersValueHandler();
 
-                encodersValueHandler(); // Работа со значениями энкодера
+                encodersValueResetHandler(); // Работа со сбросом энкодеров
+                
+                countGlidePosition();
 
                 Main.motorControllerMap.put("servoGrabAngle", getServoGrabAngle());
                 Main.motorControllerMap.put("updateTime", motorsUpdateTime);      
-                
-                countGlidePosition();
-                SmartDashboard.putNumber("CountPos: ", glidePosition); 
 
-                Thread.sleep(5);
+                Thread.sleep(10);
             } catch (Exception e) {
                 System.err.println("!!!An error occurred in MotorController: " + e.getMessage());
                 e.printStackTrace();
@@ -105,23 +108,104 @@ public class MotorController implements Runnable {
     private final TitanQuadEncoder ENC_ROTATE = new TitanQuadEncoder(MOTOR_ROTATE, Constants.ENC_ROTATE, Constants.DIST_PER_TICK);
     private final TitanQuadEncoder ENC_LIFT = new TitanQuadEncoder(MOTOR_LIFT, Constants.ENC_LIFT, Constants.DIST_PER_TICK);
 
-    private final PID PID_RIGHT = new PID(0.051, 0.43, 0.0, -100, 100); 
-    private final PID PID_LEFT = new PID(0.051, 0.43, 0.0, -100, 100);  // 0.067, 0.43, 0.0, -100, 100
-    private final PID PID_ROTATE = new PID(0.051, 0.43, 0.0, -100, 100); 
-    private final PID PID_LIFT = new PID(0.051, 0.43, 0.0, -100, 100);
+    private final PID PID_RIGHT = new PID(0.066, 0.57, 0.0, -100, 100); 
+    private final PID PID_LEFT = new PID(0.066, 0.57, 0.0, -100, 100);  // 0.067, 0.43, 0.0, -100, 100
+    private final PID PID_ROTATE = new PID(0.069, 0.59, 0.0, -100, 100); 
+    private final PID PID_LIFT = new PID(0.066, 0.57, 0.0, -100, 100);
 
     private final Servo SERVO_GRAB = new Servo(Constants.SERVO_GRAB);
     private final Servo SERVO_GRIP_ROTATE = new Servo(Constants.SERVO_GRIP_ROTATE);
     private final ServoContinuous SERVO_GLIDE = new ServoContinuous(Constants.SERVO_GLIDE);
-    
+
+    private void encodersValueHandler() {
+        Main.motorControllerMap.put("rpmRight", ENC_RIGHT.getSpeed());
+        Main.motorControllerMap.put("rpmLeft", ENC_LEFT.getSpeed());
+        Main.motorControllerMap.put("rpmRotate", ENC_ROTATE.getSpeed());
+        Main.motorControllerMap.put("rpmLift", ENC_LIFT.getSpeed());
+
+        Main.motorControllerMap.put("encRight", getEncRight()); 
+        Main.motorControllerMap.put("encLeft", getEncLeft());
+        Main.motorControllerMap.put("encRotate", getEncRotate());
+        Main.motorControllerMap.put("encLift", getEncLift());
+    }
+
+    private void encodersValueResetHandler() {
+        
+        if(Main.motorControllerMap.get("resetDriveEncs") == 1.0) {
+            resetEncLeft();
+            resetEncRight();
+            Main.motorControllerMap.put("resetDriveEncs", 0.0);
+        }
+
+        if (Main.motorControllerMap.get("resetEncs") == 1.0) {
+            resetEncRight();
+            resetEncLeft();
+            resetEncRotate();
+            resetEncLift();
+            Main.motorControllerMap.put("resetEncs", 0.0);
+        }
+
+        if(Main.motorControllerMap.get("resetEncRotate") == 1.0) {
+            resetEncRotate();
+            Main.motorControllerMap.put("resetEncRotate", 0.0);
+        }
+
+        if(Main.motorControllerMap.get("resetEncLift") == 1.0) {
+            resetEncLift();
+            Main.motorControllerMap.put("resetEncLift", 0.0);
+        }
+
+        if(Main.motorControllerMap.get("resetPID") == 1.0) {
+            PID_RIGHT.reset();
+            PID_LEFT.reset();
+            PID_ROTATE.reset();
+            PID_LIFT.reset();
+            Main.motorControllerMap.put("resetPID", 0.0);
+        }
+    }
+
+    private double getEncRight() {
+        return ENC_RIGHT.getEncoderDistance() - encRightResetValue;
+    }
+
+    private double getEncLeft() {
+        return ENC_LEFT.getEncoderDistance() - encLeftResetValue;
+    }
+
+    private double getEncRotate() {
+        return ENC_ROTATE.getEncoderDistance() - encRotateResetValue;
+    }
+
+    private double getEncLift() {
+        return ENC_LIFT.getEncoderDistance() - encLiftResetValue;
+    }
+
+    private void resetEncRight() {
+        encRightResetValue = ENC_RIGHT.getEncoderDistance();
+    }
+
+    private void resetEncLeft() {
+        encLeftResetValue = ENC_LEFT.getEncoderDistance();
+    }
+
+    private void resetEncRotate() {
+        encRotateResetValue = ENC_ROTATE.getEncoderDistance();
+    }
+
+    private void resetEncLift() {
+        encLiftResetValue = ENC_LIFT.getEncoderDistance();
+    }
+
     private void setLiftPosition(double pos) {
         double currentPos = -Main.motorControllerMap.get("encLift");
         double percentPos = Functions.TransitionFunction(currentPos, arrOfpercentForLift);
         double encPos = Functions.TransitionFunction(pos, arrOfPosForLift);
         double speed = Functions.TransitionFunction(currentPos - encPos, speedForLift);
-        liftStop = Functions.BooleanInRange(currentPos - encPos, -0.2, 0.2);
+        liftStop = Functions.BooleanInRange(currentPos - encPos, -0.8, 0.8);
         
         Main.motorControllerMap.put("currentLiftPos", percentPos);
+
+        SmartDashboard.putNumber("currentPos - encPos", currentPos - encPos);
 
         if (Main.switchMap.get("limitSwitch") && speed > 0) {
             Main.motorControllerMap.put("liftSpeed", 0.0);
@@ -138,53 +222,6 @@ public class MotorController implements Runnable {
         }
 
         Main.switchMap.put("liftStop", liftStop);
-    }
-
-    private void encodersValueHandler() {
-        Main.motorControllerMap.put("rpmRight", ENC_RIGHT.getSpeed());
-        Main.motorControllerMap.put("rpmLeft", ENC_LEFT.getSpeed());
-        Main.motorControllerMap.put("rpmRotate", ENC_ROTATE.getSpeed());
-        Main.motorControllerMap.put("rpmLift", ENC_LIFT.getSpeed());
-
-        Main.motorControllerMap.put("encRight", ENC_RIGHT.getEncoderDistance()); 
-        Main.motorControllerMap.put("encLeft", ENC_LEFT.getEncoderDistance());
-        Main.motorControllerMap.put("encRotate", ENC_ROTATE.getEncoderDistance());
-        Main.motorControllerMap.put("encLift", ENC_LIFT.getEncoderDistance());
-    }
-
-    private void encodersValueResetHandler() {
-        // Зачем отдельный сброс для пидов? // вызывается в StartPos один раз
-        if(Main.motorControllerMap.get("resetPID") == 1.0) {
-            PID_RIGHT.reset();
-            PID_LEFT.reset();
-            PID_ROTATE.reset();
-            PID_LIFT.reset();
-            Main.motorControllerMap.put("resetPID", 0.0);
-        }
-
-        if (Main.motorControllerMap.get("resetEncs") == 1.0) {
-            ENC_RIGHT.reset();
-            ENC_LEFT.reset();
-            ENC_ROTATE.reset();
-            ENC_LIFT.reset();
-            Main.motorControllerMap.put("resetEncs", 0.0);
-        }
-
-        if(Main.motorControllerMap.get("resetDriveEncs") == 1.0) {
-            ENC_RIGHT.reset();
-            ENC_LEFT.reset();
-            Main.motorControllerMap.put("resetDriveEncs", 0.0);
-        }
-
-        if(Main.motorControllerMap.get("resetEncRotate") == 1.0) {
-            ENC_ROTATE.reset();
-            Main.motorControllerMap.put("resetEncRotate", 0.0);
-        }
-
-        if(Main.motorControllerMap.get("resetEncLift") == 1.0) {
-            ENC_LIFT.reset();
-            Main.motorControllerMap.put("resetEncLift", 0.0);
-        }
     }
 
     private void setRotatePosition(double degree) {
@@ -250,7 +287,7 @@ public class MotorController implements Runnable {
             PID_ROTATE.reset();
             MOTOR_ROTATE.set(0);
         } else {
-            PID_ROTATE.calculate(-ENC_ROTATE.getSpeed(), speed);
+            PID_ROTATE.calculate(-ENC_ROTATE.getSpeed() / 2, speed);
             Main.motorControllerMap.put("rotatePID", PID_ROTATE.getOutput());
             MOTOR_ROTATE.set(Main.motorControllerMap.get("rotatePID"));
         }
@@ -261,7 +298,7 @@ public class MotorController implements Runnable {
             PID_LIFT.reset();
             MOTOR_LIFT.set(0);
         } else {
-            PID_LIFT.calculate(-ENC_LIFT.getSpeed(), speed);
+            PID_LIFT.calculate(-ENC_LIFT.getSpeed() / 2.1, speed);
             Main.motorControllerMap.put("liftPID", PID_LIFT.getOutput());
             MOTOR_LIFT.set(Main.motorControllerMap.get("liftPID"));
         }
@@ -307,24 +344,25 @@ public class MotorController implements Runnable {
     // на мои просьбы переделать проводку датчика черной линии новый метод для работы с Glide
 
     private void countGlidePosition() {
-        // Получение значений с датчика черной линии
         boolean currentStateA = Main.sensorsMap.get("cobraSignal0") > 2000 && Main.sensorsMap.get("cobraSignal1") > 2000;
         boolean currentStateB = Main.sensorsMap.get("cobraSignal2") > 2000 && Main.sensorsMap.get("cobraSignal3") > 2000;
+
+        boolean detectionFlag = currentStateA || currentStateB;
 
         if (currentStateA != lastStateA || currentStateB != lastStateB) {
             if (currentStateA != lastStateA) {
                 if (currentStateA == currentStateB) {
-                    glidePosition++;
+                    currentGlidePosition++;
                 } else {
-                    glidePosition--;
+                    currentGlidePosition--;
                 }
             }
 
             if (currentStateB != lastStateB) {
                 if (currentStateA != currentStateB) {
-                    glidePosition++;
+                    currentGlidePosition++;
                 } else {
-                    glidePosition--;
+                    currentGlidePosition--;
                 }
             }
         }
@@ -332,17 +370,51 @@ public class MotorController implements Runnable {
         // Обновляем предыдущие значения
         lastStateA = currentStateA;
         lastStateB = currentStateB;
+
+        Main.sensorsMap.put("currentGlidePos", currentGlidePosition);
     }
 
-    private boolean setGlidePosition(Double targetGlidePosition) {
+    private void setGlidePosition(double targetGlidePosition) {
 
-        double glideCurrentDiff = glidePosition - targetGlidePosition;
-        double glideServoSpeed = Functions.TransitionFunction(glideCurrentDiff, speedForGlideServo);
-        boolean glideStop = targetGlidePosition == glidePosition;
+        double glideDiff = currentGlidePosition - targetGlidePosition;
+        double glideSpeed = Functions.TransitionFunction(glideDiff, speedForGlideServo);
+        glideStop = targetGlidePosition == currentGlidePosition;
 
-        setGlideServoSpeed(-glideServoSpeed);
+        setGlideServoSpeed(-glideSpeed);
 
-        return glideStop;
+        Main.switchMap.put("glideStop", glideStop);
     }
 
+    // private void setGlidePosition(double position) { 
+    //     boolean blackLineDetect = Main.sensorsMap.get("cobraVoltage") > 2.0;
+    //     double glideServoSpeed = Functions.TransitionFunction(position - currentGlidePosition, speedForGlideServo);
+
+    //     glideStop = false;
+
+    //     direction = position > currentGlidePosition;
+
+    //     Main.sensorsMap.put("currentGlidePos", currentGlidePosition);
+
+    //     if (position != currentGlidePosition) {
+    //         Main.motorControllerMap.put("glideServoSpeed", glideServoSpeed);
+    //         glideStop = false;
+    //     } else {
+    //         glideStop = true;
+    //     }
+
+    //     if (blackLineDetect && !blackLineFlag) {
+    //         if (direction) {
+    //             currentGlidePosition++; 
+    //         } else {
+    //             currentGlidePosition--;
+    //         }
+    //         blackLineFlag = true;
+    //     }
+
+    //     if (!blackLineDetect && blackLineFlag) {
+    //         blackLineFlag = false;
+    //     }
+
+    //     Main.switchMap.put("glideStop", glideStop);
+    // }
 }

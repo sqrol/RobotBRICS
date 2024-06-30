@@ -20,12 +20,10 @@ public class StateMachine {
     public void initStates() { 
     
         states.add(new StartPos());
-        states.add(new SetGlidePosition(21));
-        states.add(new SetGlidePosition(0));
-        states.add(new SetGlidePosition(50));
-        states.add(new SetGlidePosition(0));
-        states.add(new SetGlidePosition(70));
-        states.add(new SetGlidePosition(0));
+        states.add(new SetRotatePosition(45));
+        states.add(new SetRotatePosition(0));
+        states.add(new SetRotatePosition(-90));
+        states.add(new SetRotatePosition(0));
         states.add(new End());
     }
 

@@ -2,6 +2,7 @@ package frc.robot.StateMachine.States;
 
 import frc.robot.Main;
 import frc.robot.StateMachine.CoreEngine.IState;
+import frc.robot.StateMachine.CoreEngine.StateMachine;
 
 public class SetRotatePosition implements IState{
 
@@ -29,7 +30,7 @@ public class SetRotatePosition implements IState{
 
     @Override
     public boolean isFinished() {
-        return Main.switchMap.get("rotateStop");
+        return Main.switchMap.get("rotateStop") && StateMachine.iterationTime > 2;
     }
     
 }
