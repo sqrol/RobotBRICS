@@ -16,14 +16,14 @@ public class AlignSharp implements IState {
     private double diffSharp, lastGyro = 0;
     private double coefForTime = 0;
  
-    // private static double[][] XArray = { { 0, 0.1, 2.5, 5, 10, 15, 25, 30 },
-    //                                       { 0, 0.4, 5, 12, 20, 36, 60, 80 } };
-
     private static double[][] XArray = { { 0, 0.1, 2.5, 5, 10, 15, 25, 30 },
-                                          { 0, 0.4, 4, 6, 10, 15, 20, 30 } };
+                                          { 0, 0.4, 5, 12, 20, 36, 60, 80 } };
+
+    // private static double[][] XArray = { { 0, 0.1, 2.5, 5, 10, 15, 25, 30 },
+    //                                       { 0, 0.4, 4, 6, 10, 15, 20, 30 } };
 
     private static double[][] degFunction = { { 0.1, 2, 4, 8, 12, 15, 20, 25 },
-                                               { 5, 9, 11, 18, 24, 26, 33, 35 } };
+                                               { 3, 9, 11, 18, 24, 26, 33, 35 } };
 
     private static double[][] arrayForTime = { { 0, 0.33, 0.66, 1 },
                                                { 0, 0.33, 0.66, 1 } };
@@ -36,14 +36,14 @@ public class AlignSharp implements IState {
     public void initialize() {
         Main.sensorsMap.put("resetGyro", 1.0);
         lastGyro = Main.sensorsMap.get("srcGyro");
-        Main.motorControllerMap.put("resetEncRight", 1.0);
-        Main.motorControllerMap.put("resetEncLeft", 1.0);
+        Main.motorControllerMap.put("resetDriveEncs", 1.0);
     }
 
     @Override
     public void execute() {
+
         coefForTime = Functions.TransitionFunction(StateMachine.iterationTime, arrayForTime);
-        SmartDashboard.putNumber("lastGyro", lastGyro);
+        
         double leftSharp = Main.sensorsMap.get("sharpLeft");
         double rightSharp = Main.sensorsMap.get("sharpRight");
 
@@ -58,7 +58,7 @@ public class AlignSharp implements IState {
         }
 
         Main.motorControllerMap.put("speedX", -speedX * coefForTime);
-        Main.motorControllerMap.put("speedZ", speedZ);
+        Main.motorControllerMap.put("speedZ", -speedZ);
 
         finishX = Functions.BooleanInRange(speedX, -0.5, 0.5);
         finishZ = Functions.BooleanInRange(speedZ, -0.2, 0.2);

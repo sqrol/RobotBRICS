@@ -14,6 +14,8 @@ import frc.robot.Maths.Common.PID;
 
 public class MotorController implements Runnable {
 
+    public static double motorsUpdateTime;
+
     private TitanQuad MOTOR_RIGHT;
     private TitanQuad MOTOR_LEFT;
     private TitanQuad MOTOR_ROTATE;
@@ -33,7 +35,6 @@ public class MotorController implements Runnable {
     private PID PID_ROTATE = new PID(0.069, 0.59, 0.0, -100, 100); 
     private PID PID_LIFT = new PID(0.066, 0.57, 0.0, -100, 100);
 
-    public static double motorsUpdateTime; 
     public double previousDegrees = 0;
 
     private double encRightResetValue = 0;
@@ -85,7 +86,7 @@ public class MotorController implements Runnable {
             SERVO_GRIP_ROTATE = new Servo(Constants.SERVO_GRIP_ROTATE);
             SERVO_GLIDE = new ServoContinuous(Constants.SERVO_GLIDE);
         } catch (Exception e) {
-            //TODO: handle exception
+            e.printStackTrace();
         }
     }
 
@@ -121,7 +122,7 @@ public class MotorController implements Runnable {
 
                 encodersValueHandler();
 
-                encodersValueResetHandler(); // Работа со сбросом энкодеров
+                encodersValueResetHandler(); 
                 
                 countGlidePosition();
 
@@ -338,8 +339,7 @@ public class MotorController implements Runnable {
             return SERVO_GRAB.getAngle();
         } catch (Exception e) {
             return 0;
-        }
-        
+        } 
     }
 
     private void setServoGripRotate(double angle) {
@@ -368,14 +368,17 @@ public class MotorController implements Runnable {
         boolean currentStateD = Main.sensorsMap.get("cobraSignal3") > 2000;
 
         if (currentStateA != lastStateA || currentStateD != lastStateD) {
-            // Проверяем переход от currentStateA к currentStateD
-            if (lastStateA && !currentStateA && currentStateD) {
-                currentGlidePosition++;
-            }
+
             // Проверяем переход от currentStateD к currentStateA
             if (lastStateD && !currentStateD && currentStateA) {
+                currentGlidePosition++;
+            }
+
+            // Проверяем переход от currentStateA к currentStateD
+            if (lastStateA && !currentStateA && currentStateD) {
                 currentGlidePosition--;
             }
+            
         }
 
         lastStateA = currentStateA;
@@ -390,7 +393,7 @@ public class MotorController implements Runnable {
         double glideSpeed = Functions.TransitionFunction(glideDiff, speedForGlideServo);
         glideStop = targetGlidePosition == currentGlidePosition;
 
-        setGlideServoSpeed(glideSpeed);
+        setGlideServoSpeed(-glideSpeed);
 
         Main.switchMap.put("glideStop", glideStop);
     }

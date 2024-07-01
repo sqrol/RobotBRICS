@@ -14,7 +14,8 @@ public class SetGripRotatePosition implements IState{
 
     @Override
     public void initialize() {
-
+        Main.motorControllerMap.put("speedX", 0.0);
+        Main.motorControllerMap.put("speedZ", 0.0);
     }
 
     @Override
@@ -30,7 +31,7 @@ public class SetGripRotatePosition implements IState{
                 Main.motorControllerMap.put("servoGripRotate", 70.0);
                 break;
             case "FOR DROP":
-                Main.motorControllerMap.put("servoGripRotate", 13.0);
+                Main.motorControllerMap.put("servoGripRotate", 20.0);
                 break;
             case "SMALL ANGLE":
                 Main.motorControllerMap.put("servoGripRotate", 52.0);

@@ -8,7 +8,7 @@ import frc.robot.StateMachine.CoreEngine.StateMachine;
 public class SimpleDrive implements IState{
 
     private double XPosition, ZPosition = 0;
-    private double posX, gyro = 0;
+    private double posX = 0;
     private double speedX, speedZ = 0;
 
     private boolean finishX, finishZ = false;

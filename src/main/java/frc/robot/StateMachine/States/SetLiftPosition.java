@@ -1,6 +1,5 @@
 package frc.robot.StateMachine.States;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Main;
 import frc.robot.StateMachine.CoreEngine.IState;
 import frc.robot.StateMachine.CoreEngine.StateMachine;

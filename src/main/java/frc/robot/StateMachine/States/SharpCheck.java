@@ -10,7 +10,8 @@ public class SharpCheck implements IState {
 
     @Override
     public void initialize() {
-        
+        Main.motorControllerMap.put("speedX", 0.0);
+        Main.motorControllerMap.put("speedZ", 0.0);
     }
 
     @Override

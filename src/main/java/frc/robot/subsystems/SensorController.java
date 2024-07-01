@@ -40,17 +40,17 @@ public class SensorController implements Runnable{
     private static Ultrasonic SONIC_LEFT;
 
     public static double sensorsUpdateTime;
-    public double resetGyroValue = 0;
+    private double resetGyroValue = 0;
     private double lastGyro = 0;
-    public double newGyroThread = 0;
+    private double newGyroThread = 0;
 
-    public boolean resetGyroThread = false;
-    public boolean resetGyroThreadOnce = false;
+    private boolean resetGyroThread = false;
+    private boolean resetGyroThreadOnce = false;
     private boolean plus360once = false;
     private boolean minus360once = false;
 
-    private static final MedianFilter RIGHT_SHARP_FILTER = new MedianFilter(5);
-    private static final MedianFilter LEFT_SHARP_FILTER = new MedianFilter(5);
+    private static MedianFilter RIGHT_SHARP_FILTER;
+    private static MedianFilter LEFT_SHARP_FILTER;
 
     public SensorController() {
         try {
@@ -70,8 +70,12 @@ public class SensorController implements Runnable{
             
             SONIC_RIGHT = new Ultrasonic(Constants.SONIC_PING_RIGHT, Constants.SONIC_ECHO_RIGHT);
             SONIC_LEFT = new Ultrasonic(Constants.SONIC_PING_LEFT, Constants.SONIC_ECHO_LEFT);
+
+            RIGHT_SHARP_FILTER = new MedianFilter(5);
+            LEFT_SHARP_FILTER = new MedianFilter(5);
+
         } catch (Exception e) {
-            
+            e.printStackTrace();
         }
     }
 

@@ -2,14 +2,14 @@ package frc.robot.StateMachine.States;
 
 import java.util.ArrayList;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Main;
+import frc.robot.Logic.TreeTraverse;
+
 import frc.robot.StateMachine.CoreEngine.IState;
 import frc.robot.StateMachine.CoreEngine.StateMachine;
 
 public class Transitions implements IState {
 
-    private boolean succesInit = false;
+    private TreeTraverse traverse = new TreeTraverse();
 
     @Override
     public void initialize() {
@@ -19,6 +19,11 @@ public class Transitions implements IState {
     @Override
     public void execute() {
         ArrayList<IState> newStates = new ArrayList<>();
+
+        if(traverse.execute().equals("arg0")) {
+            
+        }
+
         newStates.add(new SimpleDrive(100, 0)); 
         newStates.add(new SimpleDrive(100, 0)); 
         newStates.add(new SimpleDrive(100, 0)); 
