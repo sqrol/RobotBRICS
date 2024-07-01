@@ -15,7 +15,29 @@ import frc.robot.Main;
 import frc.robot.Filters.*;
 import frc.robot.Maths.Common.Functions;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class SensorController implements Runnable{
+
+    private static AHRS GYRO;
+
+    // Новый вызов датчика Cobra (Опять же если Софа начнет не считать меня пустым местом) 
+    // Данный датчик подключается в порт I2C контроллера VMX
+    private static Cobra COBRA;
+
+    private static AnalogInput SHARP_RIGHT;
+    private static AnalogInput SHARP_LEFT;
+
+    private static DigitalInput LIMIT_SWITCH;
+    private static DigitalInput START_BUTTON;
+    private static DigitalInput EMS_BUTTON;
+
+    private static DigitalOutput GREEN_LED; 
+    private static DigitalOutput RED_LED;
+
+    private static Ultrasonic SONIC_RIGHT;
+    private static Ultrasonic SONIC_LEFT;
 
     public static double sensorsUpdateTime;
     public double resetGyroValue = 0;
@@ -27,42 +49,34 @@ public class SensorController implements Runnable{
     private boolean plus360once = false;
     private boolean minus360once = false;
 
-    private static final AHRS GYRO = new AHRS(SPI.Port.kMXP);
-
-    private static final Cobra COBRA = new Cobra();
-
-    private static final AnalogInput SHARP_RIGHT = new AnalogInput(Constants.SHARP_RIGHT);
-    private static final AnalogInput SHARP_LEFT = new AnalogInput(Constants.SHARP_LEFT);
-
-    private static final DigitalInput LIMIT_SWITCH = new DigitalInput(Constants.LIMIT_SWITCH);
-    private static final DigitalInput START_BUTTON = new DigitalInput(Constants.START_BUTTON);
-    private static final DigitalInput EMS_BUTTON = new DigitalInput(Constants.EMS_BUTTON);
-
-    private static DigitalOutput GREEN_LED = new DigitalOutput(Constants.GREEN_LED);
-    private static DigitalOutput RED_LED = new DigitalOutput(Constants.RED_LED);
-    
-    private static final Ultrasonic SONIC_RIGHT = new Ultrasonic(Constants.SONIC_PING_RIGHT, Constants.SONIC_ECHO_RIGHT);
-    private static final Ultrasonic SONIC_LEFT = new Ultrasonic(Constants.SONIC_PING_LEFT, Constants.SONIC_ECHO_LEFT);
-
-    // Новый вызов датчика Cobra (Опять же если Софа начнет не считать меня пустым местом) 
-    // Данный датчик подключается в порт I2C контроллера VMX
-    
-
     private static final MedianFilter RIGHT_SHARP_FILTER = new MedianFilter(5);
     private static final MedianFilter LEFT_SHARP_FILTER = new MedianFilter(5);
- 
-    // private static final MeanFilter RIGHT_SONIC_FILTER = new MeanFilter(6);
+
+    public SensorController() {
+        try {
+            GYRO = new AHRS(SPI.Port.kMXP);
+
+            COBRA = new Cobra();
+        
+            SHARP_RIGHT = new AnalogInput(Constants.SHARP_RIGHT);
+            SHARP_LEFT = new AnalogInput(Constants.SHARP_LEFT);
+        
+            LIMIT_SWITCH = new DigitalInput(Constants.LIMIT_SWITCH);
+            START_BUTTON = new DigitalInput(Constants.START_BUTTON);
+            EMS_BUTTON = new DigitalInput(Constants.EMS_BUTTON);
+        
+            GREEN_LED = new DigitalOutput(Constants.GREEN_LED);
+            RED_LED = new DigitalOutput(Constants.RED_LED);
+            
+            SONIC_RIGHT = new Ultrasonic(Constants.SONIC_PING_RIGHT, Constants.SONIC_ECHO_RIGHT);
+            SONIC_LEFT = new Ultrasonic(Constants.SONIC_PING_LEFT, Constants.SONIC_ECHO_LEFT);
+        } catch (Exception e) {
+            
+        }
+    }
 
     @Override
     public void run() {
-
-        try {
-            // GREEN_LED = new DigitalOutput(Constants.GREEN_LED);
-            // RED_LED = new DigitalOutput(Constants.RED_LED);
-            
-        } catch (Exception e) {
-            //TODO: handle exception
-        }
 
         while (!Thread.interrupted()) {
             double startTime = Timer.getFPGATimestamp();

@@ -70,8 +70,4 @@ public class CameraController implements Runnable {
         camera.setExposureManual(100);; // Устанавливается яркость камеры
         camera.setBrightness(1);
     }
-
-    // public static double CheckFruit(Mat orig) {
-        
-    // }
 }

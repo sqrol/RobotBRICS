@@ -1,7 +1,6 @@
 package frc.robot.StateMachine.CoreEngine;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.StateMachine.States.*;
@@ -19,9 +18,8 @@ public class StateMachine {
     }
 
     public void initStates() { 
-    
         states.add(new StartPos());
-        states.add(new Transitions());
+        // states.add(new SimpleDrive(100, 0));
         states.add(new End());
     }
 

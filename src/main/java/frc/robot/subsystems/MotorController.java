@@ -14,6 +14,25 @@ import frc.robot.Maths.Common.PID;
 
 public class MotorController implements Runnable {
 
+    private TitanQuad MOTOR_RIGHT;
+    private TitanQuad MOTOR_LEFT;
+    private TitanQuad MOTOR_ROTATE;
+    private TitanQuad MOTOR_LIFT;
+
+    private TitanQuadEncoder ENC_RIGHT;
+    private TitanQuadEncoder ENC_LEFT;
+    private TitanQuadEncoder ENC_ROTATE;
+    private TitanQuadEncoder ENC_LIFT;
+
+    private Servo SERVO_GRAB;
+    private Servo SERVO_GRIP_ROTATE;
+    private ServoContinuous SERVO_GLIDE;
+
+    private PID PID_RIGHT = new PID(0.066, 0.57, 0.0, -100, 100); 
+    private PID PID_LEFT = new PID(0.066, 0.57, 0.0, -100, 100);  // 0.067, 0.43, 0.0, -100, 100
+    private PID PID_ROTATE = new PID(0.069, 0.59, 0.0, -100, 100); 
+    private PID PID_LIFT = new PID(0.066, 0.57, 0.0, -100, 100);
+
     public static double motorsUpdateTime; 
     public double previousDegrees = 0;
 
@@ -23,32 +42,52 @@ public class MotorController implements Runnable {
     private double encRotateResetValue = 0;
 
     // Переменные для функции setGlidePosition()
-    private static boolean lastStateA = false;
-    private static boolean lastStateB = false;
+    private boolean lastStateA = false;
+    private boolean lastStateD = false;
 
-    private boolean direction = false;  
+    private boolean flag = false;
+    private int direction = 0; // Направление вращения: 1 - вперед, -1 - назад
+
+    private boolean flagStep1 = false;
+    private boolean flagStep2 = false;
+
     private boolean glideStop = false;
 
     private static double currentGlidePosition = 0;
     
     private static boolean liftStop, rotateStop = false;
 
-    private static final double[][] arrOfpercentForLift = { { 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 }, 
-                                                                { 0, 4, 15, 30, 40, 50, 60, 70, 80, 90, 100 } };
+    private static final double[][] arrOfpercentForLift = { { 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 }, { 0, 4, 15, 30, 40, 50, 60, 70, 80, 90, 100 } };
 
-    private static final double[][] arrOfPosForLift = { { 0, 4, 15, 30, 40, 50, 60, 70, 80, 90, 100 }, 
-                                                        { 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 } };
+    private static final double[][] arrOfPosForLift = { { 0, 4, 15, 30, 40, 50, 60, 70, 80, 90, 100 }, { 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 } };
 
-    private static final double[][] speedForLift = { { 0, 30, 50, 100, 200, 330, 500, 700, 850, 1000 },
-                                                      { 0, 2, 5, 7, 15, 26, 34, 35, 50, 70 } };
+    private static final double[][] speedForLift = { { 0, 30, 50, 100, 200, 330, 500, 700, 850, 1000 }, { 0, 2, 5, 7, 15, 26, 34, 35, 50, 70 } };
 
     private static final double[][] arrOfPosForRotate = { { 0, 500, 1500, 2000 }, { 0, 45, 90, 110 } };
 
-    private static final double[][] speedForRotate =  { { 0, 5, 10, 14, 17, 26, 39, 50, 62, 70 }, 
-                                                        { 0, 6, 15, 25, 35, 47, 60, 70, 77, 85 } };
+    private static final double[][] speedForRotate =  { { 0, 5, 10, 14, 17, 26, 39, 50, 62, 70 }, { 0, 6, 15, 25, 35, 47, 60, 70, 77, 85 } };
 
-    private static final double[][] speedForGlideServo = { { 0, 1, 2, 4, 6, 8, 10 }, 
-                                                        { 0, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18}};
+    private static final double[][] speedForGlideServo = { { 0, 1, 2, 4, 6, 8, 10 }, { 0, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18}};
+
+    public MotorController() {
+        try {
+            MOTOR_RIGHT = new TitanQuad(Constants.TITAN_ID, Constants.MOTOR_RIGHT);
+            MOTOR_LEFT = new TitanQuad(Constants.TITAN_ID, Constants.MOTOR_LEFT);
+            MOTOR_ROTATE = new TitanQuad(Constants.TITAN_ID, Constants.MOTOR_ROTATE);
+            MOTOR_LIFT = new TitanQuad(Constants.TITAN_ID, Constants.MOTOR_LIFT); 
+        
+            ENC_RIGHT = new TitanQuadEncoder(MOTOR_RIGHT, Constants.ENC_RIGHT, Constants.DIST_PER_TICK);
+            ENC_LEFT = new TitanQuadEncoder(MOTOR_LEFT, Constants.ENC_LEFT, Constants.DIST_PER_TICK);
+            ENC_ROTATE = new TitanQuadEncoder(MOTOR_ROTATE, Constants.ENC_ROTATE, Constants.DIST_PER_TICK);
+            ENC_LIFT = new TitanQuadEncoder(MOTOR_LIFT, Constants.ENC_LIFT, Constants.DIST_PER_TICK);
+        
+            SERVO_GRAB = new Servo(Constants.SERVO_GRAB);
+            SERVO_GRIP_ROTATE = new Servo(Constants.SERVO_GRIP_ROTATE);
+            SERVO_GLIDE = new ServoContinuous(Constants.SERVO_GLIDE);
+        } catch (Exception e) {
+            //TODO: handle exception
+        }
+    }
 
     @Override
     public void run() {
@@ -97,25 +136,6 @@ public class MotorController implements Runnable {
             motorsUpdateTime = Timer.getFPGATimestamp() - startTime;
         }
     }
-
-    private final TitanQuad MOTOR_RIGHT = new TitanQuad(Constants.TITAN_ID, Constants.MOTOR_RIGHT);
-    private final TitanQuad MOTOR_LEFT = new TitanQuad(Constants.TITAN_ID, Constants.MOTOR_LEFT);
-    private final TitanQuad MOTOR_ROTATE = new TitanQuad(Constants.TITAN_ID, Constants.MOTOR_ROTATE);
-    private final TitanQuad MOTOR_LIFT = new TitanQuad(Constants.TITAN_ID, Constants.MOTOR_LIFT); 
-
-    private final TitanQuadEncoder ENC_RIGHT = new TitanQuadEncoder(MOTOR_RIGHT, Constants.ENC_RIGHT, Constants.DIST_PER_TICK);
-    private final TitanQuadEncoder ENC_LEFT = new TitanQuadEncoder(MOTOR_LEFT, Constants.ENC_LEFT, Constants.DIST_PER_TICK);
-    private final TitanQuadEncoder ENC_ROTATE = new TitanQuadEncoder(MOTOR_ROTATE, Constants.ENC_ROTATE, Constants.DIST_PER_TICK);
-    private final TitanQuadEncoder ENC_LIFT = new TitanQuadEncoder(MOTOR_LIFT, Constants.ENC_LIFT, Constants.DIST_PER_TICK);
-
-    private final PID PID_RIGHT = new PID(0.066, 0.57, 0.0, -100, 100); 
-    private final PID PID_LEFT = new PID(0.066, 0.57, 0.0, -100, 100);  // 0.067, 0.43, 0.0, -100, 100
-    private final PID PID_ROTATE = new PID(0.069, 0.59, 0.0, -100, 100); 
-    private final PID PID_LIFT = new PID(0.066, 0.57, 0.0, -100, 100);
-
-    private final Servo SERVO_GRAB = new Servo(Constants.SERVO_GRAB);
-    private final Servo SERVO_GRIP_ROTATE = new Servo(Constants.SERVO_GRIP_ROTATE);
-    private final ServoContinuous SERVO_GLIDE = new ServoContinuous(Constants.SERVO_GLIDE);
 
     private void encodersValueHandler() {
         Main.motorControllerMap.put("rpmRight", ENC_RIGHT.getSpeed());
@@ -344,32 +364,22 @@ public class MotorController implements Runnable {
     // на мои просьбы переделать проводку датчика черной линии новый метод для работы с Glide
 
     private void countGlidePosition() {
-        boolean currentStateA = Main.sensorsMap.get("cobraSignal0") > 2000 && Main.sensorsMap.get("cobraSignal1") > 2000;
-        boolean currentStateB = Main.sensorsMap.get("cobraSignal2") > 2000 && Main.sensorsMap.get("cobraSignal3") > 2000;
+        boolean currentStateA = Main.sensorsMap.get("cobraSignal0") > 2000;
+        boolean currentStateD = Main.sensorsMap.get("cobraSignal3") > 2000;
 
-        boolean detectionFlag = currentStateA || currentStateB;
-
-        if (currentStateA != lastStateA || currentStateB != lastStateB) {
-            if (currentStateA != lastStateA) {
-                if (currentStateA == currentStateB) {
-                    currentGlidePosition++;
-                } else {
-                    currentGlidePosition--;
-                }
+        if (currentStateA != lastStateA || currentStateD != lastStateD) {
+            // Проверяем переход от currentStateA к currentStateD
+            if (lastStateA && !currentStateA && currentStateD) {
+                currentGlidePosition++;
             }
-
-            if (currentStateB != lastStateB) {
-                if (currentStateA != currentStateB) {
-                    currentGlidePosition++;
-                } else {
-                    currentGlidePosition--;
-                }
+            // Проверяем переход от currentStateD к currentStateA
+            if (lastStateD && !currentStateD && currentStateA) {
+                currentGlidePosition--;
             }
         }
 
-        // Обновляем предыдущие значения
         lastStateA = currentStateA;
-        lastStateB = currentStateB;
+        lastStateD = currentStateD;
 
         Main.sensorsMap.put("currentGlidePos", currentGlidePosition);
     }
@@ -380,7 +390,7 @@ public class MotorController implements Runnable {
         double glideSpeed = Functions.TransitionFunction(glideDiff, speedForGlideServo);
         glideStop = targetGlidePosition == currentGlidePosition;
 
-        setGlideServoSpeed(-glideSpeed);
+        setGlideServoSpeed(glideSpeed);
 
         Main.switchMap.put("glideStop", glideStop);
     }
