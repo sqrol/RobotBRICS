@@ -21,19 +21,16 @@ public final class Main {
   public static void main(String... args) {
     Runnable motorControllerRunnable = new MotorController();
     Thread motorControllerThread = new Thread(motorControllerRunnable);
-    motorControllerThread.setPriority(Thread.NORM_PRIORITY);
     motorControllerThread.setDaemon(true);
     motorControllerThread.start();
     
     Runnable sensorControllerRunnable = new SensorController();
     Thread sensorControllerThread = new Thread(sensorControllerRunnable);
-    sensorControllerThread.setPriority(Thread.NORM_PRIORITY);
     sensorControllerThread.setDaemon(true);
     sensorControllerThread.start();
 
     Runnable cameraControllerRunnable = new CameraController();
     Thread cameraControllerThread = new Thread(cameraControllerRunnable);
-    cameraControllerThread.setPriority(Thread.NORM_PRIORITY);
     cameraControllerThread.setDaemon(true);
     cameraControllerThread.start();
 

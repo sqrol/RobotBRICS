@@ -40,7 +40,7 @@ public class DriveSonic implements IState {
         double speedZ = Functions.TransitionFunction(diffZ, degFunction);
 
         Main.motorControllerMap.put("speedX", speedX);
-        Main.motorControllerMap.put("speedZ", speedZ);
+        Main.motorControllerMap.put("speedZ", -speedZ);
         
         finishX = Functions.BooleanInRange(X - backSonicDist, -0.5, 0.5);
         finishZ = Functions.BooleanInRange(lastGyro - Main.sensorsMap.get("srcGyro"), -0.2, 0.2);

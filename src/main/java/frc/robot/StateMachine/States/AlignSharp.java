@@ -34,8 +34,7 @@ public class AlignSharp implements IState {
 
     @Override
     public void initialize() {
-        Main.sensorsMap.put("resetGyro", 1.0);
-        lastGyro = Main.sensorsMap.get("srcGyro");
+        lastGyro = Main.sensorsMap.get("posZ");
         Main.motorControllerMap.put("resetDriveEncs", 1.0);
     }
 
@@ -43,7 +42,7 @@ public class AlignSharp implements IState {
     public void execute() {
 
         coefForTime = Functions.TransitionFunction(StateMachine.iterationTime, arrayForTime);
-        
+        SmartDashboard.putNumber("lastGyro", lastGyro);
         double leftSharp = Main.sensorsMap.get("sharpLeft");
         double rightSharp = Main.sensorsMap.get("sharpRight");
 
@@ -54,7 +53,7 @@ public class AlignSharp implements IState {
             diffSharp = leftSharp - rightSharp;
             speedZ = Functions.TransitionFunction(diffSharp, degFunction);
         } else {
-            speedZ = lastGyro - Main.sensorsMap.get("srcGyro");
+            speedZ = (lastGyro - Main.sensorsMap.get("srcGyro"));
         }
 
         Main.motorControllerMap.put("speedX", -speedX * coefForTime);

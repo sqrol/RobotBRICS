@@ -4,7 +4,7 @@ import frc.robot.Main;
 import frc.robot.Logic.CommandList;
 import frc.robot.StateMachine.CoreEngine.IState;
 
-public class Transitions implements IState {
+public class Transition implements IState {
 
     private CommandList cmdList;
     

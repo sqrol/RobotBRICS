@@ -62,7 +62,7 @@ public class SimpleDrive implements IState{
     
         } else {
             speedX = 0;
-            speedZ = Functions.TransitionFunction(ZPosition - Main.sensorsMap.get("posZ"), speedZArrayJustTurn);
+            speedZ = -Functions.TransitionFunction(ZPosition - Main.sensorsMap.get("posZ"), speedZArrayJustTurn);
             
             finishX = true;
             finishZ = Functions.BooleanInRange(speedZ, -0.3, 0.3); 
@@ -70,12 +70,12 @@ public class SimpleDrive implements IState{
 
         Main.motorControllerMap.put("posX", posX);
         Main.motorControllerMap.put("speedX", speedX * startKoef);
-        Main.motorControllerMap.put("speedZ", -speedZ);
+        Main.motorControllerMap.put("speedZ", speedZ);
     }
 
     @Override
     public void finilize() {   
-        Main.sensorsMap.put("resetGyro", 1.0);
+        
     }
 
     @Override
