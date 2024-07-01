@@ -5,6 +5,7 @@ import java.util.HashMap;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.subsystems.MotorController;
 import frc.robot.subsystems.SensorController;
+import frc.robot.Logic.TreeTraverse;
 import frc.robot.subsystems.CameraController;
 
 public final class Main {
@@ -14,6 +15,8 @@ public final class Main {
   public static HashMap<String, Double> motorControllerMap = new HashMap<String, Double>();
   public static HashMap<String, Double> sensorsMap = new HashMap<String, Double>();
   public static HashMap<String, Boolean> switchMap = new HashMap<String, Boolean>();
+
+  public static TreeTraverse traverse = new TreeTraverse();
   
   public static void main(String... args) {
     Runnable motorControllerRunnable = new MotorController();
