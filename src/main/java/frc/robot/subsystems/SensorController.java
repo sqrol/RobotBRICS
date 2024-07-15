@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.studica.frc.Cobra;
 
 import frc.robot.Constants;
@@ -44,10 +46,10 @@ public class SensorController implements Runnable{
     private double lastGyro = 0;
     private double newGyroThread = 0;
 
-    private boolean resetGyroThread = false;
-    private boolean resetGyroThreadOnce = false;
-    private boolean plus360once = false;
-    private boolean minus360once = false;
+    private static boolean resetGyroThread = false;
+    private static boolean resetGyroThreadOnce = false;
+    private static boolean plus360once = false;
+    private static boolean minus360once = false;
 
     private static MedianFilter RIGHT_SHARP_FILTER;
     private static MedianFilter LEFT_SHARP_FILTER;
@@ -86,43 +88,14 @@ public class SensorController implements Runnable{
             double startTime = Timer.getFPGATimestamp();
             try {
 
-                setIndicationMode(Main.sensorsMap.get("indicationMode"));
-
                 if (Main.sensorsMap.get("resetGyro") == 1.0) {
                     resetGyroValue = 0;
                     resetGyroThreadOnce = true;
                     Main.sensorsMap.put("resetGyro", 0.0);
                 }
 
-                double gyro = getLongYaw();
-                double dGyro = gyro - lastGyro;
-                double outGyro = 0;
-                
-                if (!resetGyroThread && !resetGyroThreadOnce) {
-                    outGyro = dGyro + newGyroThread;
-                }
-
-                if (resetGyroThread) {
-                    outGyro = resetGyroValue;
-                }
-
-                if (resetGyroThreadOnce) {
-                    outGyro = resetGyroValue;
-                    resetGyroThreadOnce = false;
-                }
-
-                if (plus360once) {
-                    outGyro += 360;
-                    plus360once = false;
-                }
-
-                if (minus360once) {
-                    outGyro -= 360;
-                    minus360once = false;
-                }
-
-                newGyroThread = outGyro;
-                lastGyro = gyro;
+                setIndicationMode(Main.sensorsMap.get("indicationMode"));
+                gyroFunc();
 
                 Main.sensorsMap.put("sharpLeft", getLeftSharp());
                 Main.sensorsMap.put("sharpRight", getRightSharp());
@@ -152,6 +125,38 @@ public class SensorController implements Runnable{
             }
             sensorsUpdateTime = Timer.getFPGATimestamp() - startTime;
         }
+    }
+
+    private void gyroFunc() {
+        double gyro = getLongYaw();
+        double dGyro = gyro - lastGyro;
+        double outGyro = 0;
+        
+        if (!resetGyroThread && !resetGyroThreadOnce) {
+            outGyro = dGyro + newGyroThread;
+        }
+
+        if (resetGyroThread) {
+            outGyro = resetGyroValue;
+        }
+
+        if (resetGyroThreadOnce) {
+            outGyro = resetGyroValue;
+            resetGyroThreadOnce = false;
+        }
+
+        if (plus360once) {
+            outGyro += 360;
+            plus360once = false;
+        }
+
+        if (minus360once) {
+            outGyro -= 360;
+            minus360once = false;
+        }
+
+        newGyroThread = outGyro;
+        lastGyro = gyro;
     }
     
     private final double getLongYaw() {

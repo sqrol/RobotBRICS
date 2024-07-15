@@ -106,7 +106,9 @@ public class MotorController implements Runnable {
                     SERVO_GRAB.setDisabled();
                     SERVO_GRIP_ROTATE.setDisabled(); 
                 } else {
-                    setAxisSpeed(Main.motorControllerMap.get("speedX"), Main.motorControllerMap.get("speedZ"));
+                    setAxisSpeed(Main.motorControllerMap.get("speedX"), 
+                    Main.motorControllerMap.get("speedZ"),  Main.motorControllerMap.get("useOneSide"));
+
                     setRotateMotorSpeed(Main.motorControllerMap.get("rotateSpeed"));
                     setLiftMotorSpeed(Main.motorControllerMap.get("liftSpeed"));
 
@@ -158,12 +160,12 @@ public class MotorController implements Runnable {
             Main.motorControllerMap.put("resetDriveEncs", 0.0);
         }
 
-        if (Main.motorControllerMap.get("resetEncs") == 1.0) {
+        if (Main.motorControllerMap.get("resetAllEncoders") == 1.0) {
             resetEncRight();
             resetEncLeft();
             resetEncRotate();
             resetEncLift();
-            Main.motorControllerMap.put("resetEncs", 0.0);
+            Main.motorControllerMap.put("resetAllEncoders", 0.0);
         }
 
         if(Main.motorControllerMap.get("resetEncRotate") == 1.0) {
@@ -273,14 +275,27 @@ public class MotorController implements Runnable {
         Main.switchMap.put("rotateStop", rotateStop);
     }
 
-    private void setAxisSpeed(double x, double z) {
-        double right = x + z;
-        double left = -x + z;
+    // private void setAxisSpeed(double x, double z) {
+    //     double right = x + z;
+    //     double left = -x + z;
 
-        setRightMotorSpeed(right);
-        setLeftMotorSpeed(left);
+    //     setRightMotorSpeed(right);
+    //     setLeftMotorSpeed(left);
+    // }
+
+    private void setAxisSpeed(double x, double z, double useOneSide) {
+        if (useOneSide == 1.0) {
+            setRightMotorSpeed(x);
+            setLeftMotorSpeed(z);
+        } else {
+            double right = x + z;
+            double left = -x + z;
+
+            setRightMotorSpeed(right);
+            setLeftMotorSpeed(left);
+        }
     }
-
+    
     private void setRightMotorSpeed(double speed) {
         if (speed == 0.0) {
             PID_RIGHT.reset();
