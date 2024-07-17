@@ -43,14 +43,8 @@ public class MotorController implements Runnable {
     private double encRotateResetValue = 0;
 
     // Переменные для функции setGlidePosition()
-    private boolean lastStateA = false;
-    private boolean lastStateD = false;
-
     private boolean flag = false;
-    private int direction = 0; // Направление вращения: 1 - вперед, -1 - назад
-
-    private boolean flagStep1 = false;
-    private boolean flagStep2 = false;
+    private double glideTimer = 0; 
 
     private boolean glideStop = false;
 
@@ -125,8 +119,6 @@ public class MotorController implements Runnable {
                 encodersValueHandler();
 
                 encodersValueResetHandler(); 
-                
-                countGlidePosition();
 
                 Main.motorControllerMap.put("servoGrabAngle", getServoGrabAngle());
                 Main.motorControllerMap.put("updateTime", motorsUpdateTime);      
@@ -378,28 +370,21 @@ public class MotorController implements Runnable {
     // Если Софа все же перестанет забивать хуй (это пиздец! как с ней общаться?)
     // на мои просьбы переделать проводку датчика черной линии новый метод для работы с Glide
 
-    private void countGlidePosition() {
-        boolean currentStateA = Main.sensorsMap.get("cobraSignal0") > 2000;
-        boolean currentStateD = Main.sensorsMap.get("cobraSignal3") > 2000;
+    private void countGlidePosition(boolean direction) {
+        boolean currentStateA = Main.sensorsMap.get("cobraSignal0") > 2000.0;
 
-        if (currentStateA != lastStateA || currentStateD != lastStateD) {
-
-            // Проверяем переход от currentStateD к currentStateA
-            if (lastStateD && !currentStateD && currentStateA) {
-                currentGlidePosition++;
-            }
-
-            // Проверяем переход от currentStateA к currentStateD
-            if (lastStateA && !currentStateA && currentStateD) {
-                currentGlidePosition--;
-            }
-            
+        if (currentStateA && !flag && Timer.getFPGATimestamp() - glideTimer > 0.1) {
+          flag = true;
+          glideTimer = Timer.getFPGATimestamp();
+          
+        }
+        if (!currentStateA && flag && Timer.getFPGATimestamp() - glideTimer > 0.1) {
+          flag = false;
+          glideTimer = Timer.getFPGATimestamp();
+          if (direction) { currentGlidePosition++; } else { currentGlidePosition--; }
         }
 
-        lastStateA = currentStateA;
-        lastStateD = currentStateD;
-
-        Main.sensorsMap.put("currentGlidePos", currentGlidePosition);
+        Main.sensorsMap.put("currentGlidePos", (double) currentGlidePosition);
     }
 
     private void setGlidePosition(double targetGlidePosition) {
@@ -408,41 +393,14 @@ public class MotorController implements Runnable {
         double glideSpeed = Functions.TransitionFunction(glideDiff, speedForGlideServo);
         glideStop = targetGlidePosition == currentGlidePosition;
 
+        if (targetGlidePosition > currentGlidePosition) {
+            countGlidePosition(true);
+        } else {
+            countGlidePosition(false);
+        }
+
         setGlideServoSpeed(-glideSpeed);
 
         Main.switchMap.put("glideStop", glideStop);
     }
-
-    // private void setGlidePosition(double position) { 
-    //     boolean blackLineDetect = Main.sensorsMap.get("cobraVoltage") > 2.0;
-    //     double glideServoSpeed = Functions.TransitionFunction(position - currentGlidePosition, speedForGlideServo);
-
-    //     glideStop = false;
-
-    //     direction = position > currentGlidePosition;
-
-    //     Main.sensorsMap.put("currentGlidePos", currentGlidePosition);
-
-    //     if (position != currentGlidePosition) {
-    //         Main.motorControllerMap.put("glideServoSpeed", glideServoSpeed);
-    //         glideStop = false;
-    //     } else {
-    //         glideStop = true;
-    //     }
-
-    //     if (blackLineDetect && !blackLineFlag) {
-    //         if (direction) {
-    //             currentGlidePosition++; 
-    //         } else {
-    //             currentGlidePosition--;
-    //         }
-    //         blackLineFlag = true;
-    //     }
-
-    //     if (!blackLineDetect && blackLineFlag) {
-    //         blackLineFlag = false;
-    //     }
-
-    //     Main.switchMap.put("glideStop", glideStop);
-    // }
 }
