@@ -20,7 +20,7 @@ public class SimpleDrive implements IState{
                                        { 3, 8, 12, 18, 25, 30, 40, 53, 60, 70 } };
 
     private double[][] speedZArrayJustTurn = { { 0, 1, 5, 10, 26, 60, 75, 90 }, 
-                                               { 0, 2, 6, 12, 17, 35, 50, 70 } };
+                                               { 0, 2, 4, 10, 17, 35, 50, 70 } };
 
     private double[][] startKoefSpeedForX = { { 0.33, 0.66, 1 }, { 0.33, 0.66, 1 } };
 

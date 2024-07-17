@@ -53,6 +53,8 @@ public class DriveSonic implements IState {
 
         Main.motorControllerMap.put("speedX", 0.0);
         Main.motorControllerMap.put("speedZ", 0.0);
+
+        Main.sensorsMap.put("resetGyro", 1.0);
     }
 
     @Override

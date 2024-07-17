@@ -49,7 +49,7 @@ public class AlignSharp implements IState {
         diffX = X - Math.min(leftSharp, rightSharp);
         speedX = Functions.TransitionFunction(diffX, XArray);
 
-        if (Math.min(leftSharp, rightSharp) < 20) {
+        if (Math.min(leftSharp, rightSharp) < 30) {
             diffSharp = leftSharp - rightSharp;
             speedZ = Functions.TransitionFunction(diffSharp, degFunction);
         } else {
