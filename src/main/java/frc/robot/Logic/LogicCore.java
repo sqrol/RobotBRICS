@@ -96,7 +96,7 @@ public class LogicCore {
                 arrayWithLogic.addAll(getFruitsForExport(zoneNum));
             }
             if (!arrayWithLogic.isEmpty() && autonomousMode) {
-                arrayWithLogic.add("MOVE_IN_" + getLastCheckpoint() + "_TO_FINISH");
+                arrayWithLogic.add("MOVE_FROM_" + getLastCheckpoint() + "_TO_FINISH");
             } else {
                 arrayWithLogic.add("END");
             }
@@ -338,24 +338,24 @@ public class LogicCore {
                 String bestWayForCheck = choosingBestZoneForCheck(currentZoneName, zoneName);
 
                 if (firstCall) { // Первый запуск перемещение с зоны страта в первую назначенную зону
-                    outSubPathForDelivery.add("MOV_IN_START_TO_" + choosingBestZoneForCheck("START", zoneName));
-                    outSubPathForDelivery.add("MOV_IN_" + choosingBestZoneForCheck("START", zoneName) +"_TO_" + currentZoneArea);
+                    outSubPathForDelivery.add("MOVE_FROM_START_TO_" + choosingBestZoneForCheck("START", zoneName));
+                    outSubPathForDelivery.add("MOVE_FROM_" + choosingBestZoneForCheck("START", zoneName) +"_TO_" + currentZoneArea);
                     firstCall = false;
                 }
 
                 if (!currentZoneArea.equals(lastCurrentZoneArea)) {
                     if (firstCallForSubPath) {
-                        outSubPathForDelivery.add("MOV_IN_" + getLastCheckpoint() + "_TO_" + currentZoneArea);
+                        outSubPathForDelivery.add("MOVE_FROM_" + getLastCheckpoint() + "_TO_" + currentZoneArea);
                     }
                 }
 
                 outSubPathForDelivery.add(currentGrabPos);
 //                outSubPathForDelivery.add("MOV_IN_" + currentZoneArea + "_TO_" + bestWayForCheck);
-                outSubPathForDelivery.add("MOV_IN_" + currentZoneArea + "_TO_" + containersForFruits.get(currentFruit));
+                outSubPathForDelivery.add("MOVE_FROM_" + currentZoneArea + "_TO_" + containersForFruits.get(currentFruit));
                 outSubPathForDelivery.add("RESET_FRUIT");
 
                 if (CheckingLastElement(allFindFruits, i) && autonomousMode) { // Смотрим это последний фрукт для этой зоны или нет
-                    outSubPathForDelivery.add("MOV_IN_" + containersForFruits.get(currentFruit) + "_TO_" + bestWayForCheck);
+                    outSubPathForDelivery.add("MOVE_FROM_" + containersForFruits.get(currentFruit) + "_TO_" + bestWayForCheck);
                     setLastCheckpoint(bestWayForCheck);
                 }
 
@@ -372,7 +372,7 @@ public class LogicCore {
      */
     private String choosingBestZoneForCheck(String currentZoneName, String zoneName) {
         String out = "";
-        if (zoneName.equals("FRIST")) {
+        if (zoneName.equals("FIRST")) {
             switch (currentZoneName) {
                 case "LZ":
                     out = "CH1";
@@ -465,7 +465,7 @@ public class LogicCore {
      * Получение название зоны по номеру
      */
     private String getZoneName(Integer zoneNum) {
-        return zoneNum == 1 ? "FRIST" : zoneNum == 2 ? "SECOND" : zoneNum== 3 ? "THIRD" : "none";
+        return zoneNum == 1 ? "FIRST" : zoneNum == 2 ? "SECOND" : zoneNum== 3 ? "THIRD" : "none";
     }
 
     /**

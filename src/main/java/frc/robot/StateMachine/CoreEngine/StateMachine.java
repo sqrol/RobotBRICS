@@ -19,9 +19,21 @@ public class StateMachine {
 
     public void initStates() { 
         states.add(new StartPos());
-        states.add(new SimpleDrive2(90, true));
-        states.add(new SimpleDrive2(90, true));
-        // states.add(new Transition());
+
+        // states.add(new SimpleDrive(0, 90));
+        // states.add(new DriveSonic(68));
+        // states.add(new SimpleDrive(0, 90));
+        // states.add(new AlignSharp(14));
+        // states.add(new SimpleDrive(0, -90));
+        // states.add(new DriveSonic(10));
+        
+        states.add(new DriveSonic(60));
+        states.add(new SimpleDrive(0, -90));
+        states.add(new DriveSonic(53 ));
+        states.add(new SimpleDrive(0, 90));
+        states.add(new AlignSharp(23));
+        states.add(new SimpleDrive(0, 90));
+
         states.add(new End());
     }
 

@@ -75,7 +75,7 @@ public class SimpleDrive implements IState{
 
     @Override
     public void finilize() {   
-        Main.sensorsMap.put("resetGyro", 1.0);
+        // Main.sensorsMap.put("resetGyro", 1.0);
     }
 
     @Override
