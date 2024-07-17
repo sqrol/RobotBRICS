@@ -19,9 +19,8 @@ public class StateMachine {
 
     public void initStates() { 
         states.add(new StartPos());
-        states.add(new SimpleDrive2(90, true));
-        states.add(new SimpleDrive2(90, true));
-        // states.add(new Transition());
+        states.add(new SetGlidePosition(15.0));
+        states.add(new SetGlidePosition(0.0));
         states.add(new End());
     }
 
