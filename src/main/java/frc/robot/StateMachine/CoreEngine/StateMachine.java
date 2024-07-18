@@ -20,14 +20,7 @@ public class StateMachine {
     public void initStates() { 
         states.add(new StartPos());
 
-        states.add(new AlignSharp(14));
-
-        states.add(new SimpleDrive(0, 90));
-        states.add(new DriveSonic(80));
-        states.add(new SimpleDrive(0, 90));
-        states.add(new AlignSharp(14));
-        states.add(new SimpleDrive(0, -90));
-        states.add(new DriveSonic(82));
+        states.add(new AutoGrab2());
 
         states.add(new End());
     }

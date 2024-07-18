@@ -15,6 +15,7 @@ public final class Main {
   public static HashMap<String, Double> motorControllerMap = new HashMap<String, Double>();
   public static HashMap<String, Double> sensorsMap = new HashMap<String, Double>();
   public static HashMap<String, Boolean> switchMap = new HashMap<String, Boolean>();
+  public static HashMap<String, Double> camMap = new HashMap<String, Double>();
 
   public static TreeTraverse traverse = new TreeTraverse();
   
