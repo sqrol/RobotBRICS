@@ -20,8 +20,6 @@ public class StateMachine {
     public void initStates() { 
         states.add(new StartPos());
 
-        states.add(new AutoGrab2());
-
         states.add(new End());
     }
 

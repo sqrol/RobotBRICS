@@ -92,8 +92,8 @@ public class Robot extends TimedRobot {
 
     Main.sensorsMap.put("targetGlidePos", 0.0);
 
-    Main.motorControllerMap.put("targetLiftPos", 0.0);
-    Main.motorControllerMap.put("currentLiftPos", 0.0);
+    Main.motorControllerMap.put("targetLiftPos", 0.0); // Строка 125
+    Main.motorControllerMap.put("currentLiftPos", 0.0); // Строка 124
     
     Main.motorControllerMap.put("targetRotateDegree", 0.0);
     Main.motorControllerMap.put("currentRotateDegree", 0.0);
@@ -149,6 +149,8 @@ public class Robot extends TimedRobot {
     Main.camMap.put("currentCenterX", 0.0);
     Main.camMap.put("currentCenterY", 0.0);
     Main.camMap.put("glideMoveMode", 0.0);
+
+    Main.camMap.put("glideObjectFound", 0.0);
 
   }
 

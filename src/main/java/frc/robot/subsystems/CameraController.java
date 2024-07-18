@@ -40,7 +40,6 @@ public class CameraController implements Runnable {
         camera = CameraServer.getInstance().startAutomaticCapture(); 
         camera.setResolution(640, 480); 
         camera.setFPS(30); 
-        // settingCameraParameters();
 
         cvSink = CameraServer.getInstance().getVideo(camera); 
 
@@ -55,6 +54,12 @@ public class CameraController implements Runnable {
 
                 if (cvSink.grabFrame(source) == 0) {
                     continue;
+                }
+
+                if (Main.sensorsMap.get("camTask") == 0) {
+                    Main.camMap.put("targetFound", 0.0);
+                    Main.camMap.put("currentCenterX", 0.0);
+                    Main.camMap.put("currentCenterY", 0.0);
                 }
 
                 if (Main.sensorsMap.get("camTask") == 1) {
@@ -121,7 +126,10 @@ public class CameraController implements Runnable {
         lowestObjectCordinate = findLowestObject(mask, currentCordinate);
 
         if (lowestObjectCordinate.x != 0 && lowestObjectCordinate.y != 0) {
-            
+            Main.camMap.put("targetFound", 1.0);
+
+            Main.camMap.put("currentCenterX", lowestObjectCordinate.x);
+            Main.camMap.put("currentCenterY", lowestObjectCordinate.y);
         }
 
         outHSV.putFrame(mask);
