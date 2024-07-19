@@ -1,4 +1,4 @@
-package frc.robot.StateMachine.States;
+package frc.robot.StateMachine.StatesOMS;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Main;

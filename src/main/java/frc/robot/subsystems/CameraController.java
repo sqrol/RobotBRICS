@@ -130,6 +130,11 @@ public class CameraController implements Runnable {
 
             Main.camMap.put("currentCenterX", lowestObjectCordinate.x);
             Main.camMap.put("currentCenterY", lowestObjectCordinate.y);
+        } else {
+            Main.camMap.put("targetFound", 0.0);
+
+            Main.camMap.put("currentCenterX", 0.0);
+            Main.camMap.put("currentCenterY", 0.0);
         }
 
         outHSV.putFrame(mask);
@@ -163,6 +168,7 @@ public class CameraController implements Runnable {
             Point center = new Point(lowestX, lowestY);
     
             Imgproc.circle(inImage, center, 5, new Scalar(255, 0, 0), -1);
+
             SmartDashboard.putNumber("Lowest Object Center X", lowestX);
             SmartDashboard.putNumber("Lowest Object Center Y", lowestY);
     

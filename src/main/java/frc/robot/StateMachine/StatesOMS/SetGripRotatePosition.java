@@ -1,4 +1,4 @@
-package frc.robot.StateMachine.States;
+package frc.robot.StateMachine.StatesOMS;
 
 import frc.robot.Main;
 import frc.robot.StateMachine.CoreEngine.IState;

@@ -8,17 +8,12 @@ import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.studica.frc.Cobra;
 
 import frc.robot.Constants;
 import frc.robot.Main;
 import frc.robot.Filters.*;
-import frc.robot.Maths.Common.Functions;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class SensorController implements Runnable{
 

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.StateMachine.States.*;
+import frc.robot.StateMachine.StatesAutoOMS.*;
+import frc.robot.StateMachine.StatesOMS.*;
 
 public class StateMachine { 
     private static double startTime = 0;;
@@ -19,7 +21,7 @@ public class StateMachine {
 
     public void initStates() { 
         states.add(new StartPos());
-
+        states.add(new AutoStart());
         states.add(new End());
     }
 
