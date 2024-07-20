@@ -59,7 +59,7 @@ public class AutoGlide implements IState {
 
         SmartDashboard.putBoolean("glideStop", glideStop);
 
-        // if (Main.sensorsMap.get("currentGlidePos") < -2 && glideServoSpeed > 0) { // Тут смотрим где объект если он слишком близко то отъезжаем колесами
+        // if (Main.sensorsMap.get("currentGlidePos") < -2 && glideServoSpeed < 0) { // Тут смотрим где объект если он слишком близко то отъезжаем колесами
         //     Main.motorControllerMap.put("setGlideSpeed", glideServoSpeed);
         //     Main.motorControllerMap.put("speedX", 0.0);
         // } else {
@@ -68,7 +68,7 @@ public class AutoGlide implements IState {
         // }
         
 
-        // Если переехали лимит выдвижного механизма
+        // Если переехали лимит выдвижного механизма или уже долго все это происходит
         if (Main.sensorsMap.get("currentGlidePos") >= 25 || StateMachine.iterationTime > 15) {
             newStates.add(new AutoEnd()); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);

@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
+
+import frc.robot.MachineVision.ColorRange;
 import frc.robot.MachineVision.Viscad;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.CvSink;
@@ -69,7 +71,7 @@ public class CameraController implements Runnable {
                 }
 
                 if (Main.sensorsMap.get("camTask") == 2) {
-                    glideSearchForGrab(source, 80);
+                    glideSearchForGrab(source, 80); // Тут мы обозначаем параметры обрезаемого квадрата по середине картинки
                 }
 
                 Main.sensorsMap.put("updateTimeCamera", cameraUpdateTime);
@@ -92,31 +94,50 @@ public class CameraController implements Runnable {
     }
 
     // Бля я хуй знает как это правильно написать(
-    private static List<Point> setPointsForColors(int colorIndex) {
-        List<Point> outPoints = new ArrayList<>();
+    private static ColorRange setPointsForColors(int colorIndex) {
+        ColorRange outRange = new ColorRange();
 
         switch (colorIndex) 
         {
             case 1: // Фиолетовый (Гнилые фрукты)
-                outPoints.add(new Point(0, 180));
-                outPoints.add(new Point(150, 255));
-                outPoints.add(new Point(80, 255));
+                outRange = new ColorRange(new Point(0, 180), new Point(150, 255), new Point(80, 255));
                 break;
             case 2: // Красный (Больше красное и маленькое яблоко)
-                outPoints.add(new Point(0, 180));
-                outPoints.add(new Point(150, 255));
-                outPoints.add(new Point(80, 255));
+                outRange = new ColorRange(new Point(0, 180), new Point(150, 255), new Point(80, 255));
                 break;
             case 3: // Желтый (Желтая груша)
-                outPoints.add(new Point(0, 180));
-                outPoints.add(new Point(150, 255));
-                outPoints.add(new Point(80, 255));
+                outRange = new ColorRange(new Point(0, 180), new Point(150, 255), new Point(80, 255));
                 break;
             default:
                 break;
         }
 
-        return outPoints;
+        return outRange;
+    }
+
+    // Это нужно удалить
+    private void testing(Mat source, int colorIndex) {
+
+        ColorRange currentColor = setPointsForColors(colorIndex);
+
+        // Снижение разрешения изображения
+        Mat resizedSource = new Mat();
+        Imgproc.resize(source, resizedSource, new Size(source.cols() / 3, source.rows() / 3));
+    
+        Mat blur = Viscad.Blur(resizedSource, 4);
+        Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
+        Mat mask = createMask(hsvImage, currentColor);
+
+        outGlide.putFrame(mask);
+
+        // Освобождение памяти
+        releaseMats(resizedSource, blur, hsvImage, mask);
+    }
+
+    private static Mat createMask(Mat hsvImage, ColorRange colorRange) {
+        Mat mask = new Mat();
+        mask = Viscad.Threshold(hsvImage, colorRange.getHue(), colorRange.getSaturation(), colorRange.getValue());
+        return mask;
     }
 
     private void glideSearchForGrab(Mat source, int size) {
