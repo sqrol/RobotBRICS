@@ -21,7 +21,7 @@ public class CameraController implements Runnable {
 
     private static UsbCamera camera;
     private CvSink cvSink;
-    private static CvSource outStream, outHSV, outRect;
+    private static CvSource outStream, outHSV, outRect, outGlide;
 
     private String currentColor = "";
 
@@ -46,6 +46,8 @@ public class CameraController implements Runnable {
         outStream = CameraServer.getInstance().putVideo("OutImage", 640, 480); 
         outHSV = CameraServer.getInstance().putVideo("outHSV", 640, 480); 
         outRect = CameraServer.getInstance().putVideo("outRect", 640, 480); 
+        outGlide = CameraServer.getInstance().putVideo("outGlide", 640, 480); 
+        settingCameraParameters(); // На пробу)
 
         while (true) {
             double startTime = Timer.getFPGATimestamp();
@@ -67,7 +69,7 @@ public class CameraController implements Runnable {
                 }
 
                 if (Main.sensorsMap.get("camTask") == 2) {
-                    // testForAutoGrab(source);
+                    glideSearchForGrab(source, 80);
                 }
 
                 Main.sensorsMap.put("updateTimeCamera", cameraUpdateTime);
@@ -82,10 +84,77 @@ public class CameraController implements Runnable {
     }
 
     private static void settingCameraParameters() {
-        camera.setWhiteBalanceAuto(); // Устанавливается баланс белого
-        camera.setExposureManual(100);; // Устанавливается яркость камеры
-        camera.setBrightness(1);
+        // camera.setWhiteBalanceAuto(); // Устанавливается баланс белого
+        // camera.setExposureManual(100);; // Устанавливается яркость камеры
+        // camera.setBrightness(1);
+        camera.getProperty("focus_auto").set(1);
+        camera.getProperty("focus_auto").set(0);
     }
+
+    // Бля я хуй знает как это правильно написать(
+    private static List<Point> setPointsForColors(int colorIndex) {
+        List<Point> outPoints = new ArrayList<>();
+
+        switch (colorIndex) 
+        {
+            case 1: // Фиолетовый (Гнилые фрукты)
+                outPoints.add(new Point(0, 180));
+                outPoints.add(new Point(150, 255));
+                outPoints.add(new Point(80, 255));
+                break;
+            case 2: // Красный (Больше красное и маленькое яблоко)
+                outPoints.add(new Point(0, 180));
+                outPoints.add(new Point(150, 255));
+                outPoints.add(new Point(80, 255));
+                break;
+            case 3: // Желтый (Желтая груша)
+                outPoints.add(new Point(0, 180));
+                outPoints.add(new Point(150, 255));
+                outPoints.add(new Point(80, 255));
+                break;
+            default:
+                break;
+        }
+
+        return outPoints;
+    }
+
+    private void glideSearchForGrab(Mat source, int size) {
+        List<Rect> currentCordinate = new ArrayList<>();
+
+        Point HueBound = new Point(0, 180);
+        Point SaturationBound = new Point(150, 255);
+        Point ValueBound = new Point(80, 255);
+
+        // Снижение разрешения изображения
+        Mat resizedSource = new Mat();
+        Imgproc.resize(source, resizedSource, new Size(source.cols() / 3, source.rows() / 3));
+    
+        Mat blur = Viscad.Blur(resizedSource, 4);
+        Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
+        Mat mask = Viscad.Threshold(hsvImage, HueBound, SaturationBound, ValueBound);
+
+        Mat square = cropSquareFromCenter(mask, size);
+
+        Mat outPA = new Mat();
+        currentCordinate = Viscad.ParticleAnalysis(square, outPA);
+
+        if (!currentCordinate.isEmpty()) {
+            Rect firstRect = currentCordinate.get(0);
+            Main.camMap.put("currentCenterY", (double) firstRect.y);
+        } else {
+            Main.camMap.put("currentCenterY", 0.0);
+        }
+
+        outRect.putFrame(square);
+
+        outGlide.putFrame(mask);
+
+        // Освобождение памяти
+        releaseMats(resizedSource, blur, hsvImage, mask, outPA, square);
+    }
+
+
 
     private void testForAutoGrab(Mat source) {
 
@@ -101,9 +170,9 @@ public class CameraController implements Runnable {
         List<Rect> currentCordinate = new ArrayList<>();
         Point lowestObjectCordinate = new Point();
 
-        Point HueBound = new Point(0, 255);
-        Point SaturationBound = new Point(0, 255);
-        Point ValueBound = new Point(100, 255);
+        Point HueBound = new Point(0, 180);
+        Point SaturationBound = new Point(150, 255);
+        Point ValueBound = new Point(80, 255);
 
         // Снижение разрешения изображения
         Mat resizedSource = new Mat();
@@ -119,6 +188,8 @@ public class CameraController implements Runnable {
         // Mat square = cropSquareFromCenter(mask, 80);
         // outRect.putFrame(square);
 
+        outHSV.putFrame(mask);
+
         if (currentCordinate.isEmpty()) {
             return;
         }
@@ -129,7 +200,8 @@ public class CameraController implements Runnable {
             Main.camMap.put("targetFound", 1.0);
 
             Main.camMap.put("currentCenterX", lowestObjectCordinate.x);
-            Main.camMap.put("currentCenterY", lowestObjectCordinate.y);
+            
+            
         } else {
             Main.camMap.put("targetFound", 0.0);
 
@@ -137,7 +209,7 @@ public class CameraController implements Runnable {
             Main.camMap.put("currentCenterY", 0.0);
         }
 
-        outHSV.putFrame(mask);
+        
     
         // Освобождение памяти
         releaseMats(resizedSource, blur, hsvImage, mask, outPA);

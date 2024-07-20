@@ -148,12 +148,16 @@ public class Robot extends TimedRobot {
     Main.motorControllerMap.put("glideMode", 0.0);
     Main.motorControllerMap.put("setGlideSpeed", 0.0);
 
+    Main.motorControllerMap.put("initLift", 0.0);
+
     Main.camMap.put("targetFound", 0.0);
     Main.camMap.put("currentCenterX", 0.0);
     Main.camMap.put("currentCenterY", 0.0);
     Main.camMap.put("glideMoveMode", 0.0);
 
     Main.camMap.put("glideObjectFound", 0.0);
+
+    Main.motorControllerMap.put("servoGrabAngle", 0.0);
 
     Main.motorControllerMap.put("lastGlidePosition", 0.0);
     Main.motorControllerMap.put("currentRotatePosition", 0.0);

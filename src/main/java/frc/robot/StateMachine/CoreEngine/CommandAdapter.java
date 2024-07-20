@@ -16,7 +16,7 @@ public class CommandAdapter extends CommandBase { // outter class for CommandsBa
     @Override
     public void execute() {
         stateMachine.executeStates();
-        stateMachineOMS.executeStates();
+        // stateMachineOMS.executeStates();
     }
 
     @Override
@@ -26,6 +26,6 @@ public class CommandAdapter extends CommandBase { // outter class for CommandsBa
 
     @Override
     public boolean isFinished() {
-        return stateMachine.isProgramFinished() && stateMachineOMS.isProgramFinished();
+        return stateMachine.isProgramFinished();
     }
 }

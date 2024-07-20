@@ -51,6 +51,8 @@ public class MotorController implements Runnable {
     
     private static boolean liftStop, rotateStop = false;
 
+    private static boolean fristCall = true; 
+
     private static final double[][] arrOfpercentForLift = { { 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 }, { 0, 4, 15, 30, 40, 50, 60, 70, 80, 90, 100 } };
 
     private static final double[][] arrOfPosForLift = { { 0, 4, 15, 30, 40, 50, 60, 70, 80, 90, 100 }, { 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 } };
@@ -89,6 +91,14 @@ public class MotorController implements Runnable {
             double startTime = Timer.getFPGATimestamp();
             try {
 
+                if (fristCall) {
+                    resetEncRight();
+                    resetEncLeft();
+                    resetEncRotate();
+                    resetEncLift();
+                    fristCall = false;
+                }
+
                 if(Main.switchMap.get("EMSButton")) {
                     setRightMotorSpeed(0.0);
                     setLeftMotorSpeed(0.0);
@@ -103,13 +113,15 @@ public class MotorController implements Runnable {
                     Main.motorControllerMap.get("speedZ"),  Main.motorControllerMap.get("useOneSide"));
 
                     setRotateMotorSpeed(Main.motorControllerMap.get("rotateSpeed"));
+
+                    setLiftPosition(Main.motorControllerMap.get("targetLiftPos"), Main.motorControllerMap.get("initLift"));
+
                     setLiftMotorSpeed(Main.motorControllerMap.get("liftSpeed"));
 
                     setServoGrab(Main.motorControllerMap.get("servoGrab"));
                     setServoGripRotate(Main.motorControllerMap.get("servoGripRotate"));   
                     
                     setRotatePosition(Main.motorControllerMap.get("targetRotateDegree"));
-                    setLiftPosition(Main.motorControllerMap.get("targetLiftPos"));
 
                     if (Main.motorControllerMap.get("glideMode") == 0.0) {
                         setGlidePosition(Main.sensorsMap.get("targetGlidePos"));
@@ -122,7 +134,7 @@ public class MotorController implements Runnable {
 
                 encodersValueResetHandler(); 
 
-                Main.motorControllerMap.put("lastGlidePosition", currentGlidePosition);
+                Main.motorControllerMap.put("currentGlidePos", currentGlidePosition);
                 Main.motorControllerMap.put("currentRotatePosition", currentRotatePosition);
 
                 Main.motorControllerMap.put("servoGrabAngle", getServoGrabAngle());
@@ -216,36 +228,48 @@ public class MotorController implements Runnable {
         encLiftResetValue = ENC_LIFT.getEncoderDistance();
     }
 
-    private void setLiftPosition(double pos) {
-        double currentPos = -Main.motorControllerMap.get("encLift");
-        double encPos = Functions.TransitionFunction(pos, arrOfPosForLift);
-        double speed = Functions.TransitionFunction(currentPos - encPos, speedForLift);
-        liftStop = Functions.BooleanInRange(currentPos - encPos, -0.8, 0.8);
+    private void setLiftPosition(double pos, double init) {
 
-        SmartDashboard.putNumber("currentPos - encPos", currentPos - encPos);
-
-        if (Main.switchMap.get("limitSwitch") && speed > 0) {
-            Main.motorControllerMap.put("liftSpeed", 0.0);
-            Main.motorControllerMap.put("resetEncLift", 1.0);
-            currentRotatePosition = pos;
-            liftStop = true;
-        } else if (speed < 0 && currentPos < -3000) {
-            Main.motorControllerMap.put("liftSpeed", 0.0);
-            currentRotatePosition = pos;
-            liftStop = true;
-        } else if (liftStop && !Main.switchMap.get("limitSwitch")) {
-            Main.motorControllerMap.put("liftSpeed", 0.0);
+        if (init == 1.0) {
+            if (!Main.switchMap.get("limitSwitch")) {
+                Main.motorControllerMap.put("liftSpeed", 60.0);
+            } else {
+                Main.motorControllerMap.put("liftSpeed", 0.0);
+            }
         } else {
-            Main.motorControllerMap.put("liftSpeed", speed);
-            liftStop = false;
+            double currentPos = -Main.motorControllerMap.get("encLift");
+            double encPos = Functions.TransitionFunction(pos, arrOfPosForLift);
+            double speed = Functions.TransitionFunction(currentPos - encPos, speedForLift);
+            liftStop = Functions.BooleanInRange(currentPos - encPos, -0.8, 0.8);
+    
+            SmartDashboard.putNumber("currentPos - encPos", currentPos - encPos);
+    
+            if (Main.switchMap.get("limitSwitch") && speed > 0) {
+                Main.motorControllerMap.put("liftSpeed", 0.0);
+                Main.motorControllerMap.put("resetEncLift", 1.0);
+                currentRotatePosition = pos;
+                liftStop = true;
+            } else if (speed < 0 && currentPos < -3000) {
+                Main.motorControllerMap.put("liftSpeed", 0.0);
+                currentRotatePosition = pos;
+                liftStop = true;
+            } else if (liftStop && !Main.switchMap.get("limitSwitch")) {
+                Main.motorControllerMap.put("liftSpeed", 0.0);
+            } else {
+                Main.motorControllerMap.put("liftSpeed", speed);
+                liftStop = false;
+            }
+    
+            Main.switchMap.put("liftStop", liftStop);
         }
 
-        Main.switchMap.put("liftStop", liftStop);
     }
 
     private void setRotatePosition(double degree) {
         
         double currentRotatePos = -Main.motorControllerMap.get("encRotate");
+
+        SmartDashboard.putNumber("encRotate", currentRotatePos);
         
         double rotateDegree = Functions.TransitionFunction(currentRotatePos, arrOfPosForRotate);
         double speed = Functions.TransitionFunction(rotateDegree - degree, speedForRotate);
@@ -410,7 +434,12 @@ public class MotorController implements Runnable {
 
     private void setGlideSpeed(double inSpeed) {
 
-        if (inSpeed > 0) {
+        if (inSpeed == 0.0) {
+            SERVO_GLIDE.setDisabled();
+            return; 
+        }
+
+        if (inSpeed > 0.0) {
             countGlidePosition(true);
         } else {
             countGlidePosition(false);

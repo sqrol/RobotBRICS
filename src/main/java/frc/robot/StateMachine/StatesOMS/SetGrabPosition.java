@@ -12,12 +12,18 @@ public class SetGrabPosition implements IState{
     private boolean smooth, endMovement = false;
     private double lastUpdateTime = 0;
 
+    private int index = 0; 
+
     private static final double STEP = 1.0;
 
     public SetGrabPosition(String fruit, boolean smooth) {
         this.fruit = fruit;
         this.smooth = smooth;
         this.lastUpdateTime = Timer.getFPGATimestamp();
+    }
+
+    public SetGrabPosition(int index) {
+        this.index = index;
     }
 
     @Override

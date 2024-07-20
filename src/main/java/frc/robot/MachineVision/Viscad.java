@@ -166,6 +166,48 @@ public class Viscad {
     
         return sortedList;
     }
+
+    public static List<Point> ParticleAnalysisForCenter(Mat src, Mat dst) {
+        Mat origCopy = src.clone();
+    
+        List<MatOfPoint> contours = new ArrayList<>();
+        Mat hierarchy = new Mat();
+    
+        Imgproc.findContours(origCopy, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
+    
+        if (contours.isEmpty()) {
+            origCopy.release();
+            hierarchy.release();
+            return Collections.emptyList();
+        }
+    
+        List<Rect> listOfBoxes = new ArrayList<>();
+        List<Double> listOfAreas = new ArrayList<>();
+        List<Point> listOfCenters = new ArrayList<>();
+    
+        for (MatOfPoint cont : contours) {
+            Rect bound = Imgproc.boundingRect(cont);
+            listOfBoxes.add(bound);
+            listOfAreas.add(Imgproc.contourArea(cont));
+            Point center = new Point(bound.x + bound.width / 2.0, bound.y + bound.height / 2.0);
+            listOfCenters.add(center);
+        }
+    
+        ArrayList<Point> sortedCenters = new ArrayList<>(listOfCenters);
+        if (listOfBoxes.size() > 1) {
+            Collections.sort(sortedCenters, (left, right) -> 
+                Double.compare(
+                    listOfAreas.get(listOfCenters.indexOf(right)), 
+                    listOfAreas.get(listOfCenters.indexOf(left))
+                )
+            );
+        }
+    
+        origCopy.release();
+        hierarchy.release();
+    
+        return sortedCenters;
+    }
   
     public static List<Rect> ParticleAnalysis(Mat src)
     {

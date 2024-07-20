@@ -7,6 +7,7 @@ import frc.robot.Maths.Common.Functions;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Main;
 
 public class AutoRotate implements IState {
@@ -20,7 +21,7 @@ public class AutoRotate implements IState {
     private Boolean statesEnd = false;
     private boolean rotateStop = false; 
     
-    private static final double[][] arrForLift = { { 0, 290, 640} , { -47, 0, 47} }; 
+    private static final double[][] arrForLift = { { 0, 106, 213} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
 
     public AutoRotate() {
 
@@ -28,22 +29,27 @@ public class AutoRotate implements IState {
 
     @Override
     public void initialize() {
-        Main.sensorsMap.put("camTask", 1.0);
+        Main.motorControllerMap.put("servoGrab", 15.0);
+        Main.motorControllerMap.put("servoGripRotate", 70.0);
+
         flag = false;
         statesEnd = false;
     }
 
     @Override
     public void execute() {
-        if (Main.camMap.get("targetFound") != 0 && !flag) {
-            fruitPosX = Main.camMap.get("currentCenterX");
+        if (!flag) {
+            fruitPosX = Main.camMap.get("currentCenterX"); // Мы в AutoStart уже смотрели потому берем только координаты
+            SmartDashboard.putNumber("currentCenterX", fruitPosX);
             lastRotateDegree = Main.motorControllerMap.get("currentRotatePosition"); // Запоминаем текущую позицию поворота
-            Main.sensorsMap.put("camTask", 0.0);
+            SmartDashboard.putNumber("lastRotateDegree", lastRotateDegree);
             flag = true;
         }
 
         currentTargetDegree = Functions.TransitionFunction(fruitPosX, arrForLift);
-        Main.motorControllerMap.put("targetRotateDegree", lastRotateDegree + currentTargetDegree); // Прибавляем к текущему нужный градус
+        SmartDashboard.putNumber("currentTargetDegree", currentTargetDegree);
+        SmartDashboard.putNumber("lastRotateDegree + currentTargetDegree", currentTargetDegree - lastRotateDegree);
+        Main.motorControllerMap.put("targetRotateDegree", currentTargetDegree - lastRotateDegree); // Прибавляем к текущему нужный градус
         rotateStop = Main.switchMap.get("rotateStop") || Main.motorControllerMap.get("currentRotatePosition") > 89 || Main.motorControllerMap.get("currentRotatePosition") > -89;
 
         // Если мы долго выравниваемся по объекту то выходим
@@ -63,7 +69,7 @@ public class AutoRotate implements IState {
 
     @Override
     public void finilize() {
-        
+        Main.sensorsMap.put("camTask", 0.0);
     }
 
     @Override
