@@ -157,6 +157,8 @@ public class Robot extends TimedRobot {
 
     Main.camMap.put("glideObjectFound", 0.0);
 
+    Main.camMap.put("targetAngle", 0.0);
+
     Main.motorControllerMap.put("servoGrabAngle", 0.0);
 
     Main.motorControllerMap.put("lastGlidePosition", 0.0);
@@ -165,6 +167,8 @@ public class Robot extends TimedRobot {
   }
 
   private void sendSmartDashBoard() {
+
+    SmartDashboard.putNumber("targetAngle", Main.camMap.get("targetAngle"));
 
     SmartDashboard.putNumber("sharpRight", Main.sensorsMap.get("sharpRight"));
     SmartDashboard.putNumber("sharpLeft", Main.sensorsMap.get("sharpLeft"));

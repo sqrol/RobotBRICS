@@ -49,6 +49,7 @@ public class CameraController implements Runnable {
         outHSV = CameraServer.getInstance().putVideo("outHSV", 640, 480); 
         outRect = CameraServer.getInstance().putVideo("outRect", 640, 480); 
         outGlide = CameraServer.getInstance().putVideo("outGlide", 640, 480); 
+
         settingCameraParameters(); // На пробу)
 
         while (true) {
@@ -134,6 +135,24 @@ public class CameraController implements Runnable {
         releaseMats(resizedSource, blur, hsvImage, mask);
     }
 
+    private void colorSearching(Mat source, int colorIndex) {
+
+        ColorRange currentColor = setPointsForColors(colorIndex);
+
+        // Снижение разрешения изображения
+        Mat resizedSource = new Mat();
+        Imgproc.resize(source, resizedSource, new Size(source.cols() / 3, source.rows() / 3));
+    
+        Mat blur = Viscad.Blur(resizedSource, 4);
+        Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
+        Mat mask = createMask(hsvImage, currentColor);
+        
+        outGlide.putFrame(mask);
+
+        // Освобождение памяти
+        releaseMats(resizedSource, blur, hsvImage, mask);
+    }
+
     private static Mat createMask(Mat hsvImage, ColorRange colorRange) {
         Mat mask = new Mat();
         mask = Viscad.Threshold(hsvImage, colorRange.getHue(), colorRange.getSaturation(), colorRange.getValue());
@@ -190,10 +209,11 @@ public class CameraController implements Runnable {
 
         List<Rect> currentCordinate = new ArrayList<>();
         Point lowestObjectCordinate = new Point();
+        Point centreSearch = new Point();
 
-        Point HueBound = new Point(0, 180);
-        Point SaturationBound = new Point(150, 255);
-        Point ValueBound = new Point(80, 255);
+        Point HueBound = new Point(0, 255);
+        Point SaturationBound = new Point(100, 255);
+        Point ValueBound = new Point(100, 255);
 
         // Снижение разрешения изображения
         Mat resizedSource = new Mat();
@@ -203,26 +223,34 @@ public class CameraController implements Runnable {
         Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
         Mat mask = Viscad.Threshold(hsvImage, HueBound, SaturationBound, ValueBound);
 
+        Mat eroded = Viscad.Erode(mask, 1);
+        Mat dilated = Viscad.Dilate(eroded, 1);
+
         Mat outPA = new Mat();
         currentCordinate = Viscad.ParticleAnalysis(mask, outPA);
 
-        // Mat square = cropSquareFromCenter(mask, 80);
-        // outRect.putFrame(square);
+        centreSearch = Viscad.detectCenter(mask);
 
-        outHSV.putFrame(mask);
+        outHSV.putFrame(dilated);
 
-        if (currentCordinate.isEmpty()) {
+        SmartDashboard.putNumber("imageWidth/2", mask.cols() / 2);
+
+        if (centreSearch.x == 0 && centreSearch.y == 0) {
+            releaseMats(resizedSource, blur, hsvImage, mask, outPA, eroded, dilated);
             return;
         }
 
+        SmartDashboard.putNumber("centreSearch.y", centreSearch.y);
+
         lowestObjectCordinate = findLowestObject(mask, currentCordinate);
+
+        rotateToObject(lowestObjectCordinate  , mask.cols(), mask.rows());
 
         if (lowestObjectCordinate.x != 0 && lowestObjectCordinate.y != 0) {
             Main.camMap.put("targetFound", 1.0);
 
             Main.camMap.put("currentCenterX", lowestObjectCordinate.x);
-            
-            
+            Main.camMap.put("currentCenterY", lowestObjectCordinate.y);
         } else {
             Main.camMap.put("targetFound", 0.0);
 
@@ -230,11 +258,28 @@ public class CameraController implements Runnable {
             Main.camMap.put("currentCenterY", 0.0);
         }
 
-        
-    
         // Освобождение памяти
-        releaseMats(resizedSource, blur, hsvImage, mask, outPA);
+        releaseMats(resizedSource, blur, hsvImage, mask, outPA, eroded, dilated);
     }
+
+    private static void rotateToObject(Point target, int imageWidth, int imageHeight) {
+
+    }
+
+    // private static void rotateToObject(Point target, int imageWidth, int imageHeight) {
+    //     if (target.y != 0) {
+    //         Point center = new Point(imageWidth / 2, imageHeight / 2); 
+    //         double dx = target.x - center.x;
+        
+    //         double angle = Math.atan2(0, dx) * 180 / Math.PI;
+        
+    //         SmartDashboard.putNumber("angle123", angle);
+    //         Main.camMap.put("targetAngle", angle);
+    //     } else {
+    //         SmartDashboard.putNumber("angle123", 0);
+    //         Main.camMap.put("targetAngle", 0.0);
+    //     }
+    // }
 
     private static Point findLowestObject(Mat inImage, List<Rect> currentCoordinate) {
         Rect lowestObject = null;

@@ -20,6 +20,7 @@ public class AutoRotate implements IState {
     private double fruitPosX = 0;
     private Boolean statesEnd = false;
     private boolean rotateStop = false; 
+    private double targetAngle = 0;
     
     private static final double[][] arrForLift = { { 0, 106, 213} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
 
@@ -53,7 +54,7 @@ public class AutoRotate implements IState {
         rotateStop = Main.switchMap.get("rotateStop") || Main.motorControllerMap.get("currentRotatePosition") > 89 || Main.motorControllerMap.get("currentRotatePosition") > -89;
 
         // Если мы долго выравниваемся по объекту то выходим
-        if (StateMachine.iterationTime > 10) {
+        if (StateMachine.iterationTime > 10 || Main.motorControllerMap.get("currentRotatePosition") < 90 && Main.motorControllerMap.get("currentRotatePosition") > -90) {
             newStates.add(new AutoEnd()); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             statesEnd = true;

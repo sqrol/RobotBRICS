@@ -319,4 +319,45 @@ public class Viscad {
         }
         return newContours;
     }
+
+    public static Point detectCenter(Mat mask) {
+        // Поиск контуров на маске
+        List<MatOfPoint> contours = new ArrayList<>();
+        Mat hierarchy = new Mat();
+        Imgproc.findContours(mask, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+    
+        if (!contours.isEmpty()) {
+            MatOfPoint lowestContour = contours.get(0);
+            double maxY = getLowestPoint(lowestContour).y;
+    
+            // Находим контур с самой нижней координатой y
+            for (MatOfPoint contour : contours) {
+                Point lowestPoint = getLowestPoint(contour);
+                if (lowestPoint.y > maxY) {
+                    maxY = lowestPoint.y;
+                    lowestContour = contour;
+                }
+            }
+    
+            // Вычисляем центр самого нижнего объекта
+            Rect boundingRect = Imgproc.boundingRect(lowestContour);
+            Point center = new Point(boundingRect.x + boundingRect.width / 2, boundingRect.y + boundingRect.height / 2);
+    
+            return center;
+        }
+    
+        hierarchy.release();
+        return null;
+    }
+    
+    private static Point getLowestPoint(MatOfPoint contour) {
+        Point[] points = contour.toArray();
+        Point lowestPoint = points[0];
+        for (Point point : points) {
+            if (point.y > lowestPoint.y) {
+                lowestPoint = point;
+            }
+        }
+        return lowestPoint;
+    }
 }
