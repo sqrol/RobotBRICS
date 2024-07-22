@@ -21,16 +21,8 @@ public class StateMachine {
 
     public void initStates() { 
         states.add(new StartPos());
-        
-        states.add(new SimpleDrive(-15, 0));
-        states.add(new SimpleDrive(0, -90));
-        states.add(new DriveSonic(68));
-        states.add(new SimpleDrive(0, 90));
-        states.add(new AlignSharp(14));
-        states.add(new SimpleDrive(0, -90));
-        states.add(new DriveSonic(10));
-        states.add(new Reset());
 
+        states.add(new AutoStart()); 
         states.add(new End());
     }
 

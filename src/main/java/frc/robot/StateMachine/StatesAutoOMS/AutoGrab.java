@@ -35,17 +35,21 @@ public class AutoGrab implements IState {
         switch (index) 
         {
             case 1:
-                Main.motorControllerMap.put("targetLiftPos", 95.0);
-                if (Main.switchMap.get("liftStop")) {
+                Main.motorControllerMap.put("targetLiftPos", 85.0);
+                if (Main.switchMap.get("liftStop") && StateMachine.iterationTime > 5) {
                     index++;
                 }
                 break;
             case 2:
-                objectСaptured = smoothServoMovement(15.0, 0.01);
+                Main.motorControllerMap.put("servoGrab", 50.0);
+                if (!flag) {
+                    index++;
+                    flag = true;
+                }
                 break;
         }
 
-        if (objectСaptured) {
+        if (index == 3) {
             newStates.add(new AutoEnd()); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             statesEnd = true;

@@ -81,6 +81,11 @@ public class CameraController implements Runnable {
             } catch (Exception e) {
                 System.err.println("!!!An error occurred in CameraController: " + e.getMessage());
                 e.printStackTrace();
+                try {
+                    Thread.sleep(50); 
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt(); 
+                }
             }
             cameraUpdateTime = Timer.getFPGATimestamp() - startTime;
         }
@@ -250,7 +255,7 @@ public class CameraController implements Runnable {
             Main.camMap.put("targetFound", 1.0);
 
             Main.camMap.put("currentCenterX", lowestObjectCordinate.x);
-            Main.camMap.put("currentCenterY", lowestObjectCordinate.y);
+            // Main.camMap.put("currentCenterY", lowestObjectCordinate.y);
         } else {
             Main.camMap.put("targetFound", 0.0);
 

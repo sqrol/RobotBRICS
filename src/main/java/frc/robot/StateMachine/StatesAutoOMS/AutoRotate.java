@@ -54,7 +54,7 @@ public class AutoRotate implements IState {
         rotateStop = Main.switchMap.get("rotateStop") || Main.motorControllerMap.get("currentRotatePosition") > 89 || Main.motorControllerMap.get("currentRotatePosition") > -89;
 
         // Если мы долго выравниваемся по объекту то выходим
-        if (StateMachine.iterationTime > 10 || Main.motorControllerMap.get("currentRotatePosition") < 90 && Main.motorControllerMap.get("currentRotatePosition") > -90) {
+        if (StateMachine.iterationTime > 10 || Main.motorControllerMap.get("currentRotateDegree") > 90 && Main.motorControllerMap.get("currentRotateDegree") < -90) {
             newStates.add(new AutoEnd()); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             statesEnd = true;

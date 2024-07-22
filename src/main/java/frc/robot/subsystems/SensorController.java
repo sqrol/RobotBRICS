@@ -117,6 +117,11 @@ public class SensorController implements Runnable{
             } catch (Exception e) {
                 System.err.println("!!!An error occurred in SensorController: " + e.getMessage());
                 e.printStackTrace();
+                try {
+                    Thread.sleep(50);  
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt(); 
+                }
             }
             sensorsUpdateTime = Timer.getFPGATimestamp() - startTime;
         }

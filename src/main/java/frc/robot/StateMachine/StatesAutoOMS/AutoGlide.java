@@ -25,6 +25,7 @@ public class AutoGlide implements IState {
 
     public AutoGlide() {
         Main.sensorsMap.put("camTask", 2.0);
+        flag = false; 
     }
 
     @Override
@@ -41,7 +42,7 @@ public class AutoGlide implements IState {
         fruitPosY = Main.camMap.get("currentCenterY");
 
         if (fruitPosY == 0 && !flag) {
-            glideServoSpeed = 0.4;
+            glideServoSpeed = 0.3;
             SmartDashboard.putNumber("glideState", 1);
         } else {
             SmartDashboard.putNumber("glideState", 2);
@@ -58,18 +59,10 @@ public class AutoGlide implements IState {
         glideStop = Functions.BooleanInRange(camMiddleForGrab - fruitPosY, -2, 2);
 
         SmartDashboard.putBoolean("glideStop", glideStop);
-
-        // if (Main.sensorsMap.get("currentGlidePos") < -2 && glideServoSpeed < 0) { // Тут смотрим где объект если он слишком близко то отъезжаем колесами
-        //     Main.motorControllerMap.put("setGlideSpeed", glideServoSpeed);
-        //     Main.motorControllerMap.put("speedX", 0.0);
-        // } else {
-        //     Main.motorControllerMap.put("speedX", glideServoSpeed*10);
-        //     Main.motorControllerMap.put("setGlideSpeed", 0.0);
-        // }
         
 
         // Если переехали лимит выдвижного механизма или уже долго все это происходит
-        if (Main.sensorsMap.get("currentGlidePos") >= 25 || StateMachine.iterationTime > 15) {
+        if (Main.sensorsMap.get("currentGlidePos") >= 23 || StateMachine.iterationTime > 25) {
             newStates.add(new AutoEnd()); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             statesEnd = true;

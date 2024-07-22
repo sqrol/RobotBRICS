@@ -37,7 +37,6 @@ public class MotorController implements Runnable {
 
     private double encRightResetValue = 0;
     private double encLeftResetValue = 0;
-    private double encLiftResetValue = 0;
     private double encRotateResetValue = 0;
 
     // Переменные для функции setGlidePosition()
@@ -53,11 +52,9 @@ public class MotorController implements Runnable {
 
     private static boolean fristCall = true; 
 
-    private static final double[][] arrOfpercentForLift = { { 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 }, { 0, 4, 15, 30, 40, 50, 60, 70, 80, 90, 100 } };
+    private static final double[][] arrOfPosForLift = { { 0, 4, 15, 30, 40, 50, 60, 70, 80, 90}, { 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 } };
 
-    private static final double[][] arrOfPosForLift = { { 0, 4, 15, 30, 40, 50, 60, 70, 80, 90, 100 }, { 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 } };
-
-    private static final double[][] speedForLift = { { 0, 30, 50, 100, 200, 330, 500, 700, 850, 1000 }, { 0, 2, 5, 7, 15, 26, 34, 35, 50, 70 } };
+    private static final double[][] speedForLift = { { 0, 30, 50, 100, 200, 330, 500, 700, 850, 1000 }, { 0, 8, 15, 20, 25, 35, 40, 50, 60, 100 } };
 
     private static final double[][] arrOfPosForRotate = { { 0, 500, 1500, 2000 }, { 0, 45, 90, 110 } };
 
@@ -95,7 +92,6 @@ public class MotorController implements Runnable {
                     resetEncRight();
                     resetEncLeft();
                     resetEncRotate();
-                    resetEncLift();
                     fristCall = false;
                 }
 
@@ -114,7 +110,7 @@ public class MotorController implements Runnable {
 
                     setRotateMotorSpeed(Main.motorControllerMap.get("rotateSpeed"));
 
-                    setLiftPosition(Main.motorControllerMap.get("targetLiftPos"), Main.motorControllerMap.get("initLift"));
+                    setLiftPosition(Main.motorControllerMap.get("targetLiftPos"));
 
                     setLiftMotorSpeed(Main.motorControllerMap.get("liftSpeed"));
 
@@ -144,6 +140,11 @@ public class MotorController implements Runnable {
             } catch (Exception e) {
                 System.err.println("!!!An error occurred in MotorController: " + e.getMessage());
                 e.printStackTrace();
+                try {
+                    Thread.sleep(50); 
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
             }
             motorsUpdateTime = Timer.getFPGATimestamp() - startTime;
         }
@@ -173,7 +174,6 @@ public class MotorController implements Runnable {
             resetEncRight();
             resetEncLeft();
             resetEncRotate();
-            resetEncLift();
             Main.motorControllerMap.put("resetAllEncoders", 0.0);
         }
 
@@ -183,7 +183,6 @@ public class MotorController implements Runnable {
         }
 
         if(Main.motorControllerMap.get("resetEncLift") == 1.0) {
-            resetEncLift();
             Main.motorControllerMap.put("resetEncLift", 0.0);
         }
 
@@ -205,11 +204,11 @@ public class MotorController implements Runnable {
     }
 
     private double getEncRotate() {
-        return ENC_ROTATE.getEncoderDistance() - encRotateResetValue;
+        return -ENC_ROTATE.getEncoderDistance();
     }
 
     private double getEncLift() {
-        return ENC_LIFT.getEncoderDistance() - encLiftResetValue;
+        return -ENC_LIFT.getEncoderDistance();
     }
 
     private void resetEncRight() {
@@ -221,77 +220,70 @@ public class MotorController implements Runnable {
     }
 
     private void resetEncRotate() {
-        encRotateResetValue = ENC_ROTATE.getEncoderDistance();
+        ENC_ROTATE.reset();
     }
 
-    private void resetEncLift() {
-        encLiftResetValue = ENC_LIFT.getEncoderDistance();
-    }
+    private void setLiftPosition(double targetPosition) {
 
-    private void setLiftPosition(double pos, double init) {
+        double outLiftSpeed = 0.0;
+        double liftEncoder = getEncLift();
 
-        if (init == 1.0) {
-            if (!Main.switchMap.get("limitSwitch")) {
-                Main.motorControllerMap.put("liftSpeed", 60.0);
+        SmartDashboard.putNumber("targetPosition", targetPosition);
+
+        if (Main.motorControllerMap.get("initLift") == 1.0) {
+            if (Main.switchMap.get("limitSwitch")) {
+                outLiftSpeed = 0.0;
+                ENC_LIFT.reset();
             } else {
-                Main.motorControllerMap.put("liftSpeed", 0.0);
+                outLiftSpeed = 75.0; 
             }
         } else {
-            double currentPos = -Main.motorControllerMap.get("encLift");
-            double encPos = Functions.TransitionFunction(pos, arrOfPosForLift);
-            double speed = Functions.TransitionFunction(currentPos - encPos, speedForLift);
-            liftStop = Functions.BooleanInRange(currentPos - encPos, -0.8, 0.8);
-    
-            SmartDashboard.putNumber("currentPos - encPos", currentPos - encPos);
-    
-            if (Main.switchMap.get("limitSwitch") && speed > 0) {
-                Main.motorControllerMap.put("liftSpeed", 0.0);
-                Main.motorControllerMap.put("resetEncLift", 1.0);
-                currentRotatePosition = pos;
-                liftStop = true;
-            } else if (speed < 0 && currentPos < -3000) {
-                Main.motorControllerMap.put("liftSpeed", 0.0);
-                currentRotatePosition = pos;
-                liftStop = true;
-            } else if (liftStop && !Main.switchMap.get("limitSwitch")) {
-                Main.motorControllerMap.put("liftSpeed", 0.0);
-            } else {
-                Main.motorControllerMap.put("liftSpeed", speed);
-                liftStop = false;
-            }
-    
-            Main.switchMap.put("liftStop", liftStop);
+            double convertPosToEncs = Functions.TransitionFunction(targetPosition, arrOfPosForLift);
+            outLiftSpeed = Functions.TransitionFunction(liftEncoder - convertPosToEncs, speedForLift);
+            liftStop = Functions.BooleanInRange(liftEncoder - convertPosToEncs, -5, 5);
         }
 
+        if (outLiftSpeed > 0.0 && Main.switchMap.get("limitSwitch")) {
+            SmartDashboard.putNumber("checkLift", 1);
+            ENC_LIFT.reset();
+            outLiftSpeed = 0.0;
+        }
+        if (outLiftSpeed < 0.0 && liftEncoder < -3000) {
+            SmartDashboard.putNumber("checkLift", 2);
+            outLiftSpeed = 0.0;
+        }
+        if (liftStop) {
+            SmartDashboard.putNumber("checkLift", 3);
+            outLiftSpeed = 0.0;
+        }
+
+        Main.motorControllerMap.put("liftSpeed", outLiftSpeed);
+        Main.switchMap.put("liftStop", liftStop);
     }
 
     private void setRotatePosition(double degree) {
         
-        double currentRotatePos = -Main.motorControllerMap.get("encRotate");
-
-        SmartDashboard.putNumber("encRotate", currentRotatePos);
-        
+        double currentRotatePos = getEncRotate();
         double rotateDegree = Functions.TransitionFunction(currentRotatePos, arrOfPosForRotate);
-        double speed = Functions.TransitionFunction(rotateDegree - degree, speedForRotate);
+        double rotateSpeed = Functions.TransitionFunction(rotateDegree - degree, speedForRotate);
         
-        rotateStop = Functions.BooleanInRange(degree - rotateDegree, -0.2, 0.2);
+        rotateStop = Functions.BooleanInRange(degree - rotateDegree, -1, 1);
 
         Main.motorControllerMap.put("currentRotateDegree", rotateDegree);
 
         if (rotateStop) {
-            Main.motorControllerMap.put("rotateSpeed", 0.0);
-            SmartDashboard.putNumber("rotateCheck", 3);
+            rotateSpeed = 0.0;
             rotateStop = true;
         } else {
-            SmartDashboard.putNumber("rotateCheck", 4);
-            Main.motorControllerMap.put("rotateSpeed", speed);
+            Main.motorControllerMap.put("rotateSpeed", rotateSpeed);
         }
 
-        if ((speed > 0 && currentRotatePos > 1600) || (speed < 0 && currentRotatePos < -1600)) {
-            Main.motorControllerMap.put("rotateSpeed", 0.0);
-            SmartDashboard.putNumber("rotateCheck", 324);
+        if ((rotateSpeed > 0 && currentRotatePos > 1600) || (rotateSpeed < 0 && currentRotatePos < -1600)) {
+            rotateSpeed = 0.0;
             rotateStop = true;
         } 
+
+        Main.motorControllerMap.put("rotateSpeed", rotateSpeed);
         Main.switchMap.put("rotateStop", rotateStop);
     }
 

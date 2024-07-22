@@ -50,7 +50,7 @@ public class AutoStart implements IState {
 
     @Override
     public boolean isFinished() {
-        // return StateMachine.iterationTime > 10 || flag;
-        return false;
+        return StateMachine.iterationTime > 10 || flag;
+        // return false;
     }
 }
