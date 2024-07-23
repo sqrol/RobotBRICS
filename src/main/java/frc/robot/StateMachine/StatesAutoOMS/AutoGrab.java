@@ -1,6 +1,7 @@
 package frc.robot.StateMachine.StatesAutoOMS;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Main;
@@ -20,6 +21,32 @@ public class AutoGrab implements IState {
 
     private ArrayList<IState> newStates = new ArrayList<>();
 
+    private static final HashMap<String, Double> GRAB_MAP = new HashMap<>() {
+        {
+            put("AppleBigRed", 30.0);
+            put("AppleBigRotten", 30.0);
+
+            put("AppleSmallRed", 50.0);
+            put("AppleSmallRotten", 50.0);
+
+            put("PearYellow", 66.0);
+            put("PearRotten", 66.0);
+        }
+    };
+
+    private static final HashMap<String, Double> LIFT_MAP = new HashMap<>() {
+        {
+            put("AppleBigRed", 30.0);
+            put("AppleBigRotten", 30.0);
+
+            put("AppleSmallRed", 50.0);
+            put("AppleSmallRotten", 50.0);
+
+            put("PearYellow", 66.0);
+            put("PearRotten", 66.0);
+        }
+    };
+
     public AutoGrab() {
 
     }
@@ -32,21 +59,30 @@ public class AutoGrab implements IState {
 
     @Override
     public void execute() {
+        String temp = ""; // временная переменная, чтобы не ругался компилятор
         switch (index) 
         {
             case 1:
-                Main.motorControllerMap.put("targetLiftPos", 85.0);
-                if (Main.switchMap.get("liftStop") && StateMachine.iterationTime > 5) {
-                    index++;
+                // это проверка что в списке нашлось значение для результата с камеры
+                if(LIFT_MAP.get(temp) != null) {
+                    Main.motorControllerMap.put("targetLiftPos", LIFT_MAP.get(temp));
+                    if (Main.switchMap.get("liftStop") && StateMachine.iterationTime > 5) {
+                        index++;
+                    }
+                    break;
                 }
-                break;
+                else break;
+                
             case 2:
-                Main.motorControllerMap.put("servoGrab", 50.0);
-                if (!flag) {
-                    index++;
-                    flag = true;
+                if(GRAB_MAP.get(temp) != null) {
+                    Main.motorControllerMap.put("servoGrab", GRAB_MAP.get(temp));
+                    if (!flag) {
+                        index++;
+                        flag = true;
+                    }
+                    break;
                 }
-                break;
+                else break;  
         }
 
         if (index == 3) {
