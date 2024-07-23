@@ -53,12 +53,12 @@ public class AutoRotate implements IState {
             SmartDashboard.putNumber("currentTargetDegree", currentTargetDegree);
             SmartDashboard.putNumber("lastRotateDegree + currentTargetDegree", currentTargetDegree - lastRotateDegree);
             Main.motorControllerMap.put("targetRotateDegree", currentTargetDegree - lastRotateDegree); // Прибавляем к текущему нужный градус
-            rotateStop = Main.switchMap.get("rotateStop") || Main.motorControllerMap.get("currentRotatePosition") > 89 || Main.motorControllerMap.get("currentRotatePosition") > -89;    
+            rotateStop = Main.switchMap.get("rotateStop");    
         }
 
 
         // Если мы долго выравниваемся по объекту то выходим
-        if (StateMachine.iterationTime > 10 || Main.motorControllerMap.get("currentRotateDegree") > 90 && Main.motorControllerMap.get("currentRotateDegree") < -90) {
+        if (StateMachine.iterationTime > 10) {
             newStates.add(new AutoEnd()); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             statesEnd = true;
