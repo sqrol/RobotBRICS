@@ -22,7 +22,7 @@ public class AutoRotate implements IState {
     private boolean rotateStop = false; 
     private double targetAngle = 0;
     
-    private static final double[][] arrForLift = { { 0, 106, 213} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
+    private static final double[][] arrForLift = { { 1, 106, 213} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
 
     public AutoRotate() {
 
@@ -33,6 +33,7 @@ public class AutoRotate implements IState {
         Main.motorControllerMap.put("servoGrab", 15.0);
         Main.motorControllerMap.put("servoGripRotate", 70.0);
 
+        rotateStop = false; 
         flag = false;
         statesEnd = false;
     }
@@ -41,17 +42,20 @@ public class AutoRotate implements IState {
     public void execute() {
         if (!flag) {
             fruitPosX = Main.camMap.get("currentCenterX"); // Мы в AutoStart уже смотрели потому берем только координаты
-            SmartDashboard.putNumber("currentCenterX", fruitPosX);
-            lastRotateDegree = Main.motorControllerMap.get("currentRotatePosition"); // Запоминаем текущую позицию поворота
-            SmartDashboard.putNumber("lastRotateDegree", lastRotateDegree);
-            flag = true;
+            if (fruitPosX != 0.0 && StateMachine.iterationTime > 1) {
+                SmartDashboard.putNumber("currentCenterX123", fruitPosX);
+                lastRotateDegree = Main.motorControllerMap.get("currentRotatePosition"); // Запоминаем текущую позицию поворота
+                SmartDashboard.putNumber("lastRotateDegree", lastRotateDegree);
+                flag = true;
+            }
+        } else {
+            currentTargetDegree = Functions.TransitionFunction(fruitPosX, arrForLift);
+            SmartDashboard.putNumber("currentTargetDegree", currentTargetDegree);
+            SmartDashboard.putNumber("lastRotateDegree + currentTargetDegree", currentTargetDegree - lastRotateDegree);
+            Main.motorControllerMap.put("targetRotateDegree", currentTargetDegree - lastRotateDegree); // Прибавляем к текущему нужный градус
+            rotateStop = Main.switchMap.get("rotateStop") || Main.motorControllerMap.get("currentRotatePosition") > 89 || Main.motorControllerMap.get("currentRotatePosition") > -89;    
         }
 
-        currentTargetDegree = Functions.TransitionFunction(fruitPosX, arrForLift);
-        SmartDashboard.putNumber("currentTargetDegree", currentTargetDegree);
-        SmartDashboard.putNumber("lastRotateDegree + currentTargetDegree", currentTargetDegree - lastRotateDegree);
-        Main.motorControllerMap.put("targetRotateDegree", currentTargetDegree - lastRotateDegree); // Прибавляем к текущему нужный градус
-        rotateStop = Main.switchMap.get("rotateStop") || Main.motorControllerMap.get("currentRotatePosition") > 89 || Main.motorControllerMap.get("currentRotatePosition") > -89;
 
         // Если мы долго выравниваемся по объекту то выходим
         if (StateMachine.iterationTime > 10 || Main.motorControllerMap.get("currentRotateDegree") > 90 && Main.motorControllerMap.get("currentRotateDegree") < -90) {
@@ -75,6 +79,7 @@ public class AutoRotate implements IState {
 
     @Override
     public boolean isFinished() {
-        return statesEnd;
+        // return statesEnd;
+        return false;
     }
 }

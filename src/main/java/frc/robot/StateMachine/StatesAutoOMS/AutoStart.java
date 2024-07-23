@@ -42,7 +42,7 @@ public class AutoStart implements IState {
 
     @Override
     public void finilize() {
-        Main.sensorsMap.put("camTask", 0.0);
+        if (!flag) Main.sensorsMap.put("camTask", 0.0);
 
         Main.motorControllerMap.put("speedX", 0.0);
         Main.motorControllerMap.put("speedZ", 0.0);

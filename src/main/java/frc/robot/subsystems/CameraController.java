@@ -249,8 +249,6 @@ public class CameraController implements Runnable {
 
         lowestObjectCordinate = findLowestObject(mask, currentCordinate);
 
-        rotateToObject(lowestObjectCordinate  , mask.cols(), mask.rows());
-
         if (lowestObjectCordinate.x != 0 && lowestObjectCordinate.y != 0) {
             Main.camMap.put("targetFound", 1.0);
 
@@ -267,9 +265,6 @@ public class CameraController implements Runnable {
         releaseMats(resizedSource, blur, hsvImage, mask, outPA, eroded, dilated);
     }
 
-    private static void rotateToObject(Point target, int imageWidth, int imageHeight) {
-
-    }
 
     // private static void rotateToObject(Point target, int imageWidth, int imageHeight) {
     //     if (target.y != 0) {
