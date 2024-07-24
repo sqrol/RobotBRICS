@@ -18,6 +18,7 @@ public class AutoGrab implements IState {
 
     private double lastUpdateTime = 0.0;
     private static final double STEP = 1.0;
+    private static final double DELAY = 0.01;
 
     private ArrayList<IState> newStates = new ArrayList<>();
 
@@ -36,14 +37,14 @@ public class AutoGrab implements IState {
 
     private static final HashMap<String, Double> LIFT_MAP = new HashMap<>() {
         {
-            put("AppleBigRed", 30.0);
-            put("AppleBigRotten", 30.0);
+            put("AppleBigRed", 85.0);
+            put("AppleBigRotten", 85.0);
 
-            put("AppleSmallRed", 50.0);
-            put("AppleSmallRotten", 50.0);
+            put("AppleSmallRed", 85.0);
+            put("AppleSmallRotten", 85.0);
 
-            put("PearYellow", 66.0);
-            put("PearRotten", 66.0);
+            put("PearYellow", 85.0);
+            put("PearRotten", 85.0);
         }
     };
 
@@ -64,25 +65,27 @@ public class AutoGrab implements IState {
         {
             case 1:
                 // это проверка что в списке нашлось значение для результата с камеры
-                if(LIFT_MAP.get(temp) != null) {
-                    Main.motorControllerMap.put("targetLiftPos", LIFT_MAP.get(temp));
+                // if(LIFT_MAP.get(temp) != null) {
+                    Main.motorControllerMap.put("targetLiftPos", 70.0);
                     if (Main.switchMap.get("liftStop") && StateMachine.iterationTime > 5) {
                         index++;
                     }
                     break;
-                }
-                else break;
+                // }
+                // else break;
                 
             case 2:
-                if(GRAB_MAP.get(temp) != null) {
-                    Main.motorControllerMap.put("servoGrab", GRAB_MAP.get(temp));
-                    if (!flag) {
-                        index++;
-                        flag = true;
+                // if(GRAB_MAP.get(temp) != null) {
+                    // Main.motorControllerMap.put("servoGrab", GRAB_MAP.get(temp));
+                    if(smoothServoMovement(66.0, DELAY)) {
+                        if (!flag) {
+                            index++;
+                            flag = true;
+                        }
+                        break;
                     }
-                    break;
-                }
-                else break;  
+                // }
+                // else break;  
         }
 
         if (index == 3) {
@@ -94,7 +97,7 @@ public class AutoGrab implements IState {
 
     @Override
     public void finilize() {
-        Main.motorControllerMap.put("glideMode", 0.0);
+        
     }
 
     @Override

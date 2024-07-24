@@ -16,7 +16,7 @@ public class AutoGlide implements IState {
 
     private double glideServoSpeed = 0; 
 
-    private Boolean statesEnd = false;
+    private boolean statesEnd = false;
     private boolean glideStop = false;
 
     private int camMiddleForGrab = 20;

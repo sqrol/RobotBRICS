@@ -64,7 +64,7 @@ public class SetGrabPosition implements IState{
             } else {
                 endMovement = smoothServoMovement(15.0, 0.01);
             }
-        
+                
         }
 
         if (fruit.equals("OPEN SMALL APPLE")) {

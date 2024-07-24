@@ -105,8 +105,11 @@ public class MotorController implements Runnable {
                     SERVO_GRAB.setDisabled();
                     SERVO_GRIP_ROTATE.setDisabled(); 
                 } else {
-                    setAxisSpeed(Main.motorControllerMap.get("speedX"), 
-                    Main.motorControllerMap.get("speedZ"),  Main.motorControllerMap.get("useOneSide"));
+                    setAxisSpeed(
+                    Main.motorControllerMap.get("speedX"), 
+                    Main.motorControllerMap.get("speedZ"),  
+                    Main.motorControllerMap.get("useOneSide")
+                    );
 
                     setRotateMotorSpeed(Main.motorControllerMap.get("rotateSpeed"));
 
@@ -235,7 +238,7 @@ public class MotorController implements Runnable {
                 outLiftSpeed = 0.0;
                 ENC_LIFT.reset();
             } else {
-                outLiftSpeed = 75.0; 
+                outLiftSpeed = 70.0; 
             }
         } else {
             double convertPosToEncs = Functions.TransitionFunction(targetPosition, arrOfPosForLift);
@@ -352,13 +355,13 @@ public class MotorController implements Runnable {
         }
     }
 
-    private void setServoGrab(double angle) {
+    private void setServoGrab(double targetPosition) {
         try {
-            SERVO_GRAB.setAngle(angle);
+            SERVO_GRAB.setAngle(targetPosition);
         } catch (Exception e) {
-            System.out.println("Error in setServoGrab");
+            System.out.println("Error in setServoGrab: " + e.getMessage());
             e.printStackTrace();
-        } 
+        }
     }
 
     private double getServoGrabAngle() {

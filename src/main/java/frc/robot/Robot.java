@@ -18,6 +18,7 @@ public class Robot extends TimedRobot {
     try {
       StateMachine.states.clear();
       Thread.sleep(10);
+      
       initMaps();
       Thread.sleep(10);
     } catch (Exception e) {
@@ -124,7 +125,7 @@ public class Robot extends TimedRobot {
     Main.motorControllerMap.put("currentLiftPos", 0.0);
     Main.motorControllerMap.put("targetLiftPos", 0.0);
 
-    Main.motorControllerMap.put("servoGrab", 40.0);
+    Main.motorControllerMap.put("servoGrab", 15.0);
     Main.motorControllerMap.put("grabServoAngle", 0.0);
 
     Main.motorControllerMap.put("servoGripRotate", 79.0);
