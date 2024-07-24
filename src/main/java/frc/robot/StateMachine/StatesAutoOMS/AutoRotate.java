@@ -56,7 +56,6 @@ public class AutoRotate implements IState {
             rotateStop = Main.switchMap.get("rotateStop");    
         }
 
-
         // Если мы долго выравниваемся по объекту то выходим
         if (StateMachine.iterationTime > 10) {
             newStates.add(new AutoEnd()); 
