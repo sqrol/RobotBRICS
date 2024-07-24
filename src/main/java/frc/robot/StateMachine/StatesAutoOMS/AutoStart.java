@@ -7,12 +7,15 @@ import frc.robot.Maths.Common.Functions;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Main;
 
 public class AutoStart implements IState {
 
     private Boolean flag;
     private ArrayList<IState> newStates = new ArrayList<>();
+    private double currentColorIndex = 0; 
+    private static double startTime = 0;
 
     public AutoStart() {
 
@@ -20,6 +23,7 @@ public class AutoStart implements IState {
 
     @Override
     public void initialize() {
+        Main.camMap.put("currentColorIndex", 0.0);
         Main.sensorsMap.put("camTask", 1.0);
 
         Main.motorControllerMap.put("servoGrab", 15.0);
@@ -33,6 +37,19 @@ public class AutoStart implements IState {
 
     @Override
     public void execute() {
+
+        // Перебераем цвета 
+        double currentTime = Timer.getFPGATimestamp();
+
+        if (currentTime - startTime >= 1) {
+            startTime = currentTime;
+            if (Main.camMap.get("targetFound") == 0) {
+                currentColorIndex++; 
+            }   
+        }
+
+        Main.camMap.put("currentColorIndex", currentColorIndex);
+
         if (Main.camMap.get("targetFound") != 0 && StateMachine.iterationTime > 3) {
             newStates.add(new AutoRotate()); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);

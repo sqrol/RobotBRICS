@@ -24,6 +24,12 @@ public class Viscad {
         return dst;
     }
 
+    public static Mat ReducResolutImage(Mat src, int reductValue) {
+        Mat resizedSource = new Mat();
+        Imgproc.resize(src, resizedSource, new Size(src.cols() / reductValue, src.rows() / reductValue));
+        return resizedSource;
+    }
+
     public static Mat Threshold(Mat src, Point red, Point green, Point blue) {
         Mat outImage = new Mat();
         Core.inRange(src, new Scalar(red.x, green.x, blue.x), new Scalar(red.y, green.y, blue.y), outImage);

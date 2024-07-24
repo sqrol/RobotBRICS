@@ -79,7 +79,6 @@ public class AutoRotate implements IState {
 
     @Override
     public boolean isFinished() {
-        // return statesEnd;
-        return false;
+        return statesEnd;
     }
 }

@@ -159,6 +159,8 @@ public class Robot extends TimedRobot {
 
     Main.camMap.put("targetAngle", 0.0);
 
+    Main.camMap.put("currentColorIndex", 1.0);
+
     Main.motorControllerMap.put("servoGrabAngle", 0.0);
 
     Main.motorControllerMap.put("lastGlidePosition", 0.0);
