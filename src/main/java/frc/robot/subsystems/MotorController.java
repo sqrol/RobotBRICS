@@ -138,13 +138,13 @@ public class MotorController implements Runnable {
 
                 Thread.sleep(10);
             } catch (Exception e) {
-                System.err.println("!!!An error occurred in MotorController: " + e.getMessage());
-                e.printStackTrace();
-                try {
-                    Thread.sleep(50); 
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                }
+                // System.err.println("!!!An error occurred in MotorController: " + e.getMessage());
+                // e.printStackTrace();
+                // try {
+                //     Thread.sleep(50); 
+                // } catch (InterruptedException ie) {
+                //     Thread.currentThread().interrupt();
+                // }
             }
             motorsUpdateTime = Timer.getFPGATimestamp() - startTime;
         }

@@ -6,7 +6,6 @@ public class CommandAdapter extends CommandBase { // outter class for CommandsBa
 
     // do not do anything here
     StateMachine stateMachine = new StateMachine();
-    StateMachineOMS stateMachineOMS = new StateMachineOMS();
 
     @Override
     public void initialize() {

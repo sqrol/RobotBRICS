@@ -68,7 +68,7 @@ public class CameraController implements Runnable {
                 }
 
                 if (Main.sensorsMap.get("camTask") == 1) {
-                    testForAutoGrab(source);
+                    testForAutoGrab(source, Main.camMap.get("currentColorIndex"));
                 }
 
                 if (Main.sensorsMap.get("camTask") == 2) {
@@ -79,13 +79,13 @@ public class CameraController implements Runnable {
                 outStream.putFrame(source);
                 source.release();
             } catch (Exception e) {
-                System.err.println("!!!An error occurred in CameraController: " + e.getMessage());
-                e.printStackTrace();
-                try {
-                    Thread.sleep(50); 
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt(); 
-                }
+                // System.err.println("!!!An error occurred in CameraController: " + e.getMessage());
+                // e.printStackTrace();
+                // try {
+                //     Thread.sleep(50); 
+                // } catch (InterruptedException ie) {
+                //     Thread.currentThread().interrupt(); 
+                // }
             }
             cameraUpdateTime = Timer.getFPGATimestamp() - startTime;
         }
@@ -100,29 +100,18 @@ public class CameraController implements Runnable {
     }
 
     // Бля я хуй знает как это правильно написать(
-    private static ColorRange setPointsForColors(int colorIndex) {
+    private static ColorRange setPointsForColors(Double colorIndex) {
         ColorRange outRange = new ColorRange();
 
-        switch (colorIndex) 
-        {
-            case 1: // Фиолетовый (Гнилые фрукты)
-                outRange = new ColorRange(new Point(0, 180), new Point(150, 255), new Point(80, 255));
-                break;
-            case 2: // Красный (Больше красное и маленькое яблоко)
-                outRange = new ColorRange(new Point(0, 180), new Point(150, 255), new Point(80, 255));
-                break;
-            case 3: // Желтый (Желтая груша)
-                outRange = new ColorRange(new Point(0, 180), new Point(150, 255), new Point(80, 255));
-                break;
-            default:
-                break;
-        }
+        if (colorIndex == 1.0) { outRange = new ColorRange(new Point(0, 180), new Point(150, 255), new Point(80, 255)); }
+        if (colorIndex == 2.0) { outRange = new ColorRange(new Point(0, 180), new Point(150, 255), new Point(80, 255)); }
+        if (colorIndex == 3.0) { outRange = new ColorRange(new Point(0, 180), new Point(150, 255), new Point(80, 255)); }
 
         return outRange;
     }
 
     // Это нужно удалить
-    private void testing(Mat source, int colorIndex) {
+    private void testing(Mat source, Double colorIndex) {
 
         ColorRange currentColor = setPointsForColors(colorIndex);
 
@@ -140,13 +129,12 @@ public class CameraController implements Runnable {
         releaseMats(resizedSource, blur, hsvImage, mask);
     }
 
-    private void colorSearching(Mat source, int colorIndex) {
+    private void colorSearching(Mat source, Double colorIndex) {
 
         ColorRange currentColor = setPointsForColors(colorIndex);
 
         // Снижение разрешения изображения
-        Mat resizedSource = new Mat();
-        Imgproc.resize(source, resizedSource, new Size(source.cols() / 3, source.rows() / 3));
+        Mat resizedSource = Viscad.ReducResolutImage(source, 3);
     
         Mat blur = Viscad.Blur(resizedSource, 4);
         Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
@@ -159,9 +147,11 @@ public class CameraController implements Runnable {
     }
 
     private static Mat createMask(Mat hsvImage, ColorRange colorRange) {
-        Mat mask = new Mat();
-        mask = Viscad.Threshold(hsvImage, colorRange.getHue(), colorRange.getSaturation(), colorRange.getValue());
-        return mask;
+        Mat mask = Viscad.Threshold(hsvImage, colorRange.getHue(), colorRange.getSaturation(), colorRange.getValue());
+        Mat eroded = Viscad.Erode(mask, 1);
+        Mat dilated = Viscad.Dilate(eroded, 1);
+        releaseMats(mask, eroded);
+        return dilated;
     }
 
     private void glideSearchForGrab(Mat source, int size) {
@@ -199,9 +189,7 @@ public class CameraController implements Runnable {
         releaseMats(resizedSource, blur, hsvImage, mask, outPA, square);
     }
 
-
-
-    private void testForAutoGrab(Mat source) {
+    private void testForAutoGrab(Mat source, Double colorIndex) {
 
         // double Hue1 = SmartDashboard.getNumber("Hue1", 0);
         // double Hue2 = SmartDashboard.getNumber("Hue2", 0);
@@ -212,6 +200,8 @@ public class CameraController implements Runnable {
         // double Value1 = SmartDashboard.getNumber("Value1", 0);
         // double Value2 = SmartDashboard.getNumber("Value2", 0);
 
+        ColorRange currentColor = setPointsForColors(colorIndex);
+
         List<Rect> currentCordinate = new ArrayList<>();
         Point lowestObjectCordinate = new Point();
         Point centreSearch = new Point();
@@ -221,35 +211,30 @@ public class CameraController implements Runnable {
         Point ValueBound = new Point(100, 255);
 
         // Снижение разрешения изображения
-        Mat resizedSource = new Mat();
-        Imgproc.resize(source, resizedSource, new Size(source.cols() / 3, source.rows() / 3));
+        Mat resizedSource = Viscad.ReducResolutImage(source, 3);
     
         Mat blur = Viscad.Blur(resizedSource, 4);
         Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
-        Mat mask = Viscad.Threshold(hsvImage, HueBound, SaturationBound, ValueBound);
-
-        Mat eroded = Viscad.Erode(mask, 1);
-        Mat dilated = Viscad.Dilate(eroded, 1);
+        Mat mask = createMask(hsvImage, currentColor);
 
         Mat outPA = new Mat();
         currentCordinate = Viscad.ParticleAnalysis(mask, outPA);
 
+        int maskArea = Viscad.ImageTrueArea(mask);
+
         centreSearch = Viscad.detectCenter(mask);
 
-        outHSV.putFrame(dilated);
-
-        SmartDashboard.putNumber("imageWidth/2", mask.cols() / 2);
+        outHSV.putFrame(mask);
 
         if (centreSearch.x == 0 && centreSearch.y == 0) {
-            releaseMats(resizedSource, blur, hsvImage, mask, outPA, eroded, dilated);
+            // Освобождение памяти и опять по новой
+            releaseMats(resizedSource, blur, hsvImage, mask, outPA);
             return;
         }
 
-        SmartDashboard.putNumber("centreSearch.y", centreSearch.y);
-
         lowestObjectCordinate = findLowestObject(mask, currentCordinate);
 
-        if (lowestObjectCordinate.x != 0 && lowestObjectCordinate.y != 0) {
+        if (lowestObjectCordinate.x != 0 && lowestObjectCordinate.y != 0 && maskArea > 50) {
             Main.camMap.put("targetFound", 1.0);
 
             Main.camMap.put("currentCenterX", lowestObjectCordinate.x);
@@ -262,7 +247,7 @@ public class CameraController implements Runnable {
         }
 
         // Освобождение памяти
-        releaseMats(resizedSource, blur, hsvImage, mask, outPA, eroded, dilated);
+        releaseMats(resizedSource, blur, hsvImage, mask, outPA);
     }
 
 
