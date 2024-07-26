@@ -162,6 +162,8 @@ public class Robot extends TimedRobot {
 
     Main.camMap.put("currentColorIndex", 1.0);
 
+    Main.camMap.put("grippedFruit", 0.0); // 1.0 - BigRedApple, 2.0 - SmallRedApple
+
     Main.motorControllerMap.put("servoGrabAngle", 0.0);
 
     Main.motorControllerMap.put("lastGlidePosition", 0.0);
@@ -172,6 +174,7 @@ public class Robot extends TimedRobot {
   private void sendSmartDashBoard() {
 
     SmartDashboard.putNumber("targetAngle", Main.camMap.get("targetAngle"));
+    SmartDashboard.putNumber("grippedFruit", Main.camMap.get("grippedFruit"));
 
     SmartDashboard.putNumber("sharpRight", Main.sensorsMap.get("sharpRight"));
     SmartDashboard.putNumber("sharpLeft", Main.sensorsMap.get("sharpLeft"));

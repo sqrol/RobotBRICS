@@ -23,12 +23,23 @@ public class CameraController implements Runnable {
 
     private static UsbCamera camera;
     private CvSink cvSink;
-    private static CvSource outStream, outHSV, outRect, outGlide;
+    private static CvSource outStream, outHSV, outRect, outGlide, thresh;
 
     private String currentColor = "";
+    private double colorIndex = 0;
 
     @Override
     public void run() {
+
+        SmartDashboard.putNumber("RED1", 0.0);
+        SmartDashboard.putNumber("RED2", 0.0);
+
+        SmartDashboard.putNumber("GREEN1", 0.0);
+        SmartDashboard.putNumber("GREEN2", 0.0);
+
+        SmartDashboard.putNumber("BLUE1", 0.0);
+        SmartDashboard.putNumber("BLUE2", 0.0);
+
 
         // SmartDashboard.putNumber("Hue1", 0.0);
         // SmartDashboard.putNumber("Hue2", 0.0);
@@ -49,6 +60,7 @@ public class CameraController implements Runnable {
         outHSV = CameraServer.getInstance().putVideo("outHSV", 640, 480); 
         outRect = CameraServer.getInstance().putVideo("outRect", 640, 480); 
         outGlide = CameraServer.getInstance().putVideo("outGlide", 640, 480); 
+        thresh = CameraServer.getInstance().putVideo("thresh", 640, 480);
 
         settingCameraParameters(); // На пробу)
 
@@ -75,6 +87,9 @@ public class CameraController implements Runnable {
                     glideSearchForGrab(source, 80); // Тут мы обозначаем параметры обрезаемого квадрата по середине картинки
                 }
 
+                if(Main.sensorsMap.get("camTask") == 3) {
+                    thresholdSettings(source);
+                }
                 Main.sensorsMap.put("updateTimeCamera", cameraUpdateTime);
                 outStream.putFrame(source);
                 source.release();
@@ -100,12 +115,14 @@ public class CameraController implements Runnable {
     }
 
     // Бля я хуй знает как это правильно написать(
-    private static ColorRange setPointsForColors(Double colorIndex) {
+    private static ColorRange setPointsForColors(double colorIndex) {
         ColorRange outRange = new ColorRange();
 
-        if (colorIndex == 1.0) { outRange = new ColorRange(new Point(0, 180), new Point(150, 255), new Point(80, 255)); }
-        if (colorIndex == 2.0) { outRange = new ColorRange(new Point(0, 180), new Point(150, 255), new Point(80, 255)); }
-        if (colorIndex == 3.0) { outRange = new ColorRange(new Point(0, 180), new Point(150, 255), new Point(80, 255)); }
+        // красный 
+        if (colorIndex == 1.0) { outRange = new ColorRange(new Point(0, 13), new Point(0, 255), new Point(80, 235)); }
+        // желтый
+        if (colorIndex == 2.0) { outRange = new ColorRange(new Point(16, 255), new Point(123, 255), new Point(123, 255)); }
+        // if (colorIndex == 3.0) { outRange = new ColorRange(new Point(0, 180), new Point(150, 255), new Point(80, 255)); }
 
         return outRange;
     }
@@ -170,6 +187,16 @@ public class CameraController implements Runnable {
         Mat mask = Viscad.Threshold(hsvImage, HueBound, SaturationBound, ValueBound);
 
         Mat square = cropSquareFromCenter(mask, size);
+
+        if(Viscad.ImageTrueArea(square) >= 20000 && colorIndex != 2.0) {
+            Main.camMap.put("grippedFruit", 1.0);
+        } 
+        if(Viscad.ImageTrueArea(square) <= 20000 && colorIndex != 2.0) {
+            Main.camMap.put("grippedFruit", 2.0);
+        } else {
+            Main.camMap.put("grippedFruit", 3.0);
+        }
+        SmartDashboard.putNumber("ImageAreaGlideSquare", Viscad.ImageTrueArea(square));
 
         Mat outPA = new Mat();
         currentCordinate = Viscad.ParticleAnalysis(square, outPA);
@@ -322,7 +349,38 @@ public class CameraController implements Runnable {
         
         return croppedImage;
     }
+
+    private static int detectFruitInGripper(Mat orig) {
+        Mat cutInGripper = Viscad.ExtractImage(orig, new Rect(80, 180, 300, 300));
+        // noWheels.putFrame(cutInGripper);
+        cutInGripper.release();
+        return 1;
+    }
     
+    private static void thresholdSettings(Mat orig) {
+        
+        double red1 = SmartDashboard.getNumber("RED1", 0.0);
+        double red2 = SmartDashboard.getNumber("RED2", 0.0);
+
+        double green1 = SmartDashboard.getNumber("GREEN1", 0.0);
+        double green2 = SmartDashboard.getNumber("GREEN2", 0.0);
+
+        double blue1 = SmartDashboard.getNumber("BLUE1", 0.0);
+        double blue2 = SmartDashboard.getNumber("BLUE2", 0.0);
+
+        Point redPoint = new Point(red1, red2);
+        Point greenPoint = new Point(green1, green2);
+        Point bluePoint = new Point(blue1, blue2);
+
+        Mat blur = Viscad.Blur(orig, 4);
+        Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
+        Mat threshold = Viscad.Threshold(hsvImage, redPoint, greenPoint, bluePoint);
+
+        thresh.putFrame(threshold);
+
+        releaseMats(threshold, blur, hsvImage);
+    }
+
     private static void releaseMats(Mat... mats) {
         for (Mat mat : mats) {
             mat.release();

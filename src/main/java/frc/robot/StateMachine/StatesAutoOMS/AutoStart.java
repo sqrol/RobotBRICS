@@ -8,6 +8,7 @@ import frc.robot.Maths.Common.Functions;
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Main;
 
 public class AutoStart implements IState {
@@ -47,7 +48,7 @@ public class AutoStart implements IState {
                 currentColorIndex++; 
             }   
         }
-
+        SmartDashboard.putNumber("currentColorIndex", currentColorIndex);
         Main.camMap.put("currentColorIndex", currentColorIndex);
 
         if (Main.camMap.get("targetFound") != 0 && StateMachine.iterationTime > 3) {

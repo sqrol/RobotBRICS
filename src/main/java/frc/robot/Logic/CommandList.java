@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import frc.robot.StateMachine.CoreEngine.IState;
 import frc.robot.StateMachine.CoreEngine.StateMachine;
 import frc.robot.StateMachine.States.*;
+import frc.robot.StateMachine.StatesAutoOMS.AutoStart;
 
 public class CommandList {
 
@@ -17,6 +18,13 @@ public class CommandList {
     }
 
     public void addCommand() {
+
+
+    if(currentCommandName.equals("AUTO_GRAB_UPPER")) {
+        newStates.add(new AutoStart());
+        newStates.add(new Transition());
+        StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    }
         
 // --------------------------------- ИЗ СТАРТА КО ВСЕМ ЧЕКПОИНТАМ ---------------------------------
 

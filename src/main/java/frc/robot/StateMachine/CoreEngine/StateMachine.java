@@ -39,7 +39,7 @@ public class StateMachine {
             firstIteration = true;
             StateMachine.index++;
         }  
-    }    
+    }
 
     public boolean isProgramFinished() {
         return false;

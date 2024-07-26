@@ -18,11 +18,11 @@ public class AutoRotate implements IState {
     private double lastRotateDegree = 0;
     private double currentTargetDegree = 0;
     private double fruitPosX = 0;
-    private Boolean statesEnd = false;
+    private boolean statesEnd = false;
     private boolean rotateStop = false; 
     private double targetAngle = 0;
     
-    private static final double[][] arrForLift = { { 1, 106, 213} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
+    private static final double[][] arrForLift = { { 1, 106, 213, 300} , { -45, 0, 45, 60} }; // Тут в первом массиве мы закладываем параметры исходной картинки
 
     public AutoRotate() {
 
