@@ -1,40 +1,36 @@
 package frc.robot.Maths.Common;
 
 public class Functions {
-    public static double TransitionFunction(double value, double[][] values) {
-        double result = 0;
-        double max_o;
-        double max_i;
-        double min_o;
-        double min_i;
-        int minus = 1;
-        if (value < 0) {
-          minus = -1;
-          value = Math.abs(value);
-        }
-        if (value >= values[0][values[0].length - 1])
-          result = values[1][values[1].length - 1];
-        else {
-          for (int i = 0; i < values[0].length; i++) {
-    
-            if (value >= values[0][i] && value <= values[0][i + 1]) {
-              min_i = values[0][i + 1];
-              max_i = values[0][i];
-              min_o = values[1][i + 1];
-              max_o = values[1][i];
-    
-              if (value == values[0][i])
-                result = values[1][i];
-              else {
-                result = min_o + (((max_o - min_o) * ((Math.abs(value) - min_i) * 100 / (max_i - min_i))) / 100);
-              }
-            }
+      public static double TransitionFunctionNew(double value, double[][] values) {
+          int lastIndex = values[0].length - 1;
+
+          int sign = 1;
+          if (value < 0) {
+              sign = -1;
+              value = Math.abs(value);
           }
-        }
-        if (minus < 0) {
-          result *= -1;
-        }
-        return result;
+
+          double result = 0;
+
+          if (value >= values[0][lastIndex]) {
+              result = values[1][lastIndex];
+          } else {
+              for (int i = 0; i < lastIndex; i++) {
+                  if (value >= values[0][i] && value <= values[0][i + 1]) {
+                      double min_i = values[0][i];
+                      double max_i = values[0][i + 1];
+                      double min_o = values[1][i];
+                      double max_o = values[1][i + 1];
+
+                      // Perform linear interpolation
+                      result = min_o + (max_o - min_o) * ((value - min_i) / (max_i - min_i));
+                      break;
+                  }
+              }
+          }
+
+          result *= sign;
+          return result;
       }
 
       public static boolean BooleanInRange(double value, double min, double max) {
