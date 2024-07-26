@@ -1,7 +1,7 @@
 package frc.robot.Maths.Common;
 
 public class Functions {
-      public static double TransitionFunctionNew(double value, double[][] values) {
+      public static double TransitionFunction(double value, double[][] values) {
           int lastIndex = values[0].length - 1;
 
           int sign = 1;
