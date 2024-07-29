@@ -13,6 +13,9 @@ import frc.robot.Main;
 public class AutoRotate implements IState {
 
     private Boolean flag;
+
+    private boolean treeMode = false;
+
     private ArrayList<IState> newStates = new ArrayList<>();
 
     private double lastRotateDegree = 0;
@@ -24,8 +27,10 @@ public class AutoRotate implements IState {
     
     private static final double[][] arrForLift = { { 1, 106, 213, 300} , { -45, 0, 45, 60} }; // Тут в первом массиве мы закладываем параметры исходной картинки
 
-    public AutoRotate() {
+    public AutoRotate() {}
 
+    public AutoRotate(boolean treeMode) {
+        this.treeMode = treeMode;
     }
 
     @Override
@@ -40,6 +45,7 @@ public class AutoRotate implements IState {
 
     @Override
     public void execute() {
+        
         if (!flag) {
             fruitPosX = Main.camMap.get("currentCenterX"); // Мы в AutoStart уже смотрели потому берем только координаты
             if (fruitPosX != 0.0 && StateMachine.iterationTime > 1) {

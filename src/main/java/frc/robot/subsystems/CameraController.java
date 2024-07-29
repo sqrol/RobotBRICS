@@ -6,6 +6,7 @@ import frc.robot.Main;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
@@ -23,10 +24,10 @@ public class CameraController implements Runnable {
 
     private static UsbCamera camera;
     private CvSink cvSink;
-    private static CvSource outStream, outHSV, outRect, outGlide, thresh;
+    private static CvSource outStream, outHSV, outRect, outGlide, thresh, upperBranch, middleBranch, lowerBranch;
 
     private String currentColor = "";
-    private double colorIndex = 0;
+    private double colorIndex = 0.0;
 
     @Override
     public void run() {
@@ -62,6 +63,10 @@ public class CameraController implements Runnable {
         outGlide = CameraServer.getInstance().putVideo("outGlide", 640, 480); 
         thresh = CameraServer.getInstance().putVideo("thresh", 640, 480);
 
+        upperBranch = CameraServer.getInstance().putVideo("upperBranch", 640, 480);
+        middleBranch = CameraServer.getInstance().putVideo("middleBranch", 640, 480);
+        lowerBranch = CameraServer.getInstance().putVideo("lowerBranch", 640, 480);
+
         settingCameraParameters(); // На пробу)
 
         while (true) {
@@ -90,6 +95,11 @@ public class CameraController implements Runnable {
                 if(Main.sensorsMap.get("camTask") == 3) {
                     thresholdSettings(source);
                 }
+
+                if(Main.sensorsMap.get("camTask") == 4) {
+                    treeModeAutoGrab(source);
+                }
+
                 Main.sensorsMap.put("updateTimeCamera", cameraUpdateTime);
                 outStream.putFrame(source);
                 source.release();
@@ -188,14 +198,14 @@ public class CameraController implements Runnable {
 
         Mat square = cropSquareFromCenter(mask, size);
 
-        if(Viscad.ImageTrueArea(square) >= 20000 && colorIndex != 2.0) {
+        if(Viscad.ImageTrueArea(square) >= 2000 && colorIndex != 2.0) {
             Main.camMap.put("grippedFruit", 1.0);
-        } 
-        if(Viscad.ImageTrueArea(square) <= 20000 && colorIndex != 2.0) {
+        } else if(Viscad.ImageTrueArea(square) <= 2000 && colorIndex != 2.0) {
             Main.camMap.put("grippedFruit", 2.0);
         } else {
             Main.camMap.put("grippedFruit", 3.0);
         }
+        SmartDashboard.putNumber("colorIndex", colorIndex);
         SmartDashboard.putNumber("ImageAreaGlideSquare", Viscad.ImageTrueArea(square));
 
         Mat outPA = new Mat();
@@ -328,6 +338,41 @@ public class CameraController implements Runnable {
         return null;
     }
 
+    private static Point findHighestObject(Mat inImage, List<Rect> currentCoordinate) {
+        Rect highestObject = null;
+        int minY = Integer.MAX_VALUE;
+    
+        for (Rect rect : currentCoordinate) {
+            int x = rect.x;
+            int y = rect.y;
+            int width = rect.width;
+            int height = rect.height;
+            int topY = y;
+    
+            Imgproc.rectangle(inImage, new Point(x, y), new Point(x + width, y + height), new Scalar(0, 255, 0), 2);
+    
+            if (topY < minY) {
+                minY = topY;
+                highestObject = rect;
+            }
+        }
+    
+        if (highestObject != null) {
+            int highestX = highestObject.x + highestObject.width / 2;
+            int highestY = highestObject.y + highestObject.height / 2;
+            Point center = new Point(highestX, highestY);
+    
+            Imgproc.circle(inImage, center, 5, new Scalar(255, 0, 0), -1);
+    
+            SmartDashboard.putNumber("Highest Object Center X", highestX);
+            
+            SmartDashboard.putNumber("Highest Object Center Y", highestY);
+    
+            return center;
+        }
+        return null;
+    }
+
     public static Mat cropSquareFromCenter(Mat source, int sideLength) { // Используется при выдвижении Glide к объекту
         // Проверяем, что сторона квадрата не превышает размеры исходного изображения
         int width = source.cols();
@@ -350,13 +395,80 @@ public class CameraController implements Runnable {
         return croppedImage;
     }
 
-    private static int detectFruitInGripper(Mat orig) {
-        Mat cutInGripper = Viscad.ExtractImage(orig, new Rect(80, 180, 300, 300));
-        // noWheels.putFrame(cutInGripper);
-        cutInGripper.release();
-        return 1;
+    private void treeModeAutoGrab(Mat orig) {
+
+        ColorRange currentColor = setPointsForColors(colorIndex);
+        
+        List<Rect> currentCoordinate = new ArrayList<>();
+        Point highestFruit = new Point();
+        Point centreSearch = new Point();
+
+        Mat blur = Viscad.Blur(orig, 4);
+        Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
+        Mat mask = createMask(hsvImage, currentColor);
+
+        Mat upper = Viscad.ExtractImage(mask, new Rect(460, 0, 170, 150));
+        Mat middle = Viscad.ExtractImage(mask, new Rect(0, 128, 150, 150));
+        Mat lower = Viscad.ExtractImage(mask, new Rect(177, 330, 150, 150));
+        
+        upperBranch.putFrame(upper);
+        middleBranch.putFrame(middle);
+        lowerBranch.putFrame(lower);
+
+        outHSV.putFrame(mask);
+        // не получилось додумать до чего-то, что будет работать без костылей.
+        // Stack<Mat> branches = new Stack<>();
+        // double countBranches = 1.0;
+
+        // branches.push(upper); // 3
+        // branches.push(middle); // 2
+        // branches.push(lower); // 1
+
+        // // В стеке нижняя ветка будет самой первой, поэтому countBranches = 1.0
+        // if(Viscad.ImageTrueArea(branches.peek()) > 100) {
+        //     Main.camMap.put("branch", countBranches);
+        //     countBranches++;
+        //     branches.pop();
+        // } else {
+        //     branches.pop();
+        // }
+
+        Mat outPA = new Mat();
+        currentCoordinate = Viscad.ParticleAnalysis(mask, outPA);
+        
+        centreSearch = Viscad.detectCenter(mask);
+
+        if(centreSearch.x == 0 && centreSearch.y == 0) {
+            releaseMats(blur, hsvImage, mask, outPA);
+            return;
+        }
+
+        highestFruit = findHighestObject(mask, currentCoordinate);
+
+        // это тоже кринж, но иначе я не представляю как можно передавать ветку
+        // в целом наверное можно и не передавать, если эта функция будет работать
+        // if(Viscad.ImageTrueArea(upper) > 100) {
+        //     Main.camMap.put("branch", 1.0);
+        // }
+        // if(Viscad.ImageTrueArea(middle) > 100) {
+        //     Main.camMap.put("branch", 2.0);
+        // }
+        // if(Viscad.ImageTrueArea(lower) > 100) {
+        //     Main.camMap.put("branch", 3.0);
+        // }
+
+        if(highestFruit.x != 0 && highestFruit.y != 0 && Viscad.ImageTrueArea(mask) > 100) {
+            Main.camMap.put("targetFound", 1.0);
+            Main.camMap.put("currentCenterX", highestFruit.x);
+        } else {
+            Main.camMap.put("targetFound", 0.0);
+
+            Main.camMap.put("currentCenterX", 0.0);
+            Main.camMap.put("currentCenterY", 0.0);
+        }
+
     }
-    
+
     private static void thresholdSettings(Mat orig) {
         
         double red1 = SmartDashboard.getNumber("RED1", 0.0);

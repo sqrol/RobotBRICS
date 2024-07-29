@@ -13,22 +13,30 @@ import frc.robot.Main;
 
 public class AutoStart implements IState {
 
-    private Boolean flag;
+    private boolean flag;
+    
+    private boolean treeMode = false;
+    private double GRIP_ROTATE = 0.0;
     private ArrayList<IState> newStates = new ArrayList<>();
     private double currentColorIndex = 0; 
     private static double startTime = 0;
 
     public AutoStart() {
+        this.treeMode = false;
+        GRIP_ROTATE = 70.0;
+    }
 
+    public AutoStart(boolean treeMode) {
+        this.treeMode = treeMode;
+        GRIP_ROTATE = 70.0; // 30
     }
 
     @Override
     public void initialize() {
         Main.camMap.put("currentColorIndex", 0.0);
-        Main.sensorsMap.put("camTask", 1.0);
-
+        
         Main.motorControllerMap.put("servoGrab", 15.0);
-        Main.motorControllerMap.put("servoGripRotate", 70.0);
+        Main.motorControllerMap.put("servoGripRotate", GRIP_ROTATE);
 
         Main.motorControllerMap.put("speedX", 0.0);
         Main.motorControllerMap.put("speedZ", 0.0);
@@ -38,7 +46,7 @@ public class AutoStart implements IState {
 
     @Override
     public void execute() {
-
+        
         // Перебераем цвета 
         double currentTime = Timer.getFPGATimestamp();
 
@@ -48,13 +56,26 @@ public class AutoStart implements IState {
                 currentColorIndex++; 
             }   
         }
+
         SmartDashboard.putNumber("currentColorIndex", currentColorIndex);
         Main.camMap.put("currentColorIndex", currentColorIndex);
 
-        if (Main.camMap.get("targetFound") != 0 && StateMachine.iterationTime > 3) {
-            newStates.add(new AutoRotate()); 
-            StateMachine.states.addAll(StateMachine.index + 1, newStates);
-            flag = true;
+        if(treeMode) {
+            Main.sensorsMap.put("camTask", 4.0);
+
+            if(Main.camMap.get("targetFound") != 0 ) {
+                newStates.add(new AutoRotate(true));
+                StateMachine.states.addAll(StateMachine.index + 1, newStates);
+                flag = true;
+            }
+
+        } else {
+            Main.sensorsMap.put("camTask", 1.0);
+            if (Main.camMap.get("targetFound") != 0 && StateMachine.iterationTime > 1) {
+                newStates.add(new AutoRotate()); 
+                StateMachine.states.addAll(StateMachine.index + 1, newStates);
+                flag = true;
+            }
         }
     }
 

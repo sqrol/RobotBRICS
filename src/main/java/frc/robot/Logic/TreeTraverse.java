@@ -3,6 +3,7 @@ package frc.robot.Logic;
 import java.util.HashMap;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Main;
 
 public class TreeTraverse {
 
@@ -13,9 +14,9 @@ public class TreeTraverse {
     private static final HashMap<String, String> containersForFruits = new HashMap<String, String>() {
         {
             put("rotten", "CON2");
-            put("AppleSmallRipe", "CON4");
-            put("AppleBigRipe", "CON1");
-            put("PeerRipe", "CON3");
+            put("AppleSmallRed", "CON4");
+            put("AppleBigRed", "CON1");
+            put("PearYellow", "CON3");
         }
     };
 
@@ -23,9 +24,6 @@ public class TreeTraverse {
         {
             put("LZ", "AUTO_GRAB_UPPER");
             put("RZ", "AUTO_GRAB_UPPER");
-            put("LOZ", "AUTO_GRAB_UPPER");
-            put("UZL", "AUTO_GRAB_UPPER");
-            put("UZR", "AUTO_GRAB_UPPER");
             put("TZ", "AUTO_GRAB_UPPER");
         }
     };
@@ -43,12 +41,11 @@ public class TreeTraverse {
     public String execute() {
         String outIndex = "none";
 
-        // findFruitName = train.detectionResult;
-        // fruitFind = train.fruitFind;
+        findFruitName = getGrippedFruit();
 
         SmartDashboard.putBoolean("FruitHui: ", fruitFind); 
         SmartDashboard.putString("FruitHuiName: ", findFruitName); 
-
+        
         if (firstCall) {
             outIndex = "MOVE_FROM_START_TO_CH1";
             setLastCheckpoint("CH1");
@@ -100,64 +97,130 @@ public class TreeTraverse {
         return outIndex;
     }
 
+    // private String processCurrentTreeZone(Integer currentTreeNumber, Integer currentTreeZoneNumber, Boolean ChangeTreeNumber) {
+    //     String outIndex = "none";
+
+    //         if (firstItter) {
+
+    //             outIndex = "MOVE_FROM_" + getLastCheckpoint() + "_TO_" + TREE_NAMES[currentTreeNumber] + "_" + TREE_ZONE_NAMES[currentTreeZoneNumber];
+    //             setLastTreeZone(TREE_NAMES[currentTreeNumber] + "_" + TREE_ZONE_NAMES[currentTreeZoneNumber]);
+    //             this.currentTreeZoneSteps = 0;
+    //             firstItter = false;
+
+    //         } else {
+    //             if (fruitFind && lastAutoGrab) {
+
+    //                 if (deliverySteps < 4) {
+    //                     SmartDashboard.putNumber("deliverySteps", deliverySteps);
+    //                     if (deliverySteps == 0) {
+    //                         outIndex = "MOVE_FROM_" + getLastTreeZone() + "_TO_" + getConForFruit(findFruitName);
+    //                         setLastCheckpoint(getBestWayForCheckForZone(getLastTreeZone()));
+
+    //                         this.currentTreeZoneNumber = lastCurrentTreeZoneNumber;
+    //                         this.currentTreeZoneSteps = -1;
+    //                     }
+    //                     SmartDashboard.putNumber("deliverySteps", deliverySteps);
+    //                     if (deliverySteps == 1) {
+    //                         SmartDashboard.putNumber("this.currentTreeZoneNumber", this.lastCurrentTreeZoneNumber);
+    //                         SmartDashboard.putNumber("lastCurrentTreeZoneNumber", lastCurrentTreeZoneNumber);
+    //                         outIndex = "RESET_FRUIT";
+    //                         // fruitFind = false;
+    //                         // findFruitName = "";
+    //                         this.currentTreeZoneNumber = lastCurrentTreeZoneNumber;
+    //                         this.currentTreeZoneSteps = -1;
+    //                     }
+    //                     SmartDashboard.putNumber("deliverySteps", deliverySteps);
+    //                     if (deliverySteps == 2) {
+    //                         outIndex = "MOVE_FROM_" + getConForFruit(findFruitName) + "_TO_" + getLastCheckpoint();
+
+    //                         this.currentTreeZoneNumber = lastCurrentTreeZoneNumber;
+    //                         this.currentTreeZoneSteps = -1;
+    //                     }
+    //                     SmartDashboard.putNumber("deliverySteps", deliverySteps);
+    //                     deliverySteps++;
+    //                     SmartDashboard.putNumber("deliverySteps", deliverySteps);
+    //                     if (deliverySteps == 3) {
+
+    //                         fruitFind = false;
+    //                         findFruitName = "";
+    //                         lastAutoGrab = false;
+    //                     }
+    //                     SmartDashboard.putNumber("deliverySteps", deliverySteps);
+    //                 }
+
+    //             } else {
+    //                 if (ChangeTreeNumber) {
+    //                     outIndex = "MOVE_FROM_" + getLastTreeZone() + "_TO_" + getBestWayForCheckForZone(getLastTreeZone());
+    //                     lastStepChange = true;
+    //                     this.currentTreeZoneSteps = -1;
+    //                 } else {
+    //                     outIndex = createPathForZone(currentTreeNumber, currentTreeZoneNumber);
+    //                 }
+    //             }
+    //         }
+    //     return outIndex;
+    // }
+
     private String processCurrentTreeZone(Integer currentTreeNumber, Integer currentTreeZoneNumber, Boolean ChangeTreeNumber) {
         String outIndex = "none";
-
-            if (firstItter) {
-
-                outIndex = "MOVE_FROM_" + getLastCheckpoint() + "_TO_" + TREE_NAMES[currentTreeNumber] + "_" + TREE_ZONE_NAMES[currentTreeZoneNumber];
-                setLastTreeZone(TREE_NAMES[currentTreeNumber] + "_" + TREE_ZONE_NAMES[currentTreeZoneNumber]);
-                this.currentTreeZoneSteps = 0;
-                firstItter = false;
-
-            } else {
-                if (fruitFind && lastAutoGrab) {
-
-                    if (deliverySteps < 5) {
-
-                        if (deliverySteps == 0) {
+    
+        if (firstItter) {
+            outIndex = "MOVE_FROM_" + getLastCheckpoint() + "_TO_" + TREE_NAMES[currentTreeNumber] + "_" + TREE_ZONE_NAMES[currentTreeZoneNumber];
+            setLastTreeZone(TREE_NAMES[currentTreeNumber] + "_" + TREE_ZONE_NAMES[currentTreeZoneNumber]);
+            this.currentTreeZoneSteps = 0;
+            firstItter = false;
+    
+        } else {
+            if (fruitFind && lastAutoGrab) {
+                if (deliverySteps < 4) {
+                    SmartDashboard.putNumber("deliverySteps11", deliverySteps);
+    
+                    switch (deliverySteps) {
+                        case 0:
                             outIndex = "MOVE_FROM_" + getLastTreeZone() + "_TO_" + getConForFruit(findFruitName);
                             setLastCheckpoint(getBestWayForCheckForZone(getLastTreeZone()));
-
                             this.currentTreeZoneNumber = lastCurrentTreeZoneNumber;
                             this.currentTreeZoneSteps = -1;
-                        }
-
-                        if (deliverySteps == 1) {
+                            SmartDashboard.putNumber("deliverySteps", 0);
+                            break;
+    
+                        case 1:
+                            
                             outIndex = "RESET_FRUIT";
-                            // train.fruitFind = false;
-                            // train.detectionResult = "";
                             this.currentTreeZoneNumber = lastCurrentTreeZoneNumber;
                             this.currentTreeZoneSteps = -1;
-                        }
-
-                        if (deliverySteps == 2) {
+                            SmartDashboard.putNumber("deliverySteps", 1);
+                            break;
+    
+                        case 2:
                             outIndex = "MOVE_FROM_" + getConForFruit(findFruitName) + "_TO_" + getLastCheckpoint();
-
                             this.currentTreeZoneNumber = lastCurrentTreeZoneNumber;
                             this.currentTreeZoneSteps = -1;
-                        }
-
-                        deliverySteps++;
-
-                        if (deliverySteps == 3) {
-
-                            // train.fruitFind = false;
-                            // train.detectionResult = "";
+                            SmartDashboard.putNumber("deliverySteps", 2);
+                            break;
+    
+                        case 3:
+                            fruitFind = false;
+                            findFruitName = "";
                             lastAutoGrab = false;
-                        }
+                            SmartDashboard.putNumber("deliverySteps", 3);
+                            break;
                     }
-
+    
+                    deliverySteps++;
+                    SmartDashboard.putNumber("deliverySteps", deliverySteps);
+                    System.out.println("Incremented deliverySteps" + deliverySteps);
+                }
+            } else {
+                if (ChangeTreeNumber) {
+                    outIndex = "MOVE_FROM_" + getLastTreeZone() + "_TO_" + getBestWayForCheckForZone(getLastTreeZone());
+                    lastStepChange = true;
+                    this.currentTreeZoneSteps = -1;
                 } else {
-                    if (ChangeTreeNumber) {
-                        outIndex = "MOVE_FROM_" + getLastTreeZone() + "_TO_" + getBestWayForCheckForZone(getLastTreeZone());
-                        lastStepChange = true;
-                        this.currentTreeZoneSteps = -1;
-                    } else {
-                        outIndex = createPathForZone(currentTreeNumber, currentTreeZoneNumber);
-                    }
+                    outIndex = createPathForZone(currentTreeNumber, currentTreeZoneNumber);
                 }
             }
+        }
         return outIndex;
     }
 
@@ -253,15 +316,6 @@ public class TreeTraverse {
                 case "RZ":
                     out = "CH1";
                     break;
-                case "LOZ":
-                    out = "CH1";
-                    break;
-                case "UZL":
-                    out = "CH1";
-                    break;
-                case "UZR":
-                    out = "CH1";
-                    break;
                 case "TZ":
                     out = "CH1";
                     break;
@@ -276,25 +330,16 @@ public class TreeTraverse {
         if (zoneName.equals("SECOND")) {
             switch (currentZoneName) {
                 case "LZ":
-                    out = "CH1";
+                    out = "CH2";
                     break;
                 case "RZ":
-                    out = "CH1";
-                    break;
-                case "LOZ":
-                    out = "CH1";
-                    break;
-                case "UZL":
-                    out = "CH1";
-                    break;
-                case "UZR":
-                    out = "CH1";
+                    out = "CH2";
                     break;
                 case "TZ":
-                    out = "CH1";
+                    out = "CH2";
                     break;
                 case "START":
-                    out = "CH1";
+                    out = "CH2";
                     break;
                 default:
                     out = "null";
@@ -304,25 +349,16 @@ public class TreeTraverse {
         if (zoneName.equals("THIRD")) {
             switch (currentZoneName) {
                 case "LZ":
-                    out = "CH1";
+                    out = "CH2";
                     break;
                 case "RZ":
-                    out = "CH1";
-                    break;
-                case "LOZ":
-                    out = "CH1";
-                    break;
-                case "UZL":
-                    out = "CH1";
-                    break;
-                case "UZR":
-                    out = "CH1";
+                    out = "CH3";
                     break;
                 case "TZ":
-                    out = "CH1";
+                    out = "CH3";
                     break;
                 case "START":
-                    out = "CH1";
+                    out = "CH3";
                     break;
                 default:
                     out = "null";
@@ -330,5 +366,24 @@ public class TreeTraverse {
             }
         }
         return out;
+    }
+
+    private String getGrippedFruit() {
+        String detectionResult = "";
+        switch(Main.camMap.get("grippedFruit").intValue()) {
+            case 1: 
+                detectionResult = "AppleBigRed";
+                fruitFind = true;
+                break;
+            case 2: 
+                detectionResult = "AppleSmallRed";
+                fruitFind = true;
+                break;
+            case 3:
+                detectionResult = "PearYellow";
+                fruitFind = true;
+                break;
+        }
+        return detectionResult;
     }
 }

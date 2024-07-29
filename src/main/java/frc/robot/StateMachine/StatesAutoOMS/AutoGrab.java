@@ -40,11 +40,11 @@ public class AutoGrab implements IState {
 
     private static final HashMap<String, Double> LIFT_MAP = new HashMap<>() {
         {
-            put("AppleBigRed", 79.0);
-            put("AppleBigRotten", 79.0);
+            put("AppleBigRed", 73.0);
+            put("AppleBigRotten", 73.0);
 
-            put("AppleSmallRed", 80.0);
-            put("AppleSmallRotten", 80.0);
+            put("AppleSmallRed", 76.0);
+            put("AppleSmallRotten", 76.0);
 
             put("PearYellow", 75.0);
             put("PearRotten", 75.0);
@@ -70,7 +70,7 @@ public class AutoGrab implements IState {
                 // это проверка что в списке нашлось значение для результата с камеры
                 if(LIFT_MAP.get(getGrippedFruit()) != null) {
                     Main.motorControllerMap.put("targetLiftPos", LIFT_MAP.get(getGrippedFruit()));
-                    if (Main.switchMap.get("liftStop") && StateMachine.iterationTime > 5) {
+                    if (Main.switchMap.get("liftStop") && StateMachine.iterationTime > 2) {
                         index++;
                     }
                     break;
@@ -88,7 +88,7 @@ public class AutoGrab implements IState {
                         break;
                     }
                 }
-                else break;  
+                else break;
         }
 
         if (index == 3) {
@@ -100,7 +100,7 @@ public class AutoGrab implements IState {
 
     @Override
     public void finilize() {
-        
+        fruit = "";
     }
 
     @Override

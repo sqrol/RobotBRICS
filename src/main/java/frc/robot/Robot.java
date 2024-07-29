@@ -164,6 +164,8 @@ public class Robot extends TimedRobot {
 
     Main.camMap.put("grippedFruit", 0.0); // 1.0 - BigRedApple, 2.0 - SmallRedApple
 
+    Main.camMap.put("branch", 0.0); // 3.0 - upper, 2.0 - middle, 3.0 - lower
+
     Main.motorControllerMap.put("servoGrabAngle", 0.0);
 
     Main.motorControllerMap.put("lastGlidePosition", 0.0);

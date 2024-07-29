@@ -1,5 +1,6 @@
 package frc.robot.StateMachine.States;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Main;
 import frc.robot.Logic.CommandList;
 import frc.robot.StateMachine.CoreEngine.IState;
@@ -15,7 +16,9 @@ public class Transition implements IState {
 
     @Override
     public void execute() {
-        cmdList.setCurrentCommand(Main.traverse.execute());
+        String command = Main.traverse.execute();
+        SmartDashboard.putString("currentCommand", command);
+        cmdList.setCurrentCommand(command);
         cmdList.addCommand();
     }    
 

@@ -60,6 +60,9 @@ public class AutoGlide implements IState {
 
         SmartDashboard.putBoolean("glideStop", glideStop);
         
+        if(glideStop) {
+            
+        }
 
         // Если переехали лимит выдвижного механизма или уже долго все это происходит
         if (Main.sensorsMap.get("currentGlidePos") >= 23 || StateMachine.iterationTime > 25) {
