@@ -28,7 +28,7 @@ public class AutoStart implements IState {
 
     public AutoStart(boolean treeMode) {
         this.treeMode = treeMode;
-        GRIP_ROTATE = 70.0; // 30
+        GRIP_ROTATE = 30.0; // 30
     }
 
     @Override
@@ -63,7 +63,7 @@ public class AutoStart implements IState {
         if(treeMode) {
             Main.sensorsMap.put("camTask", 4.0);
 
-            if(Main.camMap.get("targetFound") != 0 ) {
+            if(Main.camMap.get("targetFound") != 0 && StateMachine.iterationTime > 1) {
                 newStates.add(new AutoRotate(true));
                 StateMachine.states.addAll(StateMachine.index + 1, newStates);
                 flag = true;
@@ -81,7 +81,8 @@ public class AutoStart implements IState {
 
     @Override
     public void finilize() {
-        if (!flag) Main.sensorsMap.put("camTask", 0.0);
+        if (!flag) 
+            Main.sensorsMap.put("camTask", 0.0);
 
         Main.motorControllerMap.put("speedX", 0.0);
         Main.motorControllerMap.put("speedZ", 0.0);

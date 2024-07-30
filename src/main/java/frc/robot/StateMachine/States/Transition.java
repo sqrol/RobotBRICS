@@ -17,7 +17,9 @@ public class Transition implements IState {
     @Override
     public void execute() {
         String command = Main.traverse.execute();
+
         SmartDashboard.putString("currentCommand", command);
+        
         cmdList.setCurrentCommand(command);
         cmdList.addCommand();
     }    

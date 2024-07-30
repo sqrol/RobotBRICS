@@ -234,7 +234,6 @@ public class MotorController implements Runnable {
         SmartDashboard.putNumber("targetPosition", targetPosition);
 
         if (Main.motorControllerMap.get("initLift") == 1.0) {
-            SmartDashboard.putNumber("INIT LIFT CHECK", 1111);
             if (Main.switchMap.get("limitSwitch")) {
                 outLiftSpeed = 0.0;
                 ENC_LIFT.reset();
@@ -242,7 +241,6 @@ public class MotorController implements Runnable {
                 outLiftSpeed = 70.0; 
             }
         } else {
-            SmartDashboard.putNumber("INIT LIFT CHECK", 2222);
             double convertPosToEncs = Functions.TransitionFunction(targetPosition, arrOfPosForLift);
             outLiftSpeed = Functions.TransitionFunction(liftEncoder - convertPosToEncs, speedForLift);
             liftStop = Functions.BooleanInRange(liftEncoder - convertPosToEncs, -5, 5);
@@ -291,14 +289,6 @@ public class MotorController implements Runnable {
         Main.motorControllerMap.put("rotateSpeed", rotateSpeed);
         Main.switchMap.put("rotateStop", rotateStop);
     }
-
-    // private void setAxisSpeed(double x, double z) {
-    //     double right = x + z;
-    //     double left = -x + z;
-
-    //     setRightMotorSpeed(right);
-    //     setLeftMotorSpeed(left);
-    // }
 
     private void setAxisSpeed(double x, double z, double useOneSide) {
         if (useOneSide == 1.0) {

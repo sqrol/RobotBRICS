@@ -27,19 +27,19 @@ public class CameraController implements Runnable {
     private static CvSource outStream, outHSV, outRect, outGlide, thresh, upperBranch, middleBranch, lowerBranch;
 
     private String currentColor = "";
-    private double colorIndex = 0.0;
+    // private double colorIndex = 0.0;
 
     @Override
     public void run() {
 
-        SmartDashboard.putNumber("RED1", 0.0);
-        SmartDashboard.putNumber("RED2", 0.0);
+        // SmartDashboard.putNumber("RED1", 0.0);
+        // SmartDashboard.putNumber("RED2", 0.0);
 
-        SmartDashboard.putNumber("GREEN1", 0.0);
-        SmartDashboard.putNumber("GREEN2", 0.0);
+        // SmartDashboard.putNumber("GREEN1", 0.0);
+        // SmartDashboard.putNumber("GREEN2", 0.0);
 
-        SmartDashboard.putNumber("BLUE1", 0.0);
-        SmartDashboard.putNumber("BLUE2", 0.0);
+        // SmartDashboard.putNumber("BLUE1", 0.0);
+        // SmartDashboard.putNumber("BLUE2", 0.0);
 
 
         // SmartDashboard.putNumber("Hue1", 0.0);
@@ -85,7 +85,7 @@ public class CameraController implements Runnable {
                 }
 
                 if (Main.sensorsMap.get("camTask") == 1) {
-                    testForAutoGrab(source, Main.camMap.get("currentColorIndex"));
+                    groundModeAutoGrab(source, Main.camMap.get("currentColorIndex"));
                 }
 
                 if (Main.sensorsMap.get("camTask") == 2) {
@@ -97,7 +97,8 @@ public class CameraController implements Runnable {
                 }
 
                 if(Main.sensorsMap.get("camTask") == 4) {
-                    treeModeAutoGrab(source);
+                    treeModeAutoGrab(source, Main.camMap.get("currentColorIndex"));
+                    
                 }
 
                 Main.sensorsMap.put("updateTimeCamera", cameraUpdateTime);
@@ -137,41 +138,6 @@ public class CameraController implements Runnable {
         return outRange;
     }
 
-    // Это нужно удалить
-    private void testing(Mat source, Double colorIndex) {
-
-        ColorRange currentColor = setPointsForColors(colorIndex);
-
-        // Снижение разрешения изображения
-        Mat resizedSource = new Mat();
-        Imgproc.resize(source, resizedSource, new Size(source.cols() / 3, source.rows() / 3));
-    
-        Mat blur = Viscad.Blur(resizedSource, 4);
-        Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
-        Mat mask = createMask(hsvImage, currentColor);
-
-        outGlide.putFrame(mask);
-
-        // Освобождение памяти
-        releaseMats(resizedSource, blur, hsvImage, mask);
-    }
-
-    private void colorSearching(Mat source, Double colorIndex) {
-
-        ColorRange currentColor = setPointsForColors(colorIndex);
-
-        // Снижение разрешения изображения
-        Mat resizedSource = Viscad.ReducResolutImage(source, 3);
-    
-        Mat blur = Viscad.Blur(resizedSource, 4);
-        Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
-        Mat mask = createMask(hsvImage, currentColor);
-        
-        outGlide.putFrame(mask);
-
-        // Освобождение памяти
-        releaseMats(resizedSource, blur, hsvImage, mask);
-    }
 
     private static Mat createMask(Mat hsvImage, ColorRange colorRange) {
         Mat mask = Viscad.Threshold(hsvImage, colorRange.getHue(), colorRange.getSaturation(), colorRange.getValue());
@@ -198,14 +164,14 @@ public class CameraController implements Runnable {
 
         Mat square = cropSquareFromCenter(mask, size);
 
-        if(Viscad.ImageTrueArea(square) >= 2000 && colorIndex != 2.0) {
+        if(Viscad.ImageTrueArea(square) >= 2000) {
             Main.camMap.put("grippedFruit", 1.0);
-        } else if(Viscad.ImageTrueArea(square) <= 2000 && colorIndex != 2.0) {
+        } else if(Viscad.ImageTrueArea(square) <= 2000) {
             Main.camMap.put("grippedFruit", 2.0);
         } else {
             Main.camMap.put("grippedFruit", 3.0);
         }
-        SmartDashboard.putNumber("colorIndex", colorIndex);
+    
         SmartDashboard.putNumber("ImageAreaGlideSquare", Viscad.ImageTrueArea(square));
 
         Mat outPA = new Mat();
@@ -226,7 +192,7 @@ public class CameraController implements Runnable {
         releaseMats(resizedSource, blur, hsvImage, mask, outPA, square);
     }
 
-    private void testForAutoGrab(Mat source, Double colorIndex) {
+    private void groundModeAutoGrab(Mat source, Double colorIndex) {
 
         // double Hue1 = SmartDashboard.getNumber("Hue1", 0);
         // double Hue2 = SmartDashboard.getNumber("Hue2", 0);
@@ -248,7 +214,7 @@ public class CameraController implements Runnable {
         Point ValueBound = new Point(100, 255);
 
         // Снижение разрешения изображения
-        Mat resizedSource = Viscad.ReducResolutImage(source, 3);
+        Mat resizedSource = Viscad.ReduceResolutionImage(source, 3);
     
         Mat blur = Viscad.Blur(resizedSource, 4);
         Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
@@ -271,7 +237,7 @@ public class CameraController implements Runnable {
 
         lowestObjectCordinate = findLowestObject(mask, currentCordinate);
 
-        if (lowestObjectCordinate.x != 0 && lowestObjectCordinate.y != 0 && maskArea > 50) {
+        if (lowestObjectCordinate.x != 0 && lowestObjectCordinate.y != 0 && maskArea > 100) {
             Main.camMap.put("targetFound", 1.0);
 
             Main.camMap.put("currentCenterX", lowestObjectCordinate.x);
@@ -286,22 +252,6 @@ public class CameraController implements Runnable {
         // Освобождение памяти
         releaseMats(resizedSource, blur, hsvImage, mask, outPA);
     }
-
-
-    // private static void rotateToObject(Point target, int imageWidth, int imageHeight) {
-    //     if (target.y != 0) {
-    //         Point center = new Point(imageWidth / 2, imageHeight / 2); 
-    //         double dx = target.x - center.x;
-        
-    //         double angle = Math.atan2(0, dx) * 180 / Math.PI;
-        
-    //         SmartDashboard.putNumber("angle123", angle);
-    //         Main.camMap.put("targetAngle", angle);
-    //     } else {
-    //         SmartDashboard.putNumber("angle123", 0);
-    //         Main.camMap.put("targetAngle", 0.0);
-    //     }
-    // }
 
     private static Point findLowestObject(Mat inImage, List<Rect> currentCoordinate) {
         Rect lowestObject = null;
@@ -328,19 +278,15 @@ public class CameraController implements Runnable {
             Point center = new Point(lowestX, lowestY);
     
             Imgproc.circle(inImage, center, 5, new Scalar(255, 0, 0), -1);
-
-            SmartDashboard.putNumber("Lowest Object Center X", lowestX);
-            SmartDashboard.putNumber("Lowest Object Center Y", lowestY);
     
             return center;
         }
-    
         return null;
     }
 
-    private static Point findHighestObject(Mat inImage, List<Rect> currentCoordinate) {
+    private static Point findHighestObject(Mat orig, List<Rect> currentCoordinate) {
         Rect highestObject = null;
-        int minY = Integer.MAX_VALUE;
+        int maxY = Integer.MAX_VALUE;
     
         for (Rect rect : currentCoordinate) {
             int x = rect.x;
@@ -349,10 +295,11 @@ public class CameraController implements Runnable {
             int height = rect.height;
             int topY = y;
     
-            Imgproc.rectangle(inImage, new Point(x, y), new Point(x + width, y + height), new Scalar(0, 255, 0), 2);
-    
-            if (topY < minY) {
-                minY = topY;
+            Imgproc.rectangle(orig, new Point(x, y), new Point(x + width, y + height), new Scalar(0, 255, 0), 2);
+            
+            thresh.putFrame(orig);
+            if (topY < maxY) {
+                maxY = topY;
                 highestObject = rect;
             }
         }
@@ -360,14 +307,11 @@ public class CameraController implements Runnable {
         if (highestObject != null) {
             int highestX = highestObject.x + highestObject.width / 2;
             int highestY = highestObject.y + highestObject.height / 2;
+
             Point center = new Point(highestX, highestY);
     
-            Imgproc.circle(inImage, center, 5, new Scalar(255, 0, 0), -1);
-    
-            SmartDashboard.putNumber("Highest Object Center X", highestX);
-            
-            SmartDashboard.putNumber("Highest Object Center Y", highestY);
-    
+            Imgproc.circle(orig, center, 5, new Scalar(255, 0, 0), -1);
+
             return center;
         }
         return null;
@@ -395,43 +339,22 @@ public class CameraController implements Runnable {
         return croppedImage;
     }
 
-    private void treeModeAutoGrab(Mat orig) {
+    private void treeModeAutoGrab(Mat orig, double colorIndex) {
 
         ColorRange currentColor = setPointsForColors(colorIndex);
         
         List<Rect> currentCoordinate = new ArrayList<>();
+
         Point highestFruit = new Point();
         Point centreSearch = new Point();
 
-        Mat blur = Viscad.Blur(orig, 4);
+        Mat resizedOrig = Viscad.ReduceResolutionImage(orig, 3);
+
+        Mat blur = Viscad.Blur(resizedOrig, 4);
         Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
         Mat mask = createMask(hsvImage, currentColor);
-
-        Mat upper = Viscad.ExtractImage(mask, new Rect(460, 0, 170, 150));
-        Mat middle = Viscad.ExtractImage(mask, new Rect(0, 128, 150, 150));
-        Mat lower = Viscad.ExtractImage(mask, new Rect(177, 330, 150, 150));
         
-        upperBranch.putFrame(upper);
-        middleBranch.putFrame(middle);
-        lowerBranch.putFrame(lower);
-
         outHSV.putFrame(mask);
-        // не получилось додумать до чего-то, что будет работать без костылей.
-        // Stack<Mat> branches = new Stack<>();
-        // double countBranches = 1.0;
-
-        // branches.push(upper); // 3
-        // branches.push(middle); // 2
-        // branches.push(lower); // 1
-
-        // // В стеке нижняя ветка будет самой первой, поэтому countBranches = 1.0
-        // if(Viscad.ImageTrueArea(branches.peek()) > 100) {
-        //     Main.camMap.put("branch", countBranches);
-        //     countBranches++;
-        //     branches.pop();
-        // } else {
-        //     branches.pop();
-        // }
 
         Mat outPA = new Mat();
         currentCoordinate = Viscad.ParticleAnalysis(mask, outPA);
@@ -439,34 +362,22 @@ public class CameraController implements Runnable {
         centreSearch = Viscad.detectCenter(mask);
 
         if(centreSearch.x == 0 && centreSearch.y == 0) {
-            releaseMats(blur, hsvImage, mask, outPA);
+            releaseMats(blur, hsvImage, mask, outPA, resizedOrig);
             return;
         }
 
         highestFruit = findHighestObject(mask, currentCoordinate);
 
-        // это тоже кринж, но иначе я не представляю как можно передавать ветку
-        // в целом наверное можно и не передавать, если эта функция будет работать
-        // if(Viscad.ImageTrueArea(upper) > 100) {
-        //     Main.camMap.put("branch", 1.0);
-        // }
-        // if(Viscad.ImageTrueArea(middle) > 100) {
-        //     Main.camMap.put("branch", 2.0);
-        // }
-        // if(Viscad.ImageTrueArea(lower) > 100) {
-        //     Main.camMap.put("branch", 3.0);
-        // }
-
         if(highestFruit.x != 0 && highestFruit.y != 0 && Viscad.ImageTrueArea(mask) > 100) {
             Main.camMap.put("targetFound", 1.0);
             Main.camMap.put("currentCenterX", highestFruit.x);
+            Main.camMap.put("currentCenterY", highestFruit.y);
         } else {
             Main.camMap.put("targetFound", 0.0);
-
             Main.camMap.put("currentCenterX", 0.0);
             Main.camMap.put("currentCenterY", 0.0);
         }
-
+        releaseMats(blur, hsvImage, mask, outPA, resizedOrig);
     }
 
     private static void thresholdSettings(Mat orig) {

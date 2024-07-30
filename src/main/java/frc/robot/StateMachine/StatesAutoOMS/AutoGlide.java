@@ -12,11 +12,13 @@ public class AutoGlide implements IState {
 
     private ArrayList<IState> newStates = new ArrayList<>();
     private double fruitPosY = 0;
-    private boolean flag = false; 
+    
 
     private double glideServoSpeed = 0; 
-
-    private boolean statesEnd = false;
+    
+    private boolean treeMode = false;
+    private boolean flag = false; 
+    private boolean stateEnd = false;
     private boolean glideStop = false;
 
     private int camMiddleForGrab = 27;
@@ -26,6 +28,10 @@ public class AutoGlide implements IState {
     public AutoGlide() {
         Main.sensorsMap.put("camTask", 2.0);
         flag = false; 
+    }
+
+    public AutoGlide(boolean treeMode) {
+        this.treeMode = treeMode;
     }
 
     @Override
@@ -43,39 +49,26 @@ public class AutoGlide implements IState {
 
         if (fruitPosY == 0 && !flag) {
             glideServoSpeed = 0.3;
-            SmartDashboard.putNumber("glideState", 1);
         } else {
-            SmartDashboard.putNumber("glideState", 2);
             flag = true; 
             glideServoSpeed = Functions.TransitionFunction(camMiddleForGrab - fruitPosY, speedForGlideServo); 
         }
-
-        SmartDashboard.putNumber("87 - fruitPosY", camMiddleForGrab - fruitPosY); 
-        SmartDashboard.putNumber("glideServoSpeed12", glideServoSpeed); 
-
-        SmartDashboard.putNumber("currentGlidePosOLD", Main.sensorsMap.get("currentGlidePos")); 
 
         Main.motorControllerMap.put("setGlideSpeed", glideServoSpeed);
         glideStop = Functions.BooleanInRange(camMiddleForGrab - fruitPosY, -2, 2);
 
         SmartDashboard.putBoolean("glideStop", glideStop);
-        
-        if(glideStop) {
-            
-        }
 
-        // Если переехали лимит выдвижного механизма или уже долго все это происходит
         if (Main.sensorsMap.get("currentGlidePos") >= 23 || StateMachine.iterationTime > 25) {
             newStates.add(new AutoEnd()); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
-            statesEnd = true;
+            stateEnd = true;
         }
 
-        // Если мы выровнились по объекту то переходим к следующему этапу
         if (glideStop && StateMachine.iterationTime > 2) {
             newStates.add(new AutoGrab()); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
-            statesEnd = true;
+            stateEnd = true;
         }
     }
 
@@ -93,6 +86,6 @@ public class AutoGlide implements IState {
     @Override
     public boolean isFinished() {
         // return false;
-        return statesEnd;
+        return stateEnd;
     }
 }

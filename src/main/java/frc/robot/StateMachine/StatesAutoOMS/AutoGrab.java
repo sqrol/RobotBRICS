@@ -15,7 +15,7 @@ public class AutoGrab implements IState {
     private String fruit = "";
 
     private boolean flag = false;
-    private boolean statesEnd = false;
+    private boolean stateEnd = false;
     private boolean objectСaptured = false;
     private int index = 1;
 
@@ -27,14 +27,14 @@ public class AutoGrab implements IState {
 
     private static final HashMap<String, Double> GRAB_MAP = new HashMap<>() {
         {
-            put("AppleBigRed", 30.0);
-            put("AppleBigRotten", 30.0);
+            put("AppleBigRed", 42.0);
+            put("AppleBigRotten", 42.0);
 
             put("AppleSmallRed", 50.0);
             put("AppleSmallRotten", 50.0);
 
-            put("PearYellow", 66.0);
-            put("PearRotten", 66.0);
+            put("PearYellow", 43.0);
+            put("PearRotten", 43.0);
         }
     };
 
@@ -58,7 +58,7 @@ public class AutoGrab implements IState {
     @Override
     public void initialize() {
         this.flag = false;
-        this.statesEnd = false;
+        this.stateEnd = false;
         Main.switchMap.put("liftStop", false);
     }
 
@@ -67,7 +67,6 @@ public class AutoGrab implements IState {
         SmartDashboard.putString("fruit", getGrippedFruit());
         switch (index) {
             case 1:
-                // это проверка что в списке нашлось значение для результата с камеры
                 if(LIFT_MAP.get(getGrippedFruit()) != null) {
                     Main.motorControllerMap.put("targetLiftPos", LIFT_MAP.get(getGrippedFruit()));
                     if (Main.switchMap.get("liftStop") && StateMachine.iterationTime > 2) {
@@ -79,8 +78,7 @@ public class AutoGrab implements IState {
                 
             case 2:
                 if(GRAB_MAP.get(getGrippedFruit()) != null) {
-                    Main.motorControllerMap.put("servoGrab", GRAB_MAP.get(getGrippedFruit()));
-                    if(smoothServoMovement(66.0, DELAY)) {
+                    if(smoothServoMovement(GRAB_MAP.get(getGrippedFruit()), DELAY)) {
                         if (!flag) {
                             index++;
                             flag = true;
@@ -94,7 +92,7 @@ public class AutoGrab implements IState {
         if (index == 3) {
             newStates.add(new AutoEnd()); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
-            statesEnd = true;
+            stateEnd = true;
         }
     }
 
@@ -105,7 +103,7 @@ public class AutoGrab implements IState {
 
     @Override
     public boolean isFinished() {
-        return statesEnd;
+        return stateEnd;
     }
 
     private boolean smoothServoMovement(double targetPosition, double DELAY) {

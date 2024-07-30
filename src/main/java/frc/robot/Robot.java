@@ -177,17 +177,15 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putNumber("targetAngle", Main.camMap.get("targetAngle"));
     SmartDashboard.putNumber("grippedFruit", Main.camMap.get("grippedFruit"));
+    SmartDashboard.putBoolean("targetFound", Main.camMap.get("targetFound") == 1.0);
+    SmartDashboard.putNumber("currentCenterX", Main.camMap.get("currentCenterX"));
+    SmartDashboard.putNumber("currentCenterY", Main.camMap.get("currentCenterY"));
 
     SmartDashboard.putNumber("sharpRight", Main.sensorsMap.get("sharpRight"));
     SmartDashboard.putNumber("sharpLeft", Main.sensorsMap.get("sharpLeft"));
 
     SmartDashboard.putNumber("sonicLeft", Main.sensorsMap.get("sonicLeft"));
     SmartDashboard.putNumber("sonicRight", Main.sensorsMap.get("sonicRight"));
-
-    SmartDashboard.putNumber("cobraSignal0", Main.sensorsMap.get("cobraSignal0"));
-    SmartDashboard.putNumber("cobraSignal1", Main.sensorsMap.get("cobraSignal1"));
-    SmartDashboard.putNumber("cobraSignal2", Main.sensorsMap.get("cobraSignal2"));
-    SmartDashboard.putNumber("cobraSignal3", Main.sensorsMap.get("cobraSignal3"));
 
     SmartDashboard.putBoolean("isResetZ", Main.sensorsMap.get("resetGyro") == 1.0);
     SmartDashboard.putBoolean("isResetEncs", Main.motorControllerMap.get("resetAllEncoders") == 1.0);

@@ -24,7 +24,7 @@ public class Viscad {
         return dst;
     }
 
-    public static Mat ReducResolutImage(Mat src, int reductValue) {
+    public static Mat ReduceResolutionImage(Mat src, int reductValue) {
         Mat resizedSource = new Mat();
         Imgproc.resize(src, resizedSource, new Size(src.cols() / reductValue, src.rows() / reductValue));
         return resizedSource;
