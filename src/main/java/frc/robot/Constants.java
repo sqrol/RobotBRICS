@@ -25,6 +25,7 @@ public class Constants {
     public static final int SHARP_LEFT                                = 2;
 
     public static final int LIMIT_SWITCH                              = 0;
+    public static final int LIMIT_SWITCH_GLIDE                        = 1;
     public static final int START_BUTTON                              = 4;
     public static final int EMS_BUTTON                                = 5;
 

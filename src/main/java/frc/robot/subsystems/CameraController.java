@@ -84,21 +84,25 @@ public class CameraController implements Runnable {
                     Main.camMap.put("currentCenterY", 0.0);
                 }
 
-                if (Main.sensorsMap.get("camTask") == 1) {
+                if (Main.sensorsMap.get("camTask") == 1.0) {
                     groundModeAutoGrab(source, Main.camMap.get("currentColorIndex"));
                 }
 
-                if (Main.sensorsMap.get("camTask") == 2) {
-                    glideSearchForGrab(source, 80); // Тут мы обозначаем параметры обрезаемого квадрата по середине картинки
+                if (Main.sensorsMap.get("camTask") == 2.0) {
+                    searchForGrab(source, 80); // Тут мы обозначаем параметры обрезаемого квадрата по середине картинки
                 }
 
-                if(Main.sensorsMap.get("camTask") == 3) {
+                if(Main.sensorsMap.get("camTask") == 3.0) {
                     thresholdSettings(source);
                 }
 
-                if(Main.sensorsMap.get("camTask") == 4) {
+                if(Main.sensorsMap.get("camTask") == 4.0) {
                     treeModeAutoGrab(source, Main.camMap.get("currentColorIndex"));
                     
+                }
+
+                if(Main.sensorsMap.get("camTask") == 5.0) {
+                    searchForGrab(source, 70);
                 }
 
                 Main.sensorsMap.put("updateTimeCamera", cameraUpdateTime);
@@ -147,7 +151,7 @@ public class CameraController implements Runnable {
         return dilated;
     }
 
-    private void glideSearchForGrab(Mat source, int size) {
+    private void searchForGrab(Mat source, int size) {
         List<Rect> currentCordinate = new ArrayList<>();
 
         Point HueBound = new Point(0, 180);
@@ -371,7 +375,6 @@ public class CameraController implements Runnable {
         if(highestFruit.x != 0 && highestFruit.y != 0 && Viscad.ImageTrueArea(mask) > 100) {
             Main.camMap.put("targetFound", 1.0);
             Main.camMap.put("currentCenterX", highestFruit.x);
-            Main.camMap.put("currentCenterY", highestFruit.y);
         } else {
             Main.camMap.put("targetFound", 0.0);
             Main.camMap.put("currentCenterX", 0.0);

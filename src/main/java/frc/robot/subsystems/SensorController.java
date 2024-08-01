@@ -26,7 +26,8 @@ public class SensorController implements Runnable{
     private static AnalogInput SHARP_RIGHT;
     private static AnalogInput SHARP_LEFT;
 
-    private static DigitalInput LIMIT_SWITCH;
+    private static DigitalInput LIMIT_SWITCH_LIFT;
+    // private static DigitalInput LIMIT_SWITCH_GLIDE;
     private static DigitalInput START_BUTTON;
     private static DigitalInput EMS_BUTTON;
 
@@ -58,7 +59,8 @@ public class SensorController implements Runnable{
             SHARP_RIGHT = new AnalogInput(Constants.SHARP_RIGHT);
             SHARP_LEFT = new AnalogInput(Constants.SHARP_LEFT);
         
-            LIMIT_SWITCH = new DigitalInput(Constants.LIMIT_SWITCH);
+            LIMIT_SWITCH_LIFT = new DigitalInput(Constants.LIMIT_SWITCH);
+            // LIMIT_SWITCH_GLIDE = new DigitalInput(Constants.LIMIT_SWITCH_GLIDE);
             START_BUTTON = new DigitalInput(Constants.START_BUTTON);
             EMS_BUTTON = new DigitalInput(Constants.EMS_BUTTON);
         
@@ -185,7 +187,7 @@ public class SensorController implements Runnable{
     }
 
     private boolean getLimitSwitch() {
-        return LIMIT_SWITCH.get();
+        return LIMIT_SWITCH_LIFT.get();
     }
 
     private boolean getStartButton() {

@@ -26,7 +26,6 @@ public class AutoGlide implements IState {
     private static final double[][] speedForGlideServo = { { 0, 1, 4, 10, 20, 40, 60, 80, 100 }, { 0, 0.1, 0.1, 0.1, 0.1, 0.25, 0.3, 0.4, 0.4} };
 
     public AutoGlide() {
-        Main.sensorsMap.put("camTask", 2.0);
         flag = false; 
     }
 

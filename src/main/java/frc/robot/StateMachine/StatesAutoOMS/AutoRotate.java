@@ -35,13 +35,13 @@ public class AutoRotate implements IState {
 
     public AutoRotate(boolean treeMode) {
         this.treeMode = treeMode;
-        GRIP_ROTATE = 30.0;
+        GRIP_ROTATE = 70.0; // 30.0
     }
 
     @Override
     public void initialize() {
         Main.motorControllerMap.put("servoGrab", 15.0);
-        Main.motorControllerMap.put("servoGripRotate", 70.0);
+        Main.motorControllerMap.put("servoGripRotate", GRIP_ROTATE);
 
         rotateStop = false; 
         flag = false;
@@ -73,7 +73,6 @@ public class AutoRotate implements IState {
 
         if(rotateStop && treeMode) {
             newStates.add(new AutoLift());
-            SmartDashboard.putNumber("!!!!!!!!!!!!!!!!", 111);
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             stateEnd = true;
         }
@@ -87,7 +86,7 @@ public class AutoRotate implements IState {
 
     @Override
     public void finilize() {
-        Main.sensorsMap.put("camTask", 0.0);
+        
     }
 
     @Override

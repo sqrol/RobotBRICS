@@ -8,6 +8,7 @@ import frc.robot.StateMachine.CoreEngine.StateMachine;
 import frc.robot.subsystems.MotorController;
 import frc.robot.subsystems.SensorController;
 import frc.robot.StateMachine.CoreEngine.CommandAdapter;
+import frc.robot.StateMachine.CoreEngine.IState;
 
 public class Robot extends TimedRobot {
 
@@ -164,7 +165,7 @@ public class Robot extends TimedRobot {
 
     Main.camMap.put("grippedFruit", 0.0); // 1.0 - BigRedApple, 2.0 - SmallRedApple
 
-    Main.camMap.put("branch", 0.0); // 3.0 - upper, 2.0 - middle, 3.0 - lower
+    Main.camMap.put("branchesChecked", 0.0); // 3.0 - upper, 2.0 - middle, 3.0 - lower
 
     Main.motorControllerMap.put("servoGrabAngle", 0.0);
 
@@ -235,5 +236,7 @@ public class Robot extends TimedRobot {
     } else {
       SmartDashboard.putString("currentState", "null");
     }
+    SmartDashboard.putNumber("StateMachineSize", StateMachine.states.size());
+
   }
 }
