@@ -14,12 +14,17 @@ public class AutoGrab implements IState {
 
     private String fruit = "";
 
-    private boolean flag = false;
-    private boolean stateEnd = false;
+    private boolean treeMode = false;
+
+    private boolean flag, stateEnd = false;
+    
     private boolean objectСaptured = false;
+
     private int index = 1;
+    private int branchNumber = 0;
 
     private double lastUpdateTime = 0.0;
+
     private static final double STEP = 1.0;
     private static final double DELAY = 0.01;
 
@@ -55,6 +60,11 @@ public class AutoGrab implements IState {
 
     }
 
+    public AutoGrab(boolean treeMode) {
+        this.treeMode = treeMode;
+        
+    }
+
     @Override
     public void initialize() {
         this.flag = false;
@@ -65,6 +75,10 @@ public class AutoGrab implements IState {
     @Override
     public void execute() {
         SmartDashboard.putString("fruit", getGrippedFruit());
+
+        if(treeMode) {
+            index = 2;
+        }
         switch (index) {
             case 1:
                 if(LIFT_MAP.get(getGrippedFruit()) != null) {

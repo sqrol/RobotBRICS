@@ -13,62 +13,96 @@ public class AutoGlide implements IState {
     private ArrayList<IState> newStates = new ArrayList<>();
     private double fruitPosY = 0;
     
+    private int branchNumber = 0;
 
     private double glideServoSpeed = 0; 
     
     private boolean treeMode = false;
-    private boolean flag = false; 
-    private boolean stateEnd = false;
-    private boolean glideStop = false;
 
+    private boolean flag, stateEnd = false; 
+
+    private boolean treeEnd, glideStop = false;
+    
     private int camMiddleForGrab = 27;
     
     private static final double[][] speedForGlideServo = { { 0, 1, 4, 10, 20, 40, 60, 80, 100 }, { 0, 0.1, 0.1, 0.1, 0.1, 0.25, 0.3, 0.4, 0.4} };
 
     public AutoGlide() {
         flag = false; 
+        Main.motorControllerMap.put("servoGripRotate", 75.0);
     }
 
-    public AutoGlide(boolean treeMode) {
+    public AutoGlide(boolean treeMode, int branchNumber) {
         this.treeMode = treeMode;
+        this.branchNumber = branchNumber;
     }
 
     @Override
     public void initialize() {
         Main.motorControllerMap.put("glideMode", 1.0);
-        Main.sensorsMap.put("camTask", 2.0); // Режим для выравнивания выдвижного механизма
+        if(!treeMode)
+            Main.sensorsMap.put("camTask", 2.0); 
+        else Main.sensorsMap.put("camTask", 0.0);
 
         Main.motorControllerMap.put("servoGrab", 15.0);
-        Main.motorControllerMap.put("servoGripRotate", 75.0);
+        Main.switchMap.put("glideStop", false);
     }
 
     @Override
     public void execute() {
-        fruitPosY = Main.camMap.get("currentCenterY");
 
-        if (fruitPosY == 0 && !flag) {
-            glideServoSpeed = 0.3;
+        if(treeMode) {
+            Main.sensorsMap.put("camTask", 0.0);
+            Main.motorControllerMap.put("glideMode", 0.0);
+            if(branchNumber == 1 && !treeEnd) {
+                Main.sensorsMap.put("targetGlidePos", 21.0);
+                treeEnd = Main.switchMap.get("glideStop") && StateMachine.iterationTime > 4;
+            }
+
+            if(branchNumber == 2 && !treeEnd) {
+                Main.sensorsMap.put("targetGlidePos", 21.0);
+                treeEnd = Main.switchMap.get("glideStop") && StateMachine.iterationTime > 4;
+            }
+
+            if(branchNumber == 3 && !treeEnd) {
+                Main.sensorsMap.put("targetGlidePos", 11.0);
+                treeEnd = Main.switchMap.get("glideStop") && StateMachine.iterationTime > 4;
+            }
+
+            if(treeEnd) {
+                newStates.add(new AutoGrab(true));
+                StateMachine.states.addAll(StateMachine.index + 1, newStates);
+                stateEnd = true;
+            }
+            
         } else {
-            flag = true; 
-            glideServoSpeed = Functions.TransitionFunction(camMiddleForGrab - fruitPosY, speedForGlideServo); 
+            fruitPosY = Main.camMap.get("currentCenterY");
+
+            if (fruitPosY == 0 && !flag) {
+                glideServoSpeed = 0.3;
+            } else {
+                flag = true; 
+                glideServoSpeed = Functions.TransitionFunction(camMiddleForGrab - fruitPosY, speedForGlideServo); 
+            }
+
+            Main.motorControllerMap.put("setGlideSpeed", glideServoSpeed);
+            glideStop = Functions.BooleanInRange(camMiddleForGrab - fruitPosY, -2, 2);
+
+            SmartDashboard.putBoolean("glideStop", glideStop);
+
+            if (Main.sensorsMap.get("currentGlidePos") >= 23 || StateMachine.iterationTime > 25) {
+                newStates.add(new AutoEnd()); 
+                StateMachine.states.addAll(StateMachine.index + 1, newStates);
+                stateEnd = true;
+            }
+
+            if (glideStop && StateMachine.iterationTime > 2) {
+                newStates.add(new AutoGrab()); 
+                StateMachine.states.addAll(StateMachine.index + 1, newStates);
+                stateEnd = true;
+            }
         }
-
-        Main.motorControllerMap.put("setGlideSpeed", glideServoSpeed);
-        glideStop = Functions.BooleanInRange(camMiddleForGrab - fruitPosY, -2, 2);
-
-        SmartDashboard.putBoolean("glideStop", glideStop);
-
-        if (Main.sensorsMap.get("currentGlidePos") >= 23 || StateMachine.iterationTime > 25) {
-            newStates.add(new AutoEnd()); 
-            StateMachine.states.addAll(StateMachine.index + 1, newStates);
-            stateEnd = true;
-        }
-
-        if (glideStop && StateMachine.iterationTime > 2) {
-            newStates.add(new AutoGrab()); 
-            StateMachine.states.addAll(StateMachine.index + 1, newStates);
-            stateEnd = true;
-        }
+        
     }
 
     @Override

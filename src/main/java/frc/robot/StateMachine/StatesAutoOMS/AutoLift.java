@@ -64,7 +64,7 @@ public class AutoLift implements IState {
         }
 
         if(liftStop && StateMachine.iterationTime > 1) {
-            newStates.add(new AutoGlide(true));
+            newStates.add(new AutoGlide());
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             stateEnd = true;
         }

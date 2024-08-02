@@ -168,10 +168,12 @@ public class CameraController implements Runnable {
 
         Mat square = cropSquareFromCenter(mask, size);
 
-        if(Viscad.ImageTrueArea(square) >= 2000) {
+        if(Viscad.ImageTrueArea(square) >= 700) {
             Main.camMap.put("grippedFruit", 1.0);
-        } else if(Viscad.ImageTrueArea(square) <= 2000) {
+            Main.camMap.put("targetFound", 1.0);
+        } else if(Viscad.ImageTrueArea(square) < 700 && Viscad.ImageTrueArea(square) >= 100) {
             Main.camMap.put("grippedFruit", 2.0);
+            Main.camMap.put("targetFound", 1.0);
         } else {
             Main.camMap.put("grippedFruit", 3.0);
         }

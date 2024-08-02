@@ -21,7 +21,7 @@ public class StateMachine {
 
     public void initStates() { 
         states.add(new StartPos());
-        states.add(new AutoStart(true, 1));
+        states.add(new AutoStart(true, 3));
         states.add(new End());
     }
 

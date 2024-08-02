@@ -129,7 +129,7 @@ public class Robot extends TimedRobot {
     Main.motorControllerMap.put("servoGrab", 15.0);
     Main.motorControllerMap.put("grabServoAngle", 0.0);
 
-    Main.motorControllerMap.put("servoGripRotate", 79.0);
+    Main.motorControllerMap.put("servoGripRotate", 77.0);
     Main.motorControllerMap.put("glideServoSpeed", 0.0);
 
     Main.motorControllerMap.put("speedX", 0.0);
