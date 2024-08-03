@@ -405,14 +405,12 @@ public class MotorController implements Runnable {
 
     private void setGlidePosition(double targetGlidePosition) {
         boolean limitSwitchGlide = Main.switchMap.get("limitSwitchGlide");
-        SmartDashboard.putNumber("glideCheck", 111);
         double glideDiff = currentGlidePosition - targetGlidePosition;
         double glideSpeed = Functions.TransitionFunction(glideDiff, speedForGlideServo);
         glideStop = targetGlidePosition == currentGlidePosition;
 
         if(Main.switchMap.get("initGlide")) {
-            glideSpeed = 0.3;
-            SmartDashboard.putNumber("glideCheck", 000);
+            glideSpeed = 0.4;
             if(limitSwitchGlide) {
                 glideSpeed = 0;
                 Main.switchMap.put("initGlide", false);
@@ -421,20 +419,18 @@ public class MotorController implements Runnable {
 
         if(targetGlidePosition == 0 && !limitSwitchGlide && Main.switchMap.get("initGlide")) {
             glideStop = false;
-            glideSpeed = 0.2;
-            SmartDashboard.putNumber("glideCheck", 444);
+            glideSpeed = 0.4;
         }
 
         if(limitSwitchGlide && glideSpeed > 0) {
             currentGlidePosition = 0;
-            SmartDashboard.putNumber("glideCheck", 333);
             setGlideServoSpeed(0);
             glideStop = true;
         } 
 
         if (targetGlidePosition > currentGlidePosition) {
             countGlidePosition(true);
-        } else {
+        } else if(targetGlidePosition < currentGlidePosition && targetGlidePosition != 0){
             countGlidePosition(false);
         }
 

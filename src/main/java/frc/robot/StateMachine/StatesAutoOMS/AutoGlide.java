@@ -29,7 +29,7 @@ public class AutoGlide implements IState {
 
     public AutoGlide() {
         flag = false; 
-        Main.motorControllerMap.put("servoGripRotate", 75.0);
+        GRIP_ROTATE = 75.0;
     }
 
     public AutoGlide(boolean treeMode, int branchNumber) {

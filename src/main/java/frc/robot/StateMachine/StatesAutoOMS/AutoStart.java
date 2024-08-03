@@ -105,17 +105,18 @@ public class AutoStart implements IState {
                 }
             }
         } else {
+            Main.sensorsMap.put("camTask", 1.0);
             if(Main.camMap.get("targetFound") == 1.0) {
-                newStates.add(new AutoGlide());
+                newStates.add(new AutoRotate());
                 StateMachine.states.addAll(StateMachine.index + 1, newStates);
-                flag = true;
+                stateEnd = true;
             }
-        }
 
-        if (!flag && StateMachine.iterationTime > 10) {
-            newStates.add(new AutoEnd()); 
-            StateMachine.states.addAll(StateMachine.index + 1, newStates);
-            stateEnd = true;
+            if (!flag && StateMachine.iterationTime > 10) {
+                newStates.add(new AutoEnd()); 
+                StateMachine.states.addAll(StateMachine.index + 1, newStates);
+                stateEnd = true;
+            }
         }
 
         SmartDashboard.putBoolean("flagCheck", flag);

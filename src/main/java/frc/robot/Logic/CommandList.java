@@ -6,6 +6,7 @@ import frc.robot.StateMachine.CoreEngine.IState;
 import frc.robot.StateMachine.CoreEngine.StateMachine;
 import frc.robot.StateMachine.States.*;
 import frc.robot.StateMachine.StatesAutoOMS.AutoStart;
+import frc.robot.StateMachine.StatesOMS.*;
 
 public class CommandList {
 
@@ -19,9 +20,13 @@ public class CommandList {
 
     public void addCommand() {
 
-
     if(currentCommandName.equals("AUTO_GRAB_UPPER")) {
         newStates.add(new AutoStart());
+        newStates.add(new Transition());
+        StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    }
+    if(currentCommandName.equals("RESET_FRUIT")) {
+        newStates.add(new SetGrabPosition("OPEN", true));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }

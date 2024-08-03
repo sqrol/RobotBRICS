@@ -54,7 +54,7 @@ public class AutoRotate implements IState {
     public void initialize() {
         Main.motorControllerMap.put("servoGrab", 15.0);
         Main.motorControllerMap.put("servoGripRotate", GRIP_ROTATE);
-        // Main.sensorsMap.put("camTask", 5.0);
+        Main.sensorsMap.put("camTask", 1.0);
         rotateStop = false; 
         flag = false;
         stateEnd = false;
@@ -83,8 +83,12 @@ public class AutoRotate implements IState {
             stateEnd = true;
         }
 
-        if (rotateStop) {
+        if (rotateStop && treeMode) {
             newStates.add(new AutoGlide(true, branchNumber)); 
+            StateMachine.states.addAll(StateMachine.index + 1, newStates);
+            stateEnd = true;
+        } else if(rotateStop && !treeMode) {
+            newStates.add(new AutoGlide()); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             stateEnd = true;
         }
