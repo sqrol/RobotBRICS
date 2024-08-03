@@ -67,7 +67,11 @@ public class Robot extends TimedRobot {
     Main.sensorsMap.put("currentGlidePos", 0.0);
     Main.switchMap.put("startButton", false);
     Main.switchMap.put("EMSButton", false);
-    Main.switchMap.put("limitSwitch", false);
+    Main.switchMap.put("limitSwitchLift", false);
+    Main.switchMap.put("limitSwitchGlide", false);
+
+    Main.switchMap.put("initLift", false);
+    Main.switchMap.put("initGlide", false);
 
     Main.switchMap.put("liftStop", false);
     Main.switchMap.put("glideStop", false);
@@ -139,18 +143,13 @@ public class Robot extends TimedRobot {
 
     Main.motorControllerMap.put("useOneSide", 0.0);
 
-    Main.sensorsMap.put("cobraSignal0", 0.0);
-    Main.sensorsMap.put("cobraSignal1", 0.0);
-    Main.sensorsMap.put("cobraSignal2", 0.0);
-    Main.sensorsMap.put("cobraSignal3", 0.0);
+    Main.sensorsMap.put("cobraVoltage", 0.0);
 
     Main.motorControllerMap.put("posX", 0.0);
     Main.motorControllerMap.put("updateTime", MotorController.motorsUpdateTime);
 
     Main.motorControllerMap.put("glideMode", 0.0);
     Main.motorControllerMap.put("setGlideSpeed", 0.0);
-
-    Main.motorControllerMap.put("initLift", 0.0);
 
     Main.camMap.put("targetFound", 0.0);
     Main.camMap.put("currentCenterX", 0.0);
@@ -214,6 +213,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("updateTimeSensors", Main.sensorsMap.get("updateTime"));
     SmartDashboard.putNumber("updateTimeCamera", Main.sensorsMap.get("updateTimeCamera"));
 
+    SmartDashboard.putNumber("cobraVoltage", Main.sensorsMap.get("cobraVoltage"));
+
     SmartDashboard.putNumber("targetGlidePos", Main.sensorsMap.get("targetGlidePos"));
     SmartDashboard.putNumber("currentGlidePos", Main.sensorsMap.get("currentGlidePos"));
     SmartDashboard.putNumber("targetLiftPos", Main.motorControllerMap.get("targetLiftPos"));
@@ -221,11 +222,15 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putBoolean("EMS", Main.switchMap.get("EMSButton"));
     SmartDashboard.putBoolean("startButton", Main.switchMap.get("startButton"));
-    SmartDashboard.putBoolean("limitSwitch", Main.switchMap.get("limitSwitch"));
+    SmartDashboard.putBoolean("limitSwitchLift", Main.switchMap.get("limitSwitchLift"));
+    SmartDashboard.putBoolean("limitSwitchGlide", Main.switchMap.get("limitSwitchGlide"));
 
     SmartDashboard.putBoolean("liftStop", Main.switchMap.get("liftStop"));
     SmartDashboard.putBoolean("glideStop", Main.switchMap.get("glideStop"));
     SmartDashboard.putBoolean("rotateStop", Main.switchMap.get("rotateStop"));
+
+    SmartDashboard.putBoolean("initLift", Main.switchMap.get("initLift"));
+    SmartDashboard.putBoolean("initGlide", Main.switchMap.get("initGlide"));
 
     SmartDashboard.putNumber("glideServoSpeed", Main.motorControllerMap.get("glideServoSpeed"));
 

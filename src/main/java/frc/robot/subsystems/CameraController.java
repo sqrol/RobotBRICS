@@ -89,7 +89,7 @@ public class CameraController implements Runnable {
                 }
 
                 if (Main.sensorsMap.get("camTask") == 2.0) {
-                    searchForGrab(source, 80); // Тут мы обозначаем параметры обрезаемого квадрата по середине картинки
+                    searchForGrab(source, 80);
                 }
 
                 if(Main.sensorsMap.get("camTask") == 3.0) {
@@ -98,7 +98,6 @@ public class CameraController implements Runnable {
 
                 if(Main.sensorsMap.get("camTask") == 4.0) {
                     treeModeAutoGrab(source, Main.camMap.get("currentColorIndex"));
-                    
                 }
 
                 if(Main.sensorsMap.get("camTask") == 5.0) {
@@ -320,6 +319,10 @@ public class CameraController implements Runnable {
 
             return center;
         }
+        return null;
+    }
+
+    private static Point getMiddleObjectCoordinate(Mat orig, ColorRange colorIndex) {
         return null;
     }
 

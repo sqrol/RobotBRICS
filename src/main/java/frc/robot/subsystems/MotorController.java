@@ -106,10 +106,10 @@ public class MotorController implements Runnable {
                     SERVO_GRAB.setDisabled();
                     SERVO_GRIP_ROTATE.setDisabled(); 
                 } else {
-                    setAxisSpeed(
-                    Main.motorControllerMap.get("speedX"), 
-                    Main.motorControllerMap.get("speedZ"),  
-                    Main.motorControllerMap.get("useOneSide")
+                    setAxisSpeed (
+                                Main.motorControllerMap.get("speedX"), 
+                                Main.motorControllerMap.get("speedZ"),  
+                                Main.motorControllerMap.get("useOneSide")
                     );
 
                     setRotateMotorSpeed(Main.motorControllerMap.get("rotateSpeed"));
@@ -142,13 +142,13 @@ public class MotorController implements Runnable {
 
                 Thread.sleep(10);
             } catch (Exception e) {
-                // System.err.println("!!!An error occurred in MotorController: " + e.getMessage());
-                // e.printStackTrace();
-                // try {
-                //     Thread.sleep(50); 
-                // } catch (InterruptedException ie) {
-                //     Thread.currentThread().interrupt();
-                // }
+                System.err.println("!!!An error occurred in MotorController: " + e.getMessage());
+                e.printStackTrace();
+                try {
+                    Thread.sleep(50); 
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
             }
             motorsUpdateTime = Timer.getFPGATimestamp() - startTime;
         }
@@ -234,12 +234,12 @@ public class MotorController implements Runnable {
 
         SmartDashboard.putNumber("targetPosition", targetPosition);
 
-        if (Main.motorControllerMap.get("initLift") == 1.0) {
-            if (Main.switchMap.get("limitSwitch")) {
+        if (Main.switchMap.get("initLift")) {
+            if (Main.switchMap.get("limitSwitchLift")) {
                 outLiftSpeed = 0.0;
                 ENC_LIFT.reset();
             } else {
-                outLiftSpeed = 70.0; 
+                outLiftSpeed = 60.0; 
             }
         } else {
             double convertPosToEncs = Functions.TransitionFunction(targetPosition, arrOfPosForLift);
@@ -247,7 +247,7 @@ public class MotorController implements Runnable {
             liftStop = Functions.BooleanInRange(liftEncoder - convertPosToEncs, -5, 5);
         }
 
-        if (outLiftSpeed > 0.0 && Main.switchMap.get("limitSwitch")) {
+        if (outLiftSpeed > 0.0 && Main.switchMap.get("limitSwitchLift")) {
             SmartDashboard.putNumber("checkLift", 1);
             ENC_LIFT.reset();
             outLiftSpeed = 0.0;
@@ -256,7 +256,7 @@ public class MotorController implements Runnable {
             SmartDashboard.putNumber("checkLift", 2);
             outLiftSpeed = 0.0;
         }
-        if (liftStop && Main.motorControllerMap.get("initLift") != 1.0) {
+        if (liftStop && !Main.switchMap.get("initLift")) {
             SmartDashboard.putNumber("checkLift", 3);
             outLiftSpeed = 0.0;
         }
@@ -383,31 +383,54 @@ public class MotorController implements Runnable {
         }  
     }
 
-    // Если Софа все же перестанет забивать хуй (это пиздец! как с ней общаться?)
-    // на мои просьбы переделать проводку датчика черной линии новый метод для работы с Glide
-
     private void countGlidePosition(boolean direction) {
-        boolean currentStateA = Main.sensorsMap.get("cobraSignal0") > 2000.0;
+        boolean blackLineDetect = Main.sensorsMap.get("cobraVoltage") > 2.0;
 
-        if (currentStateA && !flag && Timer.getFPGATimestamp() - glideTimer > 0.1) {
-          flag = true;
-          glideTimer = Timer.getFPGATimestamp();
+        if (blackLineDetect && !flag && Timer.getFPGATimestamp() - glideTimer > 0.1) {
+            flag = true;
+            glideTimer = Timer.getFPGATimestamp();
           
         }
-        if (!currentStateA && flag && Timer.getFPGATimestamp() - glideTimer > 0.1) {
-          flag = false;
-          glideTimer = Timer.getFPGATimestamp();
-          if (direction) { currentGlidePosition++; } else { currentGlidePosition--; }
-        }
+        if (!blackLineDetect && flag && Timer.getFPGATimestamp() - glideTimer > 0.1) {
+            flag = false;
+            glideTimer = Timer.getFPGATimestamp();
+            if (direction)
+                currentGlidePosition++;
+            else
+                currentGlidePosition--;
+            }
 
         Main.sensorsMap.put("currentGlidePos", (double) currentGlidePosition);
     }
 
     private void setGlidePosition(double targetGlidePosition) {
-
+        boolean limitSwitchGlide = Main.switchMap.get("limitSwitchGlide");
+        SmartDashboard.putNumber("glideCheck", 111);
         double glideDiff = currentGlidePosition - targetGlidePosition;
         double glideSpeed = Functions.TransitionFunction(glideDiff, speedForGlideServo);
         glideStop = targetGlidePosition == currentGlidePosition;
+
+        if(Main.switchMap.get("initGlide")) {
+            glideSpeed = 0.3;
+            SmartDashboard.putNumber("glideCheck", 000);
+            if(limitSwitchGlide) {
+                glideSpeed = 0;
+                Main.switchMap.put("initGlide", false);
+            }
+        }
+
+        if(targetGlidePosition == 0 && !limitSwitchGlide && Main.switchMap.get("initGlide")) {
+            glideStop = false;
+            glideSpeed = 0.2;
+            SmartDashboard.putNumber("glideCheck", 444);
+        }
+
+        if(limitSwitchGlide && glideSpeed > 0) {
+            currentGlidePosition = 0;
+            SmartDashboard.putNumber("glideCheck", 333);
+            setGlideServoSpeed(0);
+            glideStop = true;
+        } 
 
         if (targetGlidePosition > currentGlidePosition) {
             countGlidePosition(true);

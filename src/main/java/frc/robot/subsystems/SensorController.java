@@ -21,13 +21,13 @@ public class SensorController implements Runnable{
 
     // Новый вызов датчика Cobra (Опять же если Софа начнет не считать меня пустым местом) 
     // Данный датчик подключается в порт I2C контроллера VMX
-    private static Cobra COBRA;
+    private static AnalogInput COBRA;
 
     private static AnalogInput SHARP_RIGHT;
     private static AnalogInput SHARP_LEFT;
 
     private static DigitalInput LIMIT_SWITCH_LIFT;
-    // private static DigitalInput LIMIT_SWITCH_GLIDE;
+    private static DigitalInput LIMIT_SWITCH_GLIDE;
     private static DigitalInput START_BUTTON;
     private static DigitalInput EMS_BUTTON;
 
@@ -54,13 +54,13 @@ public class SensorController implements Runnable{
         try {
             GYRO = new AHRS(SPI.Port.kMXP);
 
-            COBRA = new Cobra();
+            COBRA = new AnalogInput(Constants.COBRA);
         
             SHARP_RIGHT = new AnalogInput(Constants.SHARP_RIGHT);
             SHARP_LEFT = new AnalogInput(Constants.SHARP_LEFT);
         
             LIMIT_SWITCH_LIFT = new DigitalInput(Constants.LIMIT_SWITCH);
-            // LIMIT_SWITCH_GLIDE = new DigitalInput(Constants.LIMIT_SWITCH_GLIDE);
+            LIMIT_SWITCH_GLIDE = new DigitalInput(Constants.LIMIT_SWITCH_GLIDE);
             START_BUTTON = new DigitalInput(Constants.START_BUTTON);
             EMS_BUTTON = new DigitalInput(Constants.EMS_BUTTON);
         
@@ -74,7 +74,13 @@ public class SensorController implements Runnable{
             LEFT_SHARP_FILTER = new MedianFilter(5);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("!!!An error occurred in SensorController: " + e.getMessage());
+                e.printStackTrace();
+                try {
+                    Thread.sleep(50); 
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
         }
     }
 
@@ -105,16 +111,12 @@ public class SensorController implements Runnable{
 
                 Main.switchMap.put("startButton", getStartButton());
                 Main.switchMap.put("EMSButton", getEMSButton());
-                Main.switchMap.put("limitSwitch", getLimitSwitch());
+                Main.switchMap.put("limitSwitchLift", getLimitSwitchLift());
+                Main.switchMap.put("limitSwitchGlide", getLimitSwitchGlide());
 
                 Main.sensorsMap.put("updateTimeSensors", sensorsUpdateTime);
 
-                // Обработка значений с нового датчика черной линии
-                Main.sensorsMap.put("cobraSignal0", getCobraSignal0());
-                Main.sensorsMap.put("cobraSignal1", getCobraSignal1());
-                Main.sensorsMap.put("cobraSignal2", getCobraSignal2());
-                Main.sensorsMap.put("cobraSignal3", getCobraSignal3());
-
+                Main.sensorsMap.put("cobraVoltage", getCobraVoltage());
                 Thread.sleep(20);
             } catch (Exception e) {
                 // System.err.println("!!!An error occurred in SensorController: " + e.getMessage());
@@ -186,8 +188,12 @@ public class SensorController implements Runnable{
         return (RIGHT_SHARP_FILTER.Filter((Math.pow(SHARP_RIGHT.getAverageVoltage(), -1.2045) * 27.726)));
     }
 
-    private boolean getLimitSwitch() {
+    private boolean getLimitSwitchLift() {
         return LIMIT_SWITCH_LIFT.get();
+    }
+
+    private boolean getLimitSwitchGlide() {
+        return LIMIT_SWITCH_GLIDE.get();
     }
 
     private boolean getStartButton() {
@@ -239,39 +245,7 @@ public class SensorController implements Runnable{
         }
     }
 
-    private double getCobraSignal0() {
-        try {
-            return COBRA.getRawValue(0);
-        } 
-        catch (Exception e) {
-            return 0;
-        }
-    }
-
-    private double getCobraSignal1() {
-        try {
-            return COBRA.getRawValue(1);
-        } 
-        catch (Exception e) {
-            return 0;
-        }
-    }
-
-    private double getCobraSignal2() {
-        try {
-            return COBRA.getRawValue(2);
-        } 
-        catch (Exception e) {
-            return 0;
-        }
-    }
-
-    private double getCobraSignal3() {
-        try {
-            return COBRA.getRawValue(3);
-        } 
-        catch (Exception e) {
-            return 0;
-        }
+    private double getCobraVoltage() {
+        return COBRA.getAverageVoltage();
     }
 }

@@ -27,22 +27,34 @@ public class AutoRotate implements IState {
     private double fruitPosX = 0;
     private double targetAngle = 0;
     
-    private static final double[][] arrForRotate = { { 1, 106, 213, 300} , { -45, 0, 45, 60} }; // Тут в первом массиве мы закладываем параметры исходной картинки
+    private int branchNumber = 0;
+
+    private static final double[][] arrForRotate = { { 1, 106, 213} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
 
     public AutoRotate() {
         GRIP_ROTATE = 70.0;
     }
 
-    public AutoRotate(boolean treeMode) {
+    public AutoRotate(boolean treeMode, int branchNumber) {
         this.treeMode = treeMode;
-        GRIP_ROTATE = 70.0; // 30.0
+        this.branchNumber = branchNumber;
+        if(branchNumber == 1) {
+            GRIP_ROTATE = 22.0;
+        }
+        if(branchNumber == 2) {
+            GRIP_ROTATE = 30.0;
+        }
+        if(branchNumber == 3) {
+            GRIP_ROTATE = 28.0;
+        }
+      
     }
 
     @Override
     public void initialize() {
         Main.motorControllerMap.put("servoGrab", 15.0);
         Main.motorControllerMap.put("servoGripRotate", GRIP_ROTATE);
-
+        // Main.sensorsMap.put("camTask", 5.0);
         rotateStop = false; 
         flag = false;
         stateEnd = false;
@@ -52,7 +64,7 @@ public class AutoRotate implements IState {
     public void execute() {
         
         if (!flag) {
-            fruitPosX = Main.camMap.get("currentCenterX"); // Мы в AutoStart уже смотрели потому берем только координаты
+            fruitPosX = Main.camMap.get("currentCenterX"); 
             if (fruitPosX != 0.0 && StateMachine.iterationTime > 1) {
                 lastRotateDegree = Main.motorControllerMap.get("currentRotatePosition"); // Запоминаем текущую позицию поворота
                 flag = true;
@@ -71,14 +83,8 @@ public class AutoRotate implements IState {
             stateEnd = true;
         }
 
-        if(rotateStop && treeMode) {
-            newStates.add(new AutoLift());
-            StateMachine.states.addAll(StateMachine.index + 1, newStates);
-            stateEnd = true;
-        }
-
         if (rotateStop) {
-            newStates.add(new AutoGlide()); 
+            newStates.add(new AutoGlide(true, branchNumber)); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             stateEnd = true;
         }

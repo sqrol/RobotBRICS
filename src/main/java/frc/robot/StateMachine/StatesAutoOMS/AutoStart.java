@@ -40,7 +40,7 @@ public class AutoStart implements IState {
         this.treeMode = treeMode;
         this.branchNumber = branchNumber;
         oneTimeFlag = true;
-        GRIP_ROTATE = 24.0; // 30
+        GRIP_ROTATE = 30.0;
     }
 
     @Override
@@ -75,6 +75,7 @@ public class AutoStart implements IState {
         Main.camMap.put("currentColorIndex", currentColorIndex);
         
         if(treeMode) {
+            Main.sensorsMap.put("camTask", 5.0);
             if (branchNumber == 1 && !treeEnd ) {
                 Main.motorControllerMap.put("servoGripRotate", 22.0);
                 Main.motorControllerMap.put("targetRotateDegree", 26.0);
@@ -96,9 +97,9 @@ public class AutoStart implements IState {
 
             if (treeEnd) {
                 SmartDashboard.putNumber("estimatedTime", Timer.getFPGATimestamp() - realStartTime);
-                Main.sensorsMap.put("camTask", 2.0); 
+                Main.sensorsMap.put("camTask", 4.0); 
                 if(Main.camMap.get("targetFound") == 1.0 && Timer.getFPGATimestamp() - realStartTime > 4.5) {
-                    newStates.add(new AutoGlide(true, branchNumber));
+                    newStates.add(new AutoRotate(true, branchNumber));
                     StateMachine.states.addAll(StateMachine.index + 1, newStates);
                     stateEnd = true;
                 }
@@ -122,8 +123,8 @@ public class AutoStart implements IState {
     
     @Override
     public void finilize() {
-        if (!flag) 
-            Main.sensorsMap.put("camTask", 0.0);
+        // if (!flag) 
+        //     Main.sensorsMap.put("camTask", 0.0);
 
         Main.motorControllerMap.put("speedX", 0.0);
         Main.motorControllerMap.put("speedZ", 0.0);

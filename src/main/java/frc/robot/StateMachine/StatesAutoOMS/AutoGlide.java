@@ -15,7 +15,7 @@ public class AutoGlide implements IState {
     
     private int branchNumber = 0;
 
-    private double glideServoSpeed = 0; 
+    private double glideServoSpeed, GRIP_ROTATE = 0; 
     
     private boolean treeMode = false;
 
@@ -35,6 +35,15 @@ public class AutoGlide implements IState {
     public AutoGlide(boolean treeMode, int branchNumber) {
         this.treeMode = treeMode;
         this.branchNumber = branchNumber;
+        if(branchNumber == 1) {
+            GRIP_ROTATE = 22.0;
+        }
+        if(branchNumber == 2) {
+            GRIP_ROTATE = 30.0;
+        }
+        if(branchNumber == 3) {
+            GRIP_ROTATE = 28.0;
+        }
     }
 
     @Override
@@ -42,8 +51,8 @@ public class AutoGlide implements IState {
         Main.motorControllerMap.put("glideMode", 1.0);
         if(!treeMode)
             Main.sensorsMap.put("camTask", 2.0); 
-        else Main.sensorsMap.put("camTask", 0.0);
-
+        // else Main.sensorsMap.put("camTask", 0.0);
+        Main.motorControllerMap.put("servoGripRotate", GRIP_ROTATE);
         Main.motorControllerMap.put("servoGrab", 15.0);
         Main.switchMap.put("glideStop", false);
     }
@@ -52,7 +61,7 @@ public class AutoGlide implements IState {
     public void execute() {
 
         if(treeMode) {
-            Main.sensorsMap.put("camTask", 0.0);
+            Main.sensorsMap.put("camTask", 2.0);
             Main.motorControllerMap.put("glideMode", 0.0);
             if(branchNumber == 1 && !treeEnd) {
                 Main.sensorsMap.put("targetGlidePos", 21.0);
