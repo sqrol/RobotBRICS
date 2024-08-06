@@ -2,6 +2,7 @@ package frc.robot.StateMachine.StatesAutoOMS;
 
 import frc.robot.StateMachine.CoreEngine.IState;
 import frc.robot.StateMachine.CoreEngine.StateMachine;
+import frc.robot.StateMachine.States.*;
 import frc.robot.StateMachine.States.Transition;
 import frc.robot.Maths.Common.Functions;
 
@@ -22,6 +23,8 @@ public class AutoRotate implements IState {
 
     private double GRIP_ROTATE = 0.0;
 
+    private double LIFT_POS = 60.0;
+
     private double lastRotateDegree, currentTargetDegree = 0;
     private double treeModeMultiplier = 0;
     private double fruitPosX = 0;
@@ -29,33 +32,34 @@ public class AutoRotate implements IState {
     
     private int branchNumber = 0;
 
-    private static final double[][] arrForRotate = { { 1, 106, 213} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
+    // private static final double[][] arrForRotate = { { 1, 106, 213} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
+    private static final double[][] arrForRotate = { { 1, 106, 260} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
 
     public AutoRotate() {
-        GRIP_ROTATE = 70.0;
+        GRIP_ROTATE = 70.0; // 70
     }
 
-    public AutoRotate(boolean treeMode, int branchNumber) {
+    public AutoRotate(boolean treeMode) {
         this.treeMode = treeMode;
-        this.branchNumber = branchNumber;
-        if(branchNumber == 1) {
-            GRIP_ROTATE = 22.0;
-        }
-        if(branchNumber == 2) {
-            GRIP_ROTATE = 30.0;
-        }
-        if(branchNumber == 3) {
-            GRIP_ROTATE = 28.0;
-        }
-      
+        
+        // if(branchNumber == 1) {
+        //     GRIP_ROTATE = 22.0;
+        // }
+        // if(branchNumber == 2) {
+        //     GRIP_ROTATE = 30.0;
+        // }
+        // if(branchNumber == 3) {
+        //     GRIP_ROTATE = 28.0;
+        // }
+        GRIP_ROTATE = 30.0;
     }
 
     @Override
     public void initialize() {
-        Main.motorControllerMap.put("servoGrab", 15.0);
+        Main.motorControllerMap.put("servoGrab", 18.0);
         Main.motorControllerMap.put("servoGripRotate", GRIP_ROTATE);
-        Main.sensorsMap.put("camTask", 1.0);
-        rotateStop = false; 
+        // Main.sensorsMap.put("camTask", 1.0);
+        Main.switchMap.put("rotateStop", false); 
         flag = false;
         stateEnd = false;
     }
@@ -84,13 +88,16 @@ public class AutoRotate implements IState {
         }
 
         if (rotateStop && treeMode) {
-            newStates.add(new AutoGlide(true, branchNumber)); 
+            newStates.add(new AutoGlide(true)); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             stateEnd = true;
         } else if(rotateStop && !treeMode) {
-            newStates.add(new AutoGlide()); 
-            StateMachine.states.addAll(StateMachine.index + 1, newStates);
-            stateEnd = true;
+            Main.motorControllerMap.put("targetLiftPos", LIFT_POS);
+            if(StateMachine.iterationTime > 2) {
+                newStates.add(new AutoGlide()); 
+                StateMachine.states.addAll(StateMachine.index + 1, newStates);
+                stateEnd = true;
+            } 
         }
     }
 

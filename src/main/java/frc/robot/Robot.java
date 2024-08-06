@@ -77,6 +77,8 @@ public class Robot extends TimedRobot {
     Main.switchMap.put("glideStop", false);
     Main.switchMap.put("rotateStop", false);
 
+    Main.switchMap.put("trackImageArea", false);
+
     Main.switchMap.put("resizeForGlide", false);
 
     Main.sensorsMap.put("indicationMode", 1.0);
@@ -224,6 +226,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("startButton", Main.switchMap.get("startButton"));
     SmartDashboard.putBoolean("limitSwitchLift", Main.switchMap.get("limitSwitchLift"));
     SmartDashboard.putBoolean("limitSwitchGlide", Main.switchMap.get("limitSwitchGlide"));
+
+    SmartDashboard.putBoolean("trackImageArea", Main.switchMap.get("trackImageArea"));
 
     SmartDashboard.putBoolean("liftStop", Main.switchMap.get("liftStop"));
     SmartDashboard.putBoolean("glideStop", Main.switchMap.get("glideStop"));

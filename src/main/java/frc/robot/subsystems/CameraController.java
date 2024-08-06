@@ -104,6 +104,10 @@ public class CameraController implements Runnable {
                     searchForGrab(source, 70);
                 }
 
+                if(Main.sensorsMap.get("camTask") == 6.0) {
+                    trackImageTrueArea(source, Main.camMap.get("currentColorIndex"));
+                }
+
                 Main.sensorsMap.put("updateTimeCamera", cameraUpdateTime);
                 outStream.putFrame(source);
                 source.release();
@@ -258,6 +262,33 @@ public class CameraController implements Runnable {
         releaseMats(resizedSource, blur, hsvImage, mask, outPA);
     }
 
+    private static void trackImageTrueArea(Mat orig, double colorIndex) {
+        boolean keepTrack = false;
+
+        ColorRange currentColor = setPointsForColors(colorIndex);
+
+        Mat resizedImage = Viscad.ReduceResolutionImage(orig, 3);
+
+        Mat blur = Viscad.Blur(resizedImage, 4);
+        Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
+        Mat mask = createMask(hsvImage, currentColor);
+
+        Mat square = cropSquareFromCenter(mask, 55);
+
+        if(Viscad.ImageTrueArea(square) > 1200) {
+            keepTrack = true;
+            SmartDashboard.putNumber("trackedImageArea", Viscad.ImageTrueArea(square));
+        } else {
+            keepTrack = false;
+        }
+
+        outRect.putFrame(square);
+
+        releaseMats(resizedImage, blur, hsvImage, mask, square);
+
+        Main.switchMap.put("trackImageArea", keepTrack);
+    }
+
     private static Point findLowestObject(Mat inImage, List<Rect> currentCoordinate) {
         Rect lowestObject = null;
         int maxY = Integer.MIN_VALUE;
@@ -322,10 +353,6 @@ public class CameraController implements Runnable {
         return null;
     }
 
-    private static Point getMiddleObjectCoordinate(Mat orig, ColorRange colorIndex) {
-        return null;
-    }
-
     public static Mat cropSquareFromCenter(Mat source, int sideLength) { // Используется при выдвижении Glide к объекту
         // Проверяем, что сторона квадрата не превышает размеры исходного изображения
         int width = source.cols();
@@ -363,12 +390,12 @@ public class CameraController implements Runnable {
         Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
         Mat mask = createMask(hsvImage, currentColor);
         
-        outHSV.putFrame(mask);
-
         Mat outPA = new Mat();
         currentCoordinate = Viscad.ParticleAnalysis(mask, outPA);
         
         centreSearch = Viscad.detectCenter(mask);
+
+        outHSV.putFrame(mask);
 
         if(centreSearch.x == 0 && centreSearch.y == 0) {
             releaseMats(blur, hsvImage, mask, outPA, resizedOrig);
