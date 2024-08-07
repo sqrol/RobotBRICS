@@ -25,7 +25,7 @@ public class AutoEnd implements IState {
             Main.motorControllerMap.put("targetRotateDegree", 0.0);
             if(Main.switchMap.get("rotateStop")) {
                 Main.motorControllerMap.put("glideMode", 0.0);
-                Main.sensorsMap.put("targetGlidePos", 0.0);
+                Main.switchMap.put("initGlide", true);
                 // Main.motorControllerMap.put("servoGripRotate", 79.0);
             }
         }

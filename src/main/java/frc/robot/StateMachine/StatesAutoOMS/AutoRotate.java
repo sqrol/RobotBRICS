@@ -93,7 +93,7 @@ public class AutoRotate implements IState {
             stateEnd = true;
         } else if(rotateStop && !treeMode) {
             Main.motorControllerMap.put("targetLiftPos", LIFT_POS);
-            if(StateMachine.iterationTime > 2) {
+            if(StateMachine.iterationTime > 3) {
                 newStates.add(new AutoGlide()); 
                 StateMachine.states.addAll(StateMachine.index + 1, newStates);
                 stateEnd = true;

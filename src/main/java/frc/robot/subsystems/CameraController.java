@@ -265,6 +265,8 @@ public class CameraController implements Runnable {
     private static void trackImageTrueArea(Mat orig, double colorIndex) {
         boolean keepTrack = false;
 
+        double stop = 0;
+
         ColorRange currentColor = setPointsForColors(colorIndex);
 
         Mat resizedImage = Viscad.ReduceResolutionImage(orig, 3);
@@ -273,15 +275,23 @@ public class CameraController implements Runnable {
         Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
         Mat mask = createMask(hsvImage, currentColor);
 
-        Mat square = cropSquareFromCenter(mask, 55);
+        Mat square = cropSquareFromCenter(mask, 57);
 
-        if(Viscad.ImageTrueArea(square) > 1200) {
+        if(Main.camMap.get("grippedFruit") == 1.0) {
+            stop = 120;
+        } 
+
+        if(Main.camMap.get("grippedFruit") == 2.0) {
+            stop = 100;
+        }
+
+        if(Viscad.ImageTrueArea(square) > stop) {
             keepTrack = true;
-            SmartDashboard.putNumber("trackedImageArea", Viscad.ImageTrueArea(square));
+            
         } else {
             keepTrack = false;
         }
-
+        SmartDashboard.putNumber("trackedImageArea", Viscad.ImageTrueArea(square));
         outRect.putFrame(square);
 
         releaseMats(resizedImage, blur, hsvImage, mask, square);

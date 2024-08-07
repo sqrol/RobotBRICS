@@ -61,7 +61,7 @@ public class MotorController implements Runnable {
 
     private static final double[][] speedForRotate =  { { 0, 5, 10, 14, 17, 26, 39, 50, 62, 70 }, { 0, 6, 15, 25, 35, 47, 60, 70, 77, 85 } };
 
-    private static final double[][] speedForGlideServo = { { 0, 1, 2, 4, 6, 8, 10 }, { 0, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18}};
+    private static final double[][] speedForGlideServo = { { 0, 1, 2, 4, 6, 8, 10 }, { 0, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24}};
 
     public MotorController() {
         try {
@@ -410,7 +410,7 @@ public class MotorController implements Runnable {
         glideStop = targetGlidePosition == currentGlidePosition;
 
         if(Main.switchMap.get("initGlide")) {
-            glideSpeed = 0.4;
+            glideSpeed = 0.32;
             if(limitSwitchGlide) {
                 glideSpeed = 0;
                 Main.switchMap.put("initGlide", false);
@@ -419,7 +419,7 @@ public class MotorController implements Runnable {
 
         if(targetGlidePosition == 0 && !limitSwitchGlide && Main.switchMap.get("initGlide")) {
             glideStop = false;
-            glideSpeed = 0.4;
+            glideSpeed = 0.32;
         }
 
         if(limitSwitchGlide && glideSpeed > 0) {
@@ -440,10 +440,15 @@ public class MotorController implements Runnable {
     }
 
     private void setGlideSpeed(double inSpeed) {
+        double glideSpeed = inSpeed;
 
         if (inSpeed == 0.0) {
             SERVO_GLIDE.setDisabled();
             return; 
+        }
+
+        if(inSpeed < 0 && Main.switchMap.get("limitSwitchGlide")) {
+            glideSpeed = 0;
         }
 
         if (inSpeed > 0.0) {
@@ -452,6 +457,6 @@ public class MotorController implements Runnable {
             countGlidePosition(false);
         }
 
-        setGlideServoSpeed(inSpeed);
+        setGlideServoSpeed(glideSpeed);
     }
 }

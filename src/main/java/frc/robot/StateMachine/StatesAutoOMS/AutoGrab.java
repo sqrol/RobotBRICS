@@ -83,7 +83,7 @@ public class AutoGrab implements IState {
             case 1:
                 if(LIFT_MAP.get(getGrippedFruit()) != null) {
                     Main.motorControllerMap.put("targetLiftPos", LIFT_MAP.get(getGrippedFruit()));
-                    if ( StateMachine.iterationTime > 2) {
+                    if (StateMachine.iterationTime > 3) {
                         index++;
                     }
                     break;
