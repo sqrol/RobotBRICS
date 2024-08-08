@@ -19,8 +19,6 @@ public class SensorController implements Runnable{
 
     private static AHRS GYRO;
 
-    // Новый вызов датчика Cobra (Опять же если Софа начнет не считать меня пустым местом) 
-    // Данный датчик подключается в порт I2C контроллера VMX
     private static AnalogInput COBRA;
 
     private static AnalogInput SHARP_RIGHT;
@@ -74,13 +72,13 @@ public class SensorController implements Runnable{
             LEFT_SHARP_FILTER = new MedianFilter(5);
 
         } catch (Exception e) {
-            System.err.println("!!!An error occurred in SensorController: " + e.getMessage());
-                e.printStackTrace();
-                try {
-                    Thread.sleep(50); 
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                }
+            // System.err.println("!!!An error occurred in SensorController: " + e.getMessage());
+            // e.printStackTrace();
+            // try {
+            //     Thread.sleep(50); 
+            // } catch (InterruptedException ie) {
+            //     Thread.currentThread().interrupt();
+            // }
         }
     }
 
@@ -117,7 +115,7 @@ public class SensorController implements Runnable{
                 Main.sensorsMap.put("updateTimeSensors", sensorsUpdateTime);
 
                 Main.sensorsMap.put("cobraVoltage", getCobraVoltage());
-                Thread.sleep(20);
+                Thread.sleep(10);
             } catch (Exception e) {
                 // System.err.println("!!!An error occurred in SensorController: " + e.getMessage());
                 // e.printStackTrace();

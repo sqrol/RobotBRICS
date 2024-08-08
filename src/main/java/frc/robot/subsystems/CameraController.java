@@ -112,13 +112,13 @@ public class CameraController implements Runnable {
                 outStream.putFrame(source);
                 source.release();
             } catch (Exception e) {
-                // System.err.println("!!!An error occurred in CameraController: " + e.getMessage());
-                // e.printStackTrace();
-                // try {
-                //     Thread.sleep(50); 
-                // } catch (InterruptedException ie) {
-                //     Thread.currentThread().interrupt(); 
-                // }
+                System.err.println("!!!An error occurred in CameraController: " + e.getMessage());
+                e.printStackTrace();
+                try {
+                    Thread.sleep(50); 
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt(); 
+                }
             }
             cameraUpdateTime = Timer.getFPGATimestamp() - startTime;
         }
@@ -406,12 +406,13 @@ public class CameraController implements Runnable {
         centreSearch = Viscad.detectCenter(mask);
 
         outHSV.putFrame(mask);
-
-        if(centreSearch.x == 0 && centreSearch.y == 0) {
-            releaseMats(blur, hsvImage, mask, outPA, resizedOrig);
-            return;
+        if(centreSearch != null) {
+            if(centreSearch.x == 0 && centreSearch.y == 0) {
+                releaseMats(blur, hsvImage, mask, outPA, resizedOrig);
+                return;
+            }
         }
-
+        
         highestFruit = findHighestObject(mask, currentCoordinate);
 
         if(highestFruit.x != 0 && highestFruit.y != 0 && Viscad.ImageTrueArea(mask) > 100) {

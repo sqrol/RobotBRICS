@@ -62,7 +62,7 @@ public class AutoGrab implements IState {
 
     public AutoGrab(boolean treeMode) {
         this.treeMode = treeMode;
-        
+        index = 2;
     }
 
     @Override
@@ -76,9 +76,6 @@ public class AutoGrab implements IState {
     public void execute() {
         SmartDashboard.putString("fruit", getGrippedFruit());
 
-        if(treeMode) {
-            index = 2;
-        }
         switch (index) {
             case 1:
                 if(LIFT_MAP.get(getGrippedFruit()) != null) {

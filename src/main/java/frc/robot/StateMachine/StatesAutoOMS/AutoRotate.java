@@ -33,25 +33,25 @@ public class AutoRotate implements IState {
     private int branchNumber = 0;
 
     // private static final double[][] arrForRotate = { { 1, 106, 213} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
-    private static final double[][] arrForRotate = { { 1, 106, 260} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
+    private static final double[][] arrForRotate = { { 1, 260} , { -45,  45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
 
     public AutoRotate() {
         GRIP_ROTATE = 70.0; // 70
     }
 
-    public AutoRotate(boolean treeMode) {
+    public AutoRotate(boolean treeMode, int branchNumber) {
         this.treeMode = treeMode;
+        this.branchNumber = branchNumber;
+        if(branchNumber == 1) {
+            GRIP_ROTATE = 22.0;
+        }
+        if(branchNumber == 2) {
+            GRIP_ROTATE = 30.0;
+        }
+        if(branchNumber == 3) {
+            GRIP_ROTATE = 27.0;
+        }
         
-        // if(branchNumber == 1) {
-        //     GRIP_ROTATE = 22.0;
-        // }
-        // if(branchNumber == 2) {
-        //     GRIP_ROTATE = 30.0;
-        // }
-        // if(branchNumber == 3) {
-        //     GRIP_ROTATE = 28.0;
-        // }
-        GRIP_ROTATE = 30.0;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class AutoRotate implements IState {
         }
 
         if (rotateStop && treeMode) {
-            newStates.add(new AutoGlide(true)); 
+            newStates.add(new AutoGlide(true, branchNumber)); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             stateEnd = true;
         } else if(rotateStop && !treeMode) {

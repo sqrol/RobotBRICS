@@ -79,7 +79,13 @@ public class MotorController implements Runnable {
             SERVO_GRIP_ROTATE = new Servo(Constants.SERVO_GRIP_ROTATE);
             SERVO_GLIDE = new ServoContinuous(Constants.SERVO_GLIDE);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("!!!An error occurred in MotorController: " + e.getMessage());
+                e.printStackTrace();
+                try {
+                    Thread.sleep(50); 
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt(); 
+                }
         }
     }
 
@@ -438,6 +444,7 @@ public class MotorController implements Runnable {
 
         Main.switchMap.put("glideStop", glideStop);
     }
+
 
     private void setGlideSpeed(double inSpeed) {
         double glideSpeed = inSpeed;
