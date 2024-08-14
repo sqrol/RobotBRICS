@@ -7,7 +7,7 @@ import frc.robot.StateMachine.CoreEngine.StateMachine;
 
 public class StartPos implements IState {
 
-    private boolean succesInit = false;
+    private boolean succesInit = false; 
 
     @Override
     public void initialize() {
@@ -21,6 +21,7 @@ public class StartPos implements IState {
 
     @Override
     public void execute() {
+
         if(!Main.switchMap.get("limitSwitchGlide")) {
             Main.switchMap.put("initGlide", true);
         } 
@@ -49,7 +50,8 @@ public class StartPos implements IState {
 
     @Override
     public boolean isFinished() {
-        // return false;
+        // return true;
         return succesInit && StateMachine.iterationTime > 0.5;
+        // return StateMachine.iterationTime > 2;
     }
 }

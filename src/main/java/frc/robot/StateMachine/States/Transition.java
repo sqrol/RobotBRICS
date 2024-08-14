@@ -8,20 +8,23 @@ import frc.robot.StateMachine.CoreEngine.IState;
 public class Transition implements IState {
 
     private CommandList cmdList;
+    private boolean flag = true; 
     
     @Override
     public void initialize() {
         cmdList = new CommandList();
+        flag = true; 
     }
 
     @Override
     public void execute() {
-        String command = Main.traverse.execute();
-
-        SmartDashboard.putString("currentCommand", command);
-        
-        cmdList.setCurrentCommand(command);
-        cmdList.addCommand();
+        if (flag) {
+            String command = Main.traverse.execute();
+            SmartDashboard.putString("currentCommand", command);
+            cmdList.setCurrentCommand(command);
+            cmdList.addCommand();
+            flag = false; 
+        }
     }    
 
     @Override
@@ -31,6 +34,6 @@ public class Transition implements IState {
 
     @Override
     public boolean isFinished() {
-        return true;
+        return !flag;
     }
 }

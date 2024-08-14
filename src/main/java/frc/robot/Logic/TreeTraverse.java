@@ -7,11 +7,10 @@ import frc.robot.Main;
 
 public class TreeTraverse {
 
-    // Данные и конфигурации
     private static final String[] TREE_ZONE_NAMES = {"LZ", "TZ", "RZ"};
-    private static final String[] TREE_NAMES = {"FIRST", "SECOND", "THIRD"};
+    private static final String[] TREE_NUMBER = {"FIRST", "SECOND", "THIRD"};
 
-    private static final HashMap<String, String> containersForFruits = new HashMap<String, String>() {
+    private final HashMap<String, String> containersForFruits = new HashMap<String, String>() {
         {
             put("rotten", "CON2");
             put("AppleSmallRed", "CON4");
@@ -28,362 +27,276 @@ public class TreeTraverse {
         }
     };
 
-    // Вот эти переменные необходимо изменить при нахождении фрукта AutoGrab'ом
-    private String findFruitName = "";
-    private boolean fruitFind = false; // Для отладки установлено в true
+    private static boolean fruitFind = true; 
+    private static boolean checkFruit = false; 
 
-    private boolean firstCall = true;
-    private boolean lastAutoGrab, lastStepChange, firstItter, treeNumberChange = true;
-    private int currentTreeNumber, currentTreeZoneNumber, currentTreeZoneSteps, deliverySteps, endSteps, lastCurrentTreeNumber, lastCurrentTreeZoneNumber = 0;
-    private String lastCheckpoint = "";
-    private String treeZone = "";
+    // Для setter и getter для чекпойнта
+    private static String lastCheckpoint = "";
+    // Первый вызов
+    private static boolean firstCall = true;
+    // Для setter и getter для зоны
+    private static String treeZone = "";
+
+    private static boolean treeNumberChange = true;
+    private static boolean resetSteps = false;
+    private static int stepsForEnd = 0;
+    private static String findFruitName = "";
+    private static int currentTreeNumber, currentTreeZoneNumber, currentTreeZoneSteps = 0;
+
 
     public String execute() {
-        String outIndex = "none";
-
-        findFruitName = getGrippedFruit();
-
-        SmartDashboard.putBoolean("FruitHui: ", fruitFind); 
-        SmartDashboard.putString("FruitHuiName: ", findFruitName); 
-        
-        if (firstCall) {
-            outIndex = "MOVE_FROM_START_TO_CH1";
-            setLastCheckpoint("CH1");
-            firstItter = true;
+        String outCommand = "";
+        if (firstCall){
+            outCommand = initializeFirstCommand();
             firstCall = false;
         } else {
-            if (currentTreeNumber < TREE_NAMES.length) {
-                if (currentTreeZoneNumber < TREE_ZONE_NAMES.length) {
-                    if (currentTreeZoneSteps < 2) {
-
-                        outIndex = processCurrentTreeZone(currentTreeNumber, currentTreeZoneNumber, treeNumberChange);
-                        currentTreeZoneSteps++;
-
-                        if (currentTreeZoneSteps + 1 == 3) {
-                            currentTreeZoneSteps = 0;
-                            currentTreeZoneNumber++;
-                        }
-                    }
-
-                    if (currentTreeZoneNumber + 1 == TREE_ZONE_NAMES.length + 1) {
-                        currentTreeZoneNumber = 0;
-                        currentTreeNumber++;
-                    }
-                }
-            } else {
-                if (endSteps < 2) {
-                    outIndex = processEnd(endSteps);
-                    endSteps++;
-                } 
-            }
+            findFruitName = getGrippedFruit();
+            outCommand = commandBuildProcess();
         }
+        // System.out.println(outCommand);
+        return outCommand; 
+    }
 
-        treeNumberChange = checkChangeTreeNumber();
-        lastCurrentTreeNumber = currentTreeNumber;
-
+    private String initializeFirstCommand() {
+        final String outIndex = "MOV_IN_START_CH1";
+        setLastCheckpoint("CH1");
         return outIndex;
     }
 
-    private String processEnd(Integer step) {
+    private String processEnd(final Integer step) {
         String outIndex = "none";
         if (step == 0) {
-            outIndex = "MOVE_FROM_" + getLastTreeZone() + "_TO_" + getBestWayForCheckForZone(getLastTreeZone());
-            setLastCheckpoint(getBestWayForCheckForZone(getLastTreeZone()));
-        }
-
-        if (step == 1) {
-            outIndex = "MOVE_FROM_" + getLastCheckpoint() + "_TO_" + "FINISH";
+            final String[] replaceZone = getLastTreeZone().split("_");
+            outIndex = "MOV_IN_" + getLastTreeZone() + "_TO_"
+                    + choosingBestZoneForCheck(replaceZone[1], replaceZone[0]);
+            setLastCheckpoint(choosingBestZoneForCheck(replaceZone[1], replaceZone[0]));
+        } else if (step == 1) {
+            outIndex = "MOV_IN_" + getLastCheckpoint() + "_TO_" + "FINISH";
+        } else if (step == 2) {
+            outIndex = "LogicEnd";
         }
         return outIndex;
     }
 
-    private String processCurrentTreeZone(Integer currentTreeNumber, Integer currentTreeZoneNumber, Boolean ChangeTreeNumber) {
-        String outIndex = "none";
+    private String commandBuildProcess() {
+        String outCommand = "";
+        if (currentTreeNumber < TREE_NUMBER.length) {
+            if (currentTreeZoneNumber < TREE_ZONE_NAMES.length) {
+                if (currentTreeZoneSteps <= 7) {
+                    final String currentTreeZone = TREE_NUMBER[currentTreeNumber] + "_"
+                            + TREE_ZONE_NAMES[currentTreeZoneNumber];
 
-            if (firstItter) {
-
-                outIndex = "MOVE_FROM_" + getLastCheckpoint() + "_TO_" + TREE_NAMES[currentTreeNumber] + "_" + TREE_ZONE_NAMES[currentTreeZoneNumber];
-                setLastTreeZone(TREE_NAMES[currentTreeNumber] + "_" + TREE_ZONE_NAMES[currentTreeZoneNumber]);
-                this.currentTreeZoneSteps = 0;
-                firstItter = false;
-
-            } else {
-                if (fruitFind && lastAutoGrab) {
-
-                    if (deliverySteps < 4) {
-                        SmartDashboard.putNumber("deliverySteps", deliverySteps);
-                        if (deliverySteps == 0) {
-                            outIndex = "MOVE_FROM_" + getLastTreeZone() + "_TO_" + getConForFruit(findFruitName);
-                            setLastCheckpoint(getBestWayForCheckForZone(getLastTreeZone()));
-
-                            this.currentTreeZoneNumber = lastCurrentTreeZoneNumber;
-                            this.currentTreeZoneSteps = -1;
+                    if (treeNumberChange) {
+                        if (currentTreeNumber == 0 && currentTreeZoneNumber == 0) {
+                            outCommand = "MOV_IN_" + getLastCheckpoint() + "_TO_" + currentTreeZone;
+                            treeNumberChange = false;
+                        } else {
+                            if (currentTreeZoneSteps == 0) {
+                                final String[] replaceZone = currentTreeZone.split("_");
+                                outCommand = "MOV_IN_" + getLastTreeZone() + "_TO_"
+                                        + choosingBestZoneForCheck(replaceZone[1], replaceZone[0]);
+                                setLastCheckpoint(choosingBestZoneForCheck(replaceZone[1], replaceZone[0]));
+                            }
+                            if (currentTreeZoneSteps == 1) {
+                                outCommand = "MOV_IN_" + getLastCheckpoint() + "_TO_" + currentTreeZone;
+                            }
+                            if (currentTreeZoneSteps == 2) {
+                                outCommand = getGrabModeInArray(TREE_ZONE_NAMES[currentTreeZoneNumber]);
+                                treeNumberChange = false;
+                                checkFruit = true;
+                                resetSteps = true;
+                            }
                         }
-                        SmartDashboard.putNumber("deliverySteps", deliverySteps);
-                        if (deliverySteps == 1) {
-                            SmartDashboard.putNumber("this.currentTreeZoneNumber", this.lastCurrentTreeZoneNumber);
-                            SmartDashboard.putNumber("lastCurrentTreeZoneNumber", lastCurrentTreeZoneNumber);
-                            outIndex = "RESET_FRUIT";
-                            // fruitFind = false;
-                            // findFruitName = "";
-                            this.currentTreeZoneNumber = lastCurrentTreeZoneNumber;
-                            this.currentTreeZoneSteps = -1;
-                        }
-                        SmartDashboard.putNumber("deliverySteps", deliverySteps);
-                        if (deliverySteps == 2) {
-                            outIndex = "MOVE_FROM_" + getConForFruit(findFruitName) + "_TO_" + getLastCheckpoint();
 
-                            this.currentTreeZoneNumber = lastCurrentTreeZoneNumber;
-                            this.currentTreeZoneSteps = -1;
-                        }
-                        SmartDashboard.putNumber("deliverySteps", deliverySteps);
-                        deliverySteps++;
-                        SmartDashboard.putNumber("deliverySteps", deliverySteps);
-                        if (deliverySteps == 3) {
+                        setLastTreeZone(currentTreeZone);
 
-                            fruitFind = false;
-                            findFruitName = "";
-                            lastAutoGrab = false;
-                        }
-                        SmartDashboard.putNumber("deliverySteps", deliverySteps);
-                    }
-
-                } else {
-                    if (ChangeTreeNumber) {
-                        outIndex = "MOVE_FROM_" + getLastTreeZone() + "_TO_" + getBestWayForCheckForZone(getLastTreeZone());
-                        lastStepChange = true;
-                        this.currentTreeZoneSteps = -1;
                     } else {
-                        outIndex = createPathForZone(currentTreeNumber, currentTreeZoneNumber);
+
+                        if (fruitFind && checkFruit) {
+                            if (currentTreeZoneSteps == 0) {
+                                outCommand = "MOV_IN_" + getLastTreeZone() + "_TO_" + getLastCheckpoint();
+                                currentTreeZoneNumber = currentTreeZoneNumber - 1;
+                            } else if (currentTreeZoneSteps == 1) {
+                                outCommand = "MOV_IN_" + getLastCheckpoint() + "_TO_" + getConForFruit(findFruitName);
+                            } else if (currentTreeZoneSteps == 2) {
+                                outCommand = "RESET_FRUIT";
+                            } else if (currentTreeZoneSteps == 3) {
+                                outCommand = "MOV_IN_" + getConForFruit(findFruitName) + "_TO_" + getLastCheckpoint();
+                            } else if (currentTreeZoneSteps == 4) {
+                                outCommand = "MOV_IN_" + getLastCheckpoint() + "_TO_" + getLastTreeZone();
+                            } else if (currentTreeZoneSteps == 5) {
+                                outCommand = getGrabModeInArray(TREE_ZONE_NAMES[currentTreeZoneNumber]);
+
+                                // Сбрасываем переменные для захвата
+                                findFruitName = "";
+                                resetSteps = true;
+                                checkFruit = false;
+                                fruitFind = false;
+                            }
+                        } else {
+
+                            if (currentTreeZoneSteps == 0) {
+                                outCommand = "MOV_IN_" + getLastTreeZone() + "_TO_" + currentTreeZone;
+                                checkFruit = false;
+                            }
+
+                            if (currentTreeZoneSteps == 1) {
+                                outCommand = getGrabModeInArray(TREE_ZONE_NAMES[currentTreeZoneNumber]);
+                                treeNumberChange = currentTreeZoneNumber >= TREE_ZONE_NAMES.length - 1; // Смотрим это
+                                                                                                        // последняя
+                                                                                                        // зона для
+                                                                                                        // текущего
+                                                                                                        // дерева
+                                checkFruit = true;
+                                resetSteps = true;
+                            }
+
+                            setLastTreeZone(currentTreeZone);
+                        }
+                    }
+
+                    currentTreeZoneSteps++;
+
+                    // Сброс задач этого блока
+                    if (currentTreeZoneSteps >= 7 || resetSteps) {
+                        resetSteps = false;
+                        resetStepsZone();
                     }
                 }
-            }
-        return outIndex;
-    }
 
-    // private String processCurrentTreeZone(Integer currentTreeNumber, Integer currentTreeZoneNumber, Boolean ChangeTreeNumber) {
-    //     String outIndex = "none";
-    
-    //     if (firstItter) {
-    //         outIndex = "MOVE_FROM_" + getLastCheckpoint() + "_TO_" + TREE_NAMES[currentTreeNumber] + "_" + TREE_ZONE_NAMES[currentTreeZoneNumber];
-    //         setLastTreeZone(TREE_NAMES[currentTreeNumber] + "_" + TREE_ZONE_NAMES[currentTreeZoneNumber]);
-    //         this.currentTreeZoneSteps = 0;
-    //         firstItter = false;
-    
-    //     } else {
-    //         if (fruitFind && lastAutoGrab) {
-    //             if (deliverySteps < 4) {
-    //                 SmartDashboard.putNumber("deliverySteps11", deliverySteps);
-    
-    //                 switch (deliverySteps) {
-    //                     case 0:
-    //                         outIndex = "MOVE_FROM_" + getLastTreeZone() + "_TO_" + getConForFruit(findFruitName);
-    //                         setLastCheckpoint(getBestWayForCheckForZone(getLastTreeZone()));
-    //                         this.currentTreeZoneNumber = lastCurrentTreeZoneNumber;
-    //                         this.currentTreeZoneSteps = -1;
-    //                         SmartDashboard.putNumber("deliverySteps", 0);
-    //                         break;
-    
-    //                     case 1:
-                            
-    //                         outIndex = "RESET_FRUIT";
-    //                         this.currentTreeZoneNumber = lastCurrentTreeZoneNumber;
-    //                         this.currentTreeZoneSteps = -1;
-    //                         SmartDashboard.putNumber("deliverySteps", 1);
-    //                         break;
-    
-    //                     case 2:
-    //                         outIndex = "MOVE_FROM_" + getConForFruit(findFruitName) + "_TO_" + getLastCheckpoint();
-    //                         this.currentTreeZoneNumber = lastCurrentTreeZoneNumber;
-    //                         this.currentTreeZoneSteps = -1;
-    //                         SmartDashboard.putNumber("deliverySteps", 2);
-    //                         break;
-    
-    //                     case 3:
-    //                         fruitFind = false;
-    //                         findFruitName = "";
-    //                         lastAutoGrab = false;
-    //                         SmartDashboard.putNumber("deliverySteps", 3);
-    //                         break;
-    //                 }
-    
-    //                 deliverySteps++;
-    //                 SmartDashboard.putNumber("deliverySteps", deliverySteps);
-    //                 System.out.println("Incremented deliverySteps" + deliverySteps);
-    //             }
-    //         } else {
-    //             if (ChangeTreeNumber) {
-    //                 outIndex = "MOVE_FROM_" + getLastTreeZone() + "_TO_" + getBestWayForCheckForZone(getLastTreeZone());
-    //                 lastStepChange = true;
-    //                 this.currentTreeZoneSteps = -1;
-    //             } else {
-    //                 outIndex = createPathForZone(currentTreeNumber, currentTreeZoneNumber);
-    //             }
-    //         }
-    //     }
-    //     return outIndex;
-    // }
-
-    private String createPathForZone(Integer currentTreeNumber, Integer currentTreeZoneNumber) {
-        String outIndex = "none";
-
-        if (currentTreeZoneSteps == 0) {
-            if (lastStepChange) {
-                outIndex = "MOVE_FROM_" + getLastCheckpoint() + "_TO_" + TREE_NAMES[currentTreeNumber] + "_" + TREE_ZONE_NAMES[currentTreeZoneNumber];
-                lastStepChange = false;
-            } else {
-                if (!lastAutoGrab) {
-                    SmartDashboard.putString("lastCheckpoint", getLastCheckpoint());
-                    outIndex = "MOVE_FROM_" + getLastCheckpoint() + "_TO_" + TREE_NAMES[currentTreeNumber] + "_" + TREE_ZONE_NAMES[currentTreeZoneNumber];
-                    setLastTreeZone(TREE_NAMES[currentTreeNumber] + "_" + TREE_ZONE_NAMES[currentTreeZoneNumber]);
-                    lastAutoGrab = false;
-                } else {
-                    outIndex = "MOVE_FROM_" + getLastTreeZone() + "_TO_" + TREE_NAMES[currentTreeNumber] + "_" + TREE_ZONE_NAMES[currentTreeZoneNumber];
-                    setLastTreeZone(TREE_NAMES[currentTreeNumber] + "_" + TREE_ZONE_NAMES[currentTreeZoneNumber]);
-                    lastAutoGrab = false;
+                // Сброс задач этого блока
+                if (currentTreeZoneNumber >= TREE_ZONE_NAMES.length) {
+                    resetTreeZone();
                 }
             }
+        } else {
+            outCommand = processEnd(stepsForEnd);
+            stepsForEnd++;
         }
 
-        if (currentTreeZoneSteps == 1) {
-            outIndex = getGrabModeInArray(TREE_ZONE_NAMES[currentTreeZoneNumber]);
-            setLastTreeZone(TREE_NAMES[currentTreeNumber] + "_" + TREE_ZONE_NAMES[currentTreeZoneNumber]);
-            lastCurrentTreeZoneNumber = this.currentTreeZoneNumber;
-            deliverySteps = 0;
-            lastAutoGrab = true;
+        // System.out.println("currentTreeNumber: " + currentTreeNumber);
+        // System.out.println("currentTreeZoneNumber: " + currentTreeZoneNumber);
+        // System.out.println("currentTreeZoneSteps: " + currentTreeZoneSteps);
+
+        return outCommand;
+    }
+
+    private void resetStepsZone() {
+        currentTreeZoneSteps = 0;
+        currentTreeZoneNumber++;
+    }
+
+    private void resetTreeZone() {
+        currentTreeZoneNumber = 0;
+        currentTreeNumber++;
+    }
+
+    private String getGrippedFruit() {
+        String detectionResult = "";
+        switch (Main.camMap.get("grippedFruit").intValue()) {
+        case 1:
+            detectionResult = "AppleBigRed";
+            fruitFind = true;
+            break;
+        case 2:
+            detectionResult = "AppleSmallRed";
+            fruitFind = true;
+            break;
+        case 3:
+            detectionResult = "PearYellow";
+            fruitFind = true;
+            break;
+        default:
+            detectionResult = "";
+            fruitFind = false;
+            break;
         }
-        return outIndex;
+        return detectionResult;
     }
 
-    /**
-     * Узнаем в какой контейнер нужно вести найденный фрукт
-     */
-    private String getConForFruit(String fruitName) {
-        return containersForFruits.getOrDefault(fruitName, "none");
-    }
-
-    private String getBestWayForCheckForZone(String getLastTreeZone) {
-        String[] replaceZone = getLastTreeZone.split("_");
-        return choosingBestZoneForCheck(replaceZone[1], replaceZone[0]);
-    }
-
-    private boolean checkChangeTreeNumber() {
-        return currentTreeNumber != lastCurrentTreeNumber;
-    }
-
-    /**
-     * Узнаем какой тип распознавания нужно использовать для заданной зоны
-     */
-    private String getGrabModeInArray(String zoneName) {
-        return grabTypeForZones.getOrDefault(zoneName, "none");
-    }
-
-    /**
-     * Установка последней Checkpoint
-     */
-    private void setLastCheckpoint(String lastCheckpoint) {
-        this.lastCheckpoint = lastCheckpoint;
-    }
-
-    /**
-     * Установка последней зоны в который мы были у дерева
-     */
-    private void setLastTreeZone(String treeZone) {
-        this.treeZone = treeZone;
-    }
-
-    /**
-     * Получение последней зоны в который мы были у дерева
-     */
-    private String getLastTreeZone() {
-        return this.treeZone;
-    }
-
-    /**
-     * Получение последней точки робота
-     */
-    private String getLastCheckpoint() {
-        return lastCheckpoint;
-    }
-
-    private String choosingBestZoneForCheck(String currentZoneName, String zoneName) {
+    private String choosingBestZoneForCheck(final String currentZoneName, final String zoneName) {
         String out = "";
         if (zoneName.equals("FIRST")) {
             switch (currentZoneName) {
-                case "LZ":
-                    out = "CH1";
-                    break;
-                case "RZ":
-                    out = "CH1";
-                    break;
-                case "TZ":
-                    out = "CH1";
-                    break;
-                case "START":
-                    out = "CH1";
-                    break;
-                default:
-                    out = "null";
-                    break;
+            case "LZ":
+                out = "CH1";
+                break;
+            case "RZ":
+                out = "CH1";
+                break;
+            case "TZ":
+                out = "CH1";
+                break;
+            case "START":
+                out = "CH1";
+                break;
+            default:
+                out = "null";
+                break;
             }
         }
         if (zoneName.equals("SECOND")) {
             switch (currentZoneName) {
-                case "LZ":
-                    out = "CH2";
-                    break;
-                case "RZ":
-                    out = "CH2";
-                    break;
-                case "TZ":
-                    out = "CH2";
-                    break;
-                case "START":
-                    out = "CH2";
-                    break;
-                default:
-                    out = "null";
-                    break;
+            case "LZ":
+                out = "CH2";
+                break;
+            case "RZ":
+                out = "CH2";
+                break;
+            case "TZ":
+                out = "CH2";
+                break;
+            case "START":
+                out = "CH2";
+                break;
+            default:
+                out = "null";
+                break;
             }
         }
         if (zoneName.equals("THIRD")) {
             switch (currentZoneName) {
-                case "LZ":
-                    out = "CH2";
-                    break;
-                case "RZ":
-                    out = "CH3";
-                    break;
-                case "TZ":
-                    out = "CH3";
-                    break;
-                case "START":
-                    out = "CH3";
-                    break;
-                default:
-                    out = "null";
-                    break;
+            case "LZ":
+                out = "CH2";
+                break;
+            case "RZ":
+                out = "CH3";
+                break;
+            case "TZ":
+                out = "CH3";
+                break;
+            case "START":
+                out = "CH3";
+                break;
+            default:
+                out = "null";
+                break;
             }
         }
         return out;
     }
 
-    private String getGrippedFruit() {
-        String detectionResult = "";
-        switch(Main.camMap.get("grippedFruit").intValue()) {
-            case 1: 
-                detectionResult = "AppleBigRed";
-                fruitFind = true;
-                break;
-            case 2: 
-                detectionResult = "AppleSmallRed";
-                fruitFind = true;
-                break;
-            case 3:
-                detectionResult = "PearYellow";
-                fruitFind = true;
-                break;
-        }
-        return detectionResult;
+    private String getGrabModeInArray(final String zoneName) {
+        return grabTypeForZones.getOrDefault(zoneName, "none");
+    }
+
+    private String getConForFruit(final String fruitName) {
+        return containersForFruits.getOrDefault(fruitName, "none");
+    }
+
+    private void setLastCheckpoint(final String lastCheckpoint) {
+        TreeTraverse.lastCheckpoint = lastCheckpoint;
+    }
+
+    private void setLastTreeZone(final String treeZone) {
+        TreeTraverse.treeZone = treeZone;
+    }
+
+    private String getLastTreeZone() {
+        return TreeTraverse.treeZone;
+    }
+
+    private String getLastCheckpoint() {
+        return lastCheckpoint;
     }
 }
