@@ -24,7 +24,7 @@ public class Transition implements IState {
             cmdList.setCurrentCommand(command);
             cmdList.addCommand();
             flag = false; 
-        }
+        } 
     }    
 
     @Override
