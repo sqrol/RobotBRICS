@@ -24,10 +24,10 @@ public class Constants {
     public static final int COBRA                                     = 3; 
 
     public static final int SHARP_RIGHT                               = 0;
-    public static final int SHARP_LEFT                                = 2;
+    public static final int SHARP_LEFT                                = 1;
 
 
-    public static final int LIMIT_SWITCH                              = 0;
+    public static final int LIMIT_SWITCH_LIFT                         = 0;
     public static final int LIMIT_SWITCH_GLIDE                        = 3;
     public static final int START_BUTTON                              = 4;
     public static final int EMS_BUTTON                                = 5;

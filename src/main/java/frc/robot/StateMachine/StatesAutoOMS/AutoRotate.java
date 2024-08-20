@@ -33,7 +33,7 @@ public class AutoRotate implements IState {
     private int branchNumber = 0;
 
     // private static final double[][] arrForRotate = { { 1, 106, 213} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
-    private static final double[][] arrForRotate = { { 1, 260} , { -45,  45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
+    private static final double[][] arrForRotate = { { 1, 106, 260} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
 
     public AutoRotate() {
         GRIP_ROTATE = 70.0; // 70

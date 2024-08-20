@@ -25,8 +25,8 @@ public class LogicCore {
 
     private boolean firstCallForSubPath = false;
 
-    private final boolean B1Flag = false;
-    private final boolean B2Flag = false;
+    private final boolean C1Flag = false;
+    private final boolean C2Flag = false;
 
     // Для сдачи модулей B отключает построение пути назад
     private final boolean autonomousMode = true; // если true, то едет до финиша,
@@ -134,8 +134,8 @@ public class LogicCore {
         String[] currentTree = getTreeArray(zoneNum);
         String zoneName = getZoneName(zoneNum);
 
-        if(B1Flag) {
-            outArray.add("B1");
+        if(C1Flag) {
+            outArray.add("C1");
         } else {
 
             outArray.addAll(grabFromLowerZone(currentZone, zoneName));
@@ -143,88 +143,88 @@ public class LogicCore {
             outArray.addAll(grabFromRightZone(currentZone, zoneName, zoneNum));
             outArray.addAll(grabFromTreeZone(currentTree, zoneName));
         }
-        if(B2Flag) {
-            outArray.add("B2");
+        if(C2Flag) {
+            outArray.add("C2");
         }
 
         return outArray;
     }
 
-    // Пример: GRAB_POS_0_0_LOWER
-    // GRAB_POS_(GLIDEPOS, ROT-DEGREE, SUBGRABPOS)
     private String grabPosGenerate(String inGrabPos) {
         Map<String, String> grabPosMap = new HashMap<>();
-        // нормальные захваты б
+        // нормальные захваты  (FIRST LZ, LOZ, TZ)
+        //                     (SECOND RZ, LOZ, TZ)
+        //                     (THIRD RZ, LOZ, TZ, LZ)
+        grabPosMap.put("GRAB_POS_1", "ROTATE_-45");
+        grabPosMap.put("GRAB_POS_2", "ROTATE_-45");
 
-        grabPosMap.put("GRAB_POS_1", "-45_1ST_SIDE_LINE");
-        grabPosMap.put("GRAB_POS_2", "-45_2NS_SIDE_LINE");
+        grabPosMap.put("GRAB_POS_3", "ROTATE_45");
+        grabPosMap.put("GRAB_POS_4", "ROTATE_45");
 
+        grabPosMap.put("GRAB_POS_5", "ROTATE_-15");
+        grabPosMap.put("GRAB_POS_6", "ROTATE_-15");
+        grabPosMap.put("GRAB_POS_7", "ROTATE_-15");
 
-        grabPosMap.put("GRAB_POS_3", "45_2ND_SIDE_LINE_RZ");
-        grabPosMap.put("GRAB_POS_4", "45_1ST_SIDE_LINE_RZ");
+        grabPosMap.put("GRAB_POS_9", "ROTATE_10");
+        grabPosMap.put("GRAB_POS_10", "ROTATE_10");
+        grabPosMap.put("GRAB_POS_11", "ROTATE_10");
 
+        grabPosMap.put("GRAB_POS_12", "ROTATE_15");
+        grabPosMap.put("GRAB_POS_13", "ROTATE_15");
+        grabPosMap.put("GRAB_POS_14", "ROTATE_15");
 
-        grabPosMap.put("GRAB_POS_7", "-45_3RD_SIDE_LINE");
-        grabPosMap.put("GRAB_POS_8", "UNDER_TREE_8");
-        grabPosMap.put("GRAB_POS_9", "20_3RD_SIDE_LINE_RZ");
-        grabPosMap.put("GRAB_POS_14", "GRAB_POS_14");
-        grabPosMap.put("GRAB_POS_15", "UNDER_TREE_15");
-        grabPosMap.put("GRAB_POS_16", "-20_3RD_SIDE_LINE_RZ");
-        grabPosMap.put("GRAB_POS_21", "45_3RD_SIDE_LINE");
-        grabPosMap.put("GRAB_POS_22", "0_1ST_MAIN_LINE");
-        grabPosMap.put("GRAB_POS_23", "-45_3RD_SIDE_LINE_RZ");
+        grabPosMap.put("GRAB_POS_16", "ROTATE_-15");
+        grabPosMap.put("GRAB_POS_17", "ROTATE_-15");
+        grabPosMap.put("GRAB_POS_18", "ROTATE_-15");
 
+        grabPosMap.put("GRAB_POS_19", "ROTATE_45");
+        grabPosMap.put("GRAB_POS_20", "ROTATE_45");
+        grabPosMap.put("GRAB_POS_21", "ROTATE_45");
 
-        grabPosMap.put("GRAB_POS_25", "-45_1ST_SIDE_LINE_RZ");
-        grabPosMap.put("GRAB_POS_24", "-45_2ND_SIDE_LINE_RZ");
-        grabPosMap.put("GRAB_POS_18", "-20_1ST_SIDE_LINE_RZ");
-        grabPosMap.put("GRAB_POS_17", "-20_2ND_SIDE_LINE_RZ");
-        grabPosMap.put("GRAB_POS_11", "20_1ST_SIDE_LINE_RZ");
-        grabPosMap.put("GRAB_POS_10", "20_2ND_SIDE_LINE_RZ");
+        grabPosMap.put("GRAB_POS_22", "ROTATE_0");
 
-
-        grabPosMap.put("GRAB_POS_20", "45_2ND_SIDE_LINE");
-        grabPosMap.put("GRAB_POS_19", "45_1ST_SIDE_LINE");
-        grabPosMap.put("GRAB_POS_13", "25_2ND_SIDE_LINE");
-        grabPosMap.put("GRAB_POS_12", "25_1ST_SIDE_LINE");
-        grabPosMap.put("GRAB_POS_6", "-25_2ND_SIDE_LINE");
-        grabPosMap.put("GRAB_POS_5", "-25_1ST_SIDE_LINE");
-
+        grabPosMap.put("GRAB_POS_23", "ROTATE_-45");
+        grabPosMap.put("GRAB_POS_24", "ROTATE_-45");
+        grabPosMap.put("GRAB_POS_25", "ROTATE_-45");
+   
         return grabPosMap.getOrDefault(inGrabPos, "none");
     }
 
     private String grabPosGenerate2(String inGrabPos) {
         Map<String, String> grabPosMap = new HashMap<>();
         // неформальные захваты
-        grabPosMap.put("GRAB_POS_1", "-45_4TH_MAIN_LINE_SECOND_LZ");
-        grabPosMap.put("GRAB_POS_2", "0_4TH_MAIN_LINE_SECOND_LZ");
+        grabPosMap.put("GRAB_POS_1", "ROTATE_0");
+        grabPosMap.put("GRAB_POS_2", "ROTATE_0");
 
-        grabPosMap.put("GRAB_POS_3", "0_4TH_MAIN_LINE");
-        grabPosMap.put("GRAB_POS_4", "45_4TH_MAIN_LINE");
+        grabPosMap.put("GRAB_POS_3", "ROTATE_0");
+        grabPosMap.put("GRAB_POS_4", "ROTATE_0");
+        grabPosMap.put("GRAB_POS_5", "ROTATE_-15");
+        grabPosMap.put("GRAB_POS_6", "ROTATE_0");
 
-        grabPosMap.put("GRAB_POS_7", "45_3RD_MAIN_LINE_SECOND_LZ");
-        grabPosMap.put("GRAB_POS_8", "UNDER_TREE_8");
-        grabPosMap.put("GRAB_POS_9", "GRAB_POS_2_45_LOWER");
-        grabPosMap.put("GRAB_POS_14", "45_2ND_MAIN_LINE_SECOND_LZ");
-        grabPosMap.put("GRAB_POS_15", "UNDER_TREE_15");
-        grabPosMap.put("GRAB_POS_16", "-45_2ND_MAIN_LINE");
-        grabPosMap.put("GRAB_POS_21", "45_1ST_SIDE_LINE");
-        grabPosMap.put("GRAB_POS_22", "0_1ST_MAIN_LINE");
-        grabPosMap.put("GRAB_POS_23", "-45_1ST_MAIN_LINE");
+        grabPosMap.put("GRAB_POS_7", "ROTATE_15");
+        
+        grabPosMap.put("GRAB_POS_9", "ROTATE_-15");
+        grabPosMap.put("GRAB_POS_10", "ROTATE_0");
+        grabPosMap.put("GRAB_POS_11", "ROTATE_10");
+        grabPosMap.put("GRAB_POS_12", "ROTATE_-45");
+        grabPosMap.put("GRAB_POS_13", "ROTATE_0");
 
-        grabPosMap.put("GRAB_POS_25", "45_1ST_SIDE_LINE");
-        grabPosMap.put("GRAB_POS_24", "0_1ST_MAIN_LINE");
-        grabPosMap.put("GRAB_POS_18", "45_2ND_MAIN_LINE");
-        grabPosMap.put("GRAB_POS_17", "0_2ND_MAIN_LINE");
-        grabPosMap.put("GRAB_POS_11", "45_3RD_MAIN_LINE");
-        grabPosMap.put("GRAB_POS_10", "-45_3RD_MAIN_LINE");
+        grabPosMap.put("GRAB_POS_14", "ROTATE_15");
 
-        grabPosMap.put("GRAB_POS_20", "0_1ST_MAIN_LINE");
-        grabPosMap.put("GRAB_POS_19", "-45_1ST_MAIN_LINE");
-        grabPosMap.put("GRAB_POS_13", "0_2ND_MAIN_LINE");
-        grabPosMap.put("GRAB_POS_12", "-45_2ND_MAIN_LINE");
-        grabPosMap.put("GRAB_POS_6", "0_3RD_MAIN_LINE_SECOND_LZ");
-        grabPosMap.put("GRAB_POS_5", "-45_3RD_MAIN_SECOND_LZ");
+        grabPosMap.put("GRAB_POS_16", "ROTATE_-15");
+
+        grabPosMap.put("GRAB_POS_17", "ROTATE_0");
+        grabPosMap.put("GRAB_POS_18", "ROTATE_15");
+
+        grabPosMap.put("GRAB_POS_19", "ROTATE_-45");
+        grabPosMap.put("GRAB_POS_20", "ROTATE_0");
+
+        grabPosMap.put("GRAB_POS_21", "ROTATE_45");
+        grabPosMap.put("GRAB_POS_22", "ROTATE_0");
+        grabPosMap.put("GRAB_POS_23", "ROTATE_-45");
+
+        grabPosMap.put("GRAB_POS_24", "ROTATE_0");
+        grabPosMap.put("GRAB_POS_25", "ROTATE_45");
 
         return grabPosMap.getOrDefault(inGrabPos, "none");
     }

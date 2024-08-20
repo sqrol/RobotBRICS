@@ -25,9 +25,75 @@ public class CommandList {
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
+
     if(currentCommandName.equals("RESET_FRUIT")) {
         newStates.add(new SetGrabPosition("OPEN", true));
         newStates.add(new Transition());
+        StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    }
+
+    if(currentCommandName.equals("C1")) {
+
+        // Проезд на 1 метр вперед
+        newStates.add(new SimpleDrive(105, 0));
+        newStates.add(new StartPos());
+
+
+        // Проезд змейкой
+        newStates.add(new SimpleDrive(62, 0));
+        newStates.add(new SimpleDrive(0, -90));
+
+        newStates.add(new SimpleDrive(75, 0));
+        newStates.add(new SimpleDrive(0, 90));
+
+        newStates.add(new SimpleDrive(60, 0));
+        newStates.add(new SimpleDrive(0, 90));
+
+        newStates.add(new SimpleDrive(75, 0));
+        newStates.add(new SimpleDrive(0, -90));
+
+        newStates.add(new SimpleDrive(65, 0));
+        newStates.add(new SimpleDrive(0, -90));
+
+        newStates.add(new SimpleDrive(71, 0));
+        newStates.add(new SimpleDrive(0, 90));
+        newStates.add(new SimpleDrive(60, 0));
+        newStates.add(new StartPos());
+
+
+        // Работа ультразвуковых датчиков
+        newStates.add(new SonicCheck());
+        newStates.add(new StartPos());
+
+
+        // Работа инфракрасных датчиков
+        newStates.add(new SharpCheck());
+        newStates.add(new StartPos());
+
+
+        // Распознавание объекта
+        newStates.add(new CheckFruit());
+        newStates.add(new End());
+
+        StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    }
+
+    if(currentCommandName.equals("C2")) {
+
+        // Идентификация и отображение
+        newStates.add(new CheckRotten());
+        newStates.add(new StartPos());
+
+
+        // Распознавание элемента по его геометрии
+        newStates.add(new CheckFruit());
+        newStates.add(new StartPos());
+
+
+        // Управление элементом
+        newStates.add(new AutoStart());
+        newStates.add(new End());
+
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
         
@@ -1152,6 +1218,10 @@ public class CommandList {
     if(currentCommandName.equals("END")) {
         newStates.add(new End()); 
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    }
+
+    if(currentCommandName.equals("arg0")) {
+
     }
     }
 }

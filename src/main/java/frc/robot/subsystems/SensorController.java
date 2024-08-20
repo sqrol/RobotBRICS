@@ -57,7 +57,7 @@ public class SensorController implements Runnable{
             SHARP_RIGHT = new AnalogInput(Constants.SHARP_RIGHT);
             SHARP_LEFT = new AnalogInput(Constants.SHARP_LEFT);
         
-            LIMIT_SWITCH_LIFT = new DigitalInput(Constants.LIMIT_SWITCH);
+            LIMIT_SWITCH_LIFT = new DigitalInput(Constants.LIMIT_SWITCH_LIFT);
             LIMIT_SWITCH_GLIDE = new DigitalInput(Constants.LIMIT_SWITCH_GLIDE);
             START_BUTTON = new DigitalInput(Constants.START_BUTTON);
             EMS_BUTTON = new DigitalInput(Constants.EMS_BUTTON);

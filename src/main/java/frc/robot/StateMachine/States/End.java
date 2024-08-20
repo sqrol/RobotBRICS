@@ -14,6 +14,8 @@ public class End implements IState {
     public void execute() {
         Main.motorControllerMap.put("speedX", 0.0);
         Main.motorControllerMap.put("speedZ", 0.0);
+        Main.motorControllerMap.put("liftSpeed", 0.0);
+        Main.motorControllerMap.put("rotateSpeed", 0.0);
     }
 
     @Override
