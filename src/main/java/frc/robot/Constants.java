@@ -40,4 +40,16 @@ public class Constants {
     
     public static final int SONIC_ECHO_LEFT                           = 8;
     public static final int SONIC_PING_LEFT                           = 9;
+
+    ///////////////////////
+    
+    public static final String BIG_RED_APPLE                          = "BigRedApple";
+    public static final String SMALL_RED_APPLE                        = "SmallRedApple";
+    public static final String BIG_GREEN_APPLE                        = "BigGreenApple";
+    public static final String SMALL_GREEN_APPLE                      = "SmallGreenApple";
+    public static final String GREEN_PEAR                             = "PearGreen";
+    public static final String YELLOW_PEAR                            = "YellowPear"; 
+    public static final String BIG_ROTTEN_APPLE                       = "BigRottenApple";
+    public static final String SMALL_ROTTEN_APPLE                     = "SmallRottenApple";
+    public static final String ROTTEN_PEAR                            = "RottenPear";
 }

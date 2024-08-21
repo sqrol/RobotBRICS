@@ -1,5 +1,6 @@
 package frc.robot.StateMachine.States;
 
+import frc.robot.Constants;
 import frc.robot.Main;
 import frc.robot.StateMachine.CoreEngine.IState;
 
@@ -14,17 +15,17 @@ public class CheckFruit implements IState {
 
     @Override
     public void execute() {
-        if(Main.camMap.get("grippedfruit") == 1.0) {
+        if(Main.stringDutyMap.get("detectedFruit").equals(Constants.BIG_RED_APPLE)) {
             Main.sensorsMap.put("indicationMode", 4.0);
             if(Main.switchMap.get("startButton")) {
                 exit = true;
             }
-        } else if(Main.camMap.get("grippedFruit") == 2.0) {
+        } else if(Main.stringDutyMap.get("detectedFruit").equals(Constants.SMALL_RED_APPLE)) {
             Main.sensorsMap.put("indicationMode", 4.0);
             if(Main.switchMap.get("startButton")) {
                 exit = true;
             }
-        } else if(Main.sensorsMap.get("grippedFruit") == 3.0) {
+        } else if(Main.stringDutyMap.get("detectedFruit").equals(Constants.YELLOW_PEAR)) {
             Main.sensorsMap.put("indicationMode", 4.0);
             if(Main.switchMap.get("startButton")) {
                 exit = true;

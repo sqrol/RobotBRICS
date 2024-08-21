@@ -33,7 +33,7 @@ public class AutoRotate implements IState {
     private int branchNumber = 0;
 
     // private static final double[][] arrForRotate = { { 1, 106, 213} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
-    private static final double[][] arrForRotate = { { 1, 106, 260} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
+    private static final double[][] arrForRotate = { { 1, 106, 260, 340} , { -54, -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
 
     public AutoRotate() {
         GRIP_ROTATE = 70.0; // 70
@@ -56,7 +56,7 @@ public class AutoRotate implements IState {
 
     @Override
     public void initialize() {
-        Main.motorControllerMap.put("servoGrab", 18.0);
+        Main.motorControllerMap.put("servoGrab", 19.0);
         Main.motorControllerMap.put("servoGripRotate", GRIP_ROTATE);
         // Main.sensorsMap.put("camTask", 1.0);
         Main.switchMap.put("rotateStop", false); 
@@ -68,7 +68,7 @@ public class AutoRotate implements IState {
     public void execute() {
         
         if (!flag) {
-            fruitPosX = Main.camMap.get("currentCenterX"); 
+            fruitPosX = Main.camMap.get("currentCenterX") + Main.motorControllerMap.get("currentRotateDegree"); 
             if (fruitPosX != 0.0 && StateMachine.iterationTime > 1) {
                 lastRotateDegree = Main.motorControllerMap.get("currentRotatePosition"); // Запоминаем текущую позицию поворота
                 flag = true;
@@ -92,7 +92,7 @@ public class AutoRotate implements IState {
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             stateEnd = true;
         } else if(rotateStop && !treeMode) {
-            Main.motorControllerMap.put("targetLiftPos", LIFT_POS);
+            // Main.motorControllerMap.put("targetLiftPos", LIFT_POS);
             if(StateMachine.iterationTime > 3) {
                 newStates.add(new AutoGlide()); 
                 StateMachine.states.addAll(StateMachine.index + 1, newStates);

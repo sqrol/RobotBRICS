@@ -43,7 +43,7 @@ public class AlignSharp implements IState {
 
         coefForTime = Functions.TransitionFunction(StateMachine.iterationTime, arrayForTime);
         SmartDashboard.putNumber("lastGyro", lastGyro);
-        double leftSharp = Main.sensorsMap.get("sharpLeft");
+        double leftSharp = Main.sensorsMap.get("sharpLeft") - 0.7;
         double rightSharp = Main.sensorsMap.get("sharpRight");
 
         diffX = X - Math.min(leftSharp, rightSharp);

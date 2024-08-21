@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Main;
 
 import java.util.ArrayList;
@@ -32,14 +33,14 @@ public class CameraController implements Runnable {
     @Override
     public void run() {
 
-        // SmartDashboard.putNumber("RED1", 0.0);
-        // SmartDashboard.putNumber("RED2", 0.0);
+        SmartDashboard.putNumber("RED1", 0.0);
+        SmartDashboard.putNumber("RED2", 0.0);
 
-        // SmartDashboard.putNumber("GREEN1", 0.0);
-        // SmartDashboard.putNumber("GREEN2", 0.0);
+        SmartDashboard.putNumber("GREEN1", 0.0);
+        SmartDashboard.putNumber("GREEN2", 0.0);
 
-        // SmartDashboard.putNumber("BLUE1", 0.0);
-        // SmartDashboard.putNumber("BLUE2", 0.0);
+        SmartDashboard.putNumber("BLUE1", 0.0);
+        SmartDashboard.putNumber("BLUE2", 0.0);
 
 
         // SmartDashboard.putNumber("Hue1", 0.0);
@@ -93,7 +94,7 @@ public class CameraController implements Runnable {
                 }
 
                 if(Main.sensorsMap.get("camTask") == 3.0) {
-                    thresholdSettings(source);
+                    checkRotten(source);
                 }
 
                 if(Main.sensorsMap.get("camTask") == 4.0) {
@@ -172,13 +173,13 @@ public class CameraController implements Runnable {
         Mat square = cropSquareFromCenter(mask, size);
 
         if(Viscad.ImageTrueArea(square) >= 700) {
-            Main.camMap.put("grippedFruit", 1.0);
+            Main.stringDutyMap.put("detectedFruit", Constants.BIG_RED_APPLE);
             Main.camMap.put("targetFound", 1.0);
         } else if(Viscad.ImageTrueArea(square) < 700 && Viscad.ImageTrueArea(square) >= 100) {
-            Main.camMap.put("grippedFruit", 2.0);
+            Main.stringDutyMap.put("detectedFruit", Constants.SMALL_RED_APPLE);
             Main.camMap.put("targetFound", 1.0);
         } else {
-            Main.camMap.put("grippedFruit", 3.0);
+            Main.stringDutyMap.put("detectedFruit", "none");
         }
     
         SmartDashboard.putNumber("ImageAreaGlideSquare", Viscad.ImageTrueArea(square));
@@ -277,13 +278,13 @@ public class CameraController implements Runnable {
 
         Mat square = cropSquareFromCenter(mask, 57);
 
-        if(Main.camMap.get("grippedFruit") == 1.0) {
+        if(Main.stringDutyMap.get("detectedFruit").equals(Constants.BIG_RED_APPLE)) {
             stop = 120;
         } 
 
-        if(Main.camMap.get("grippedFruit") == 2.0) {
+        if(Main.stringDutyMap.get("detectedFruit").equals(Constants.SMALL_RED_APPLE)) {
             stop = 100;
-        }
+        } 
 
         if(Viscad.ImageTrueArea(square) > stop) {
             keepTrack = true;
@@ -444,10 +445,45 @@ public class CameraController implements Runnable {
         Mat blur = Viscad.Blur(orig, 4);
         Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
         Mat threshold = Viscad.Threshold(hsvImage, redPoint, greenPoint, bluePoint);
+        Mat dilate = Viscad.Dilate(threshold, 4);
+        thresh.putFrame(dilate);
+        SmartDashboard.putNumber("imgAreaRotten", Viscad.ImageTrueArea(dilate));
+        releaseMats(threshold, blur, hsvImage, dilate);
+    }
 
-        thresh.putFrame(threshold);
+    private static void checkFruit(Mat orig) {
+        
+    }
 
-        releaseMats(threshold, blur, hsvImage);
+    private static void checkRotten(Mat orig) {
+        double red1 = SmartDashboard.getNumber("RED1", 0.0);
+        double red2 = SmartDashboard.getNumber("RED2", 0.0);
+
+        double green1 = SmartDashboard.getNumber("GREEN1", 0.0);
+        double green2 = SmartDashboard.getNumber("GREEN2", 0.0);
+
+        double blue1 = SmartDashboard.getNumber("BLUE1", 0.0);
+        double blue2 = SmartDashboard.getNumber("BLUE2", 0.0);
+
+        Point redPoint = new Point(85, 255);
+        Point greenPoint = new Point(0, 255);
+        Point bluePoint = new Point(0, 255);
+
+        Mat blur = Viscad.Blur(orig, 4);
+        Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
+        Mat threshold = Viscad.Threshold(hsvImage, redPoint, greenPoint, bluePoint);
+        Mat dilate = Viscad.Dilate(threshold, 4);
+
+        SmartDashboard.putNumber("imgAreaRotten", Viscad.ImageTrueArea(dilate));
+        thresh.putFrame(dilate);
+
+        if(Viscad.ImageTrueArea(dilate) > 3000) {
+            Main.stringDutyMap.put("detectedFruit", "RottenPear"); // пока не получается определять конкретный гнилой фрукт
+        } else {                                                   // для базового модуля пока так
+            Main.stringDutyMap.put("detectedFruit", "none");
+        }
+
+        releaseMats(threshold, blur, hsvImage, dilate);
     }
 
     private static void releaseMats(Mat... mats) {

@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Main;
 import frc.robot.Maths.Common.Functions;
 import frc.robot.StateMachine.CoreEngine.IState;
@@ -32,27 +33,27 @@ public class AutoGrab implements IState {
 
     private static final HashMap<String, Double> GRAB_MAP = new HashMap<>() {
         {
-            put("AppleBigRed", 42.0);
-            put("AppleBigRotten", 42.0);
+            put(Constants.BIG_RED_APPLE, 42.0);
+            put(Constants.BIG_ROTTEN_APPLE, 42.0);
 
-            put("AppleSmallRed", 50.0);
-            put("AppleSmallRotten", 50.0);
+            put(Constants.SMALL_RED_APPLE, 50.0);
+            put(Constants.SMALL_ROTTEN_APPLE, 50.0);
 
-            put("PearYellow", 43.0);
-            put("PearRotten", 43.0);
+            put(Constants.YELLOW_PEAR, 43.0);
+            put(Constants.ROTTEN_PEAR, 43.0);
         }
     };
 
     private static final HashMap<String, Double> LIFT_MAP = new HashMap<>() {
         {
-            put("AppleBigRed", 73.0);
-            put("AppleBigRotten", 73.0);
+            put(Constants.BIG_RED_APPLE, 73.0);
+            put(Constants.BIG_ROTTEN_APPLE, 73.0);
 
-            put("AppleSmallRed", 76.0);
-            put("AppleSmallRotten", 76.0);
+            put(Constants.SMALL_RED_APPLE, 76.0);
+            put(Constants.SMALL_ROTTEN_APPLE, 76.0);
 
-            put("PearYellow", 75.0);
-            put("PearRotten", 75.0);
+            put(Constants.YELLOW_PEAR, 75.0);
+            put(Constants.ROTTEN_PEAR, 75.0);
         }
     };
 
@@ -74,25 +75,28 @@ public class AutoGrab implements IState {
 
     @Override
     public void execute() {
-        SmartDashboard.putString("fruit", getGrippedFruit());
 
         switch (index) {
             case 1:
-                if(LIFT_MAP.get(getGrippedFruit()) != null) {
-                    Main.motorControllerMap.put("targetLiftPos", LIFT_MAP.get(getGrippedFruit()));
-                    if (StateMachine.iterationTime > 3) {
-                        index++;
+            // здесь он пропускает момент с проверкой iterationTime и сразу переходит на второй кейс
+                Main.motorControllerMap.put("servoGrab", 19.0);
+                if(LIFT_MAP.get(Main.stringDutyMap.get("detectedFruit")) != null) {
+                    Main.motorControllerMap.put("targetLiftPos", LIFT_MAP.get(Main.stringDutyMap.get("detectedFruit")));
+                    if(Main.switchMap.get("liftStop")) {
+                        if(StateMachine.iterationTime > 5) {
+                            index++;
+                            break;
+                        }
+                        
                     }
-                    break;
-                }
-                else {
+                } else {
                     index++;
                     break;
                 }
                 
             case 2:
-                if(GRAB_MAP.get(getGrippedFruit()) != null) {
-                    if(smoothServoMovement(GRAB_MAP.get(getGrippedFruit()), DELAY)) {
+                if(GRAB_MAP.get(Main.stringDutyMap.get("detectedFruit")) != null) {
+                    if(smoothServoMovement(GRAB_MAP.get(Main.stringDutyMap.get("detectedFruit")), DELAY)) {
                         if (!flag) {
                             index++;
                             flag = true;
@@ -137,20 +141,5 @@ public class AutoGrab implements IState {
             }
         }
         return Functions.BooleanInRange(Math.abs(targetPosition - currentPosition), -1, 1); 
-    }
-
-    private String getGrippedFruit() {
-        switch(Main.camMap.get("grippedFruit").intValue()) {
-            case 1: 
-                fruit = "AppleBigRed";
-                break;
-            case 2: 
-                fruit = "AppleSmallRed";
-                break;
-            case 3:
-                fruit = "PearYellow";
-                break;
-        }
-        return fruit;
     }
 }

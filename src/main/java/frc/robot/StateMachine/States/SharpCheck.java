@@ -17,7 +17,7 @@ public class SharpCheck implements IState {
     @Override
     public void execute() {
         if (Main.sensorsMap.get("sharpLeft") < 10 || Main.sensorsMap.get("sharpRight") < 10) {
-            Main.sensorsMap.put("indicationMode", 4.0);
+            Main.sensorsMap.put("indicationMode", 2.0);
             if(Main.switchMap.get("startButton")) {
                 exit = true;
             }

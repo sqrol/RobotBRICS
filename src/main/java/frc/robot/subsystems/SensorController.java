@@ -204,7 +204,6 @@ public class SensorController implements Runnable{
 
     private void setGreenLED(boolean state) {
         try {
-            GREEN_LED.disablePWM();
             GREEN_LED.set(state);
         } catch (Exception e) {
             e.printStackTrace();
@@ -213,7 +212,6 @@ public class SensorController implements Runnable{
 
     private void setRedLED(boolean state) {
         try {
-            RED_LED.disablePWM();
             RED_LED.set(state);
         } catch (Exception e) {
             e.printStackTrace();

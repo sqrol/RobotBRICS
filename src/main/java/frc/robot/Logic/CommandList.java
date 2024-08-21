@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import frc.robot.StateMachine.CoreEngine.IState;
 import frc.robot.StateMachine.CoreEngine.StateMachine;
 import frc.robot.StateMachine.States.*;
+import frc.robot.StateMachine.StatesAutoOMS.AutoEnd;
 import frc.robot.StateMachine.StatesAutoOMS.AutoStart;
 import frc.robot.StateMachine.StatesOMS.*;
 
@@ -28,6 +29,7 @@ public class CommandList {
 
     if(currentCommandName.equals("RESET_FRUIT")) {
         newStates.add(new SetGrabPosition("OPEN", true));
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
@@ -94,6 +96,50 @@ public class CommandList {
         newStates.add(new AutoStart());
         newStates.add(new End());
 
+        StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    }
+
+// --------------------------------- ЗАХВАТЫ ---------------------------------
+
+    if(currentCommandName.equals("ROTATE_0")) {
+        newStates.add(new SetRotatePosition(0));
+        newStates.add(new AutoStart());
+        newStates.add(new Transition());
+        StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    }
+
+    if(currentCommandName.equals("ROTATE_10")) {
+        newStates.add(new SetRotatePosition(10));
+        newStates.add(new AutoStart());
+        newStates.add(new Transition());
+        StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    }
+
+    if(currentCommandName.equals("ROTATE_15")) {
+        newStates.add(new SetRotatePosition(15));
+        newStates.add(new AutoStart());
+        newStates.add(new Transition());
+        StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    }
+
+    if(currentCommandName.equals("ROTATE_-15")) {
+        newStates.add(new SetRotatePosition(-15));
+        newStates.add(new AutoStart());
+        newStates.add(new Transition());
+        StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    }
+
+    if(currentCommandName.equals("ROTATE_45")) {
+        newStates.add(new SetRotatePosition(45));
+        newStates.add(new AutoStart());
+        newStates.add(new Transition());
+        StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    }
+
+    if(currentCommandName.equals("ROTATE_-45")) {
+        newStates.add(new SetRotatePosition(-45));
+        newStates.add(new AutoStart());
+        newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
         
@@ -182,7 +228,7 @@ public class CommandList {
         newStates.add(new SimpleDrive(0, -90));
         newStates.add(new AlignSharp(20));
         newStates.add(new SimpleDrive(0, 90));
-        newStates.add(new SimpleDrive(6, 0));
+        newStates.add(new SimpleDrive(16, 0));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
@@ -602,7 +648,8 @@ public class CommandList {
 
 
     if(currentCommandName.equals("MOVE_FROM_FIRST_LZ_TO_CON2")) {
-        newStates.add(new DriveSonic(24));
+        newStates.add(new SimpleDrive(-30, 0));
+        newStates.add(new DriveSonic(20));
         newStates.add(new SimpleDrive(0, -90));
         newStates.add(new AlignSharp(14));
         newStates.add(new Transition());
@@ -1218,10 +1265,6 @@ public class CommandList {
     if(currentCommandName.equals("END")) {
         newStates.add(new End()); 
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
-    }
-
-    if(currentCommandName.equals("arg0")) {
-
     }
     }
 }

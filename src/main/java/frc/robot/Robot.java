@@ -64,6 +64,9 @@ public class Robot extends TimedRobot {
   }
 
   private void initMaps() {
+
+    Main.stringDutyMap.put("detectedFruit", "none");
+
     Main.sensorsMap.put("currentGlidePos", 0.0);
     Main.switchMap.put("startButton", false);
     Main.switchMap.put("EMSButton", false);
@@ -132,7 +135,7 @@ public class Robot extends TimedRobot {
     Main.motorControllerMap.put("currentLiftPos", 0.0);
     Main.motorControllerMap.put("targetLiftPos", 0.0);
 
-    Main.motorControllerMap.put("servoGrab", 15.0);
+    Main.motorControllerMap.put("servoGrab", 19.0);
     Main.motorControllerMap.put("grabServoAngle", 0.0);
 
     Main.motorControllerMap.put("servoGripRotate", 77.0);
@@ -164,7 +167,6 @@ public class Robot extends TimedRobot {
 
     Main.camMap.put("currentColorIndex", 1.0);
 
-    Main.camMap.put("grippedFruit", 0.0); // 1.0 - BigRedApple, 2.0 - SmallRedApple
 
     Main.camMap.put("branchesChecked", 0.0); // 3.0 - upper, 2.0 - middle, 3.0 - lower
 
@@ -177,8 +179,10 @@ public class Robot extends TimedRobot {
 
   private void sendSmartDashBoard() {
 
+    SmartDashboard.putString("detectedFruit", Main.stringDutyMap.get("detectedFruit"));
+
     SmartDashboard.putNumber("targetAngle", Main.camMap.get("targetAngle"));
-    SmartDashboard.putNumber("grippedFruit", Main.camMap.get("grippedFruit"));
+    
     SmartDashboard.putBoolean("targetFound", Main.camMap.get("targetFound") == 1.0);
     SmartDashboard.putNumber("currentCenterX", Main.camMap.get("currentCenterX"));
     SmartDashboard.putNumber("currentCenterY", Main.camMap.get("currentCenterY"));
@@ -240,6 +244,8 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putNumber("objectFind", Main.sensorsMap.get("objectFind"));
 
+    SmartDashboard.putNumber("iterationTime", StateMachine.iterationTime);
+    
     if (StateMachine.states.size() > 0) {
       SmartDashboard.putString("currentState", StateMachine.currentState.getClass().getSimpleName());
     } else {

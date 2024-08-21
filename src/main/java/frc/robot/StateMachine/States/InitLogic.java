@@ -2,18 +2,18 @@ package frc.robot.StateMachine.States;
 
 import frc.robot.Main;
 import frc.robot.StateMachine.CoreEngine.IState;
+import frc.robot.StateMachine.CoreEngine.StateMachine;
 
-public class ThreshCheck implements IState {
+public class InitLogic implements IState {
 
     @Override
     public void initialize() {
-        Main.sensorsMap.put("camTask", 3.0);
 
     }
 
     @Override
     public void execute() {
-        Main.motorControllerMap.put("servoGripRotate", 70.0);
+        Main.logic.logicInit();
     }
 
     @Override
@@ -23,7 +23,7 @@ public class ThreshCheck implements IState {
 
     @Override
     public boolean isFinished() {
-        return false;
+        return StateMachine.iterationTime > 0.3;
     }
     
 }

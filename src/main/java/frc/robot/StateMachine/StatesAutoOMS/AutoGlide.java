@@ -116,7 +116,7 @@ public class AutoGlide implements IState {
 
         if (glideStop && !treeMode && StateMachine.iterationTime > 2) {
             SmartDashboard.putNumber("AUTOGLIDE CHECK", 333);
-            newStates.add(new AutoGrab(true)); 
+            newStates.add(new AutoGrab()); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             stateEnd = true;
         }
@@ -126,7 +126,7 @@ public class AutoGlide implements IState {
     public void finilize() {
         Main.motorControllerMap.put("setGlideSpeed", 0.0);
         // Main.motorControllerMap.put("glideMode", 0.0);
-
+        Main.motorControllerMap.put("servoGrab", 19.0);
         Main.sensorsMap.put("camTask", 0.0);
 
         Main.motorControllerMap.put("speedX", 0.0);

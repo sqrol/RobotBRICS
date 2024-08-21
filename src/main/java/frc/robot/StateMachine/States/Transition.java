@@ -9,6 +9,8 @@ public class Transition implements IState {
 
     private CommandList cmdList;
     private boolean flag = true; 
+
+    private boolean autonomousMode = false;
     
     @Override
     public void initialize() {
@@ -18,13 +20,19 @@ public class Transition implements IState {
 
     @Override
     public void execute() {
-        if (flag) {
+        if (flag && autonomousMode) {
             String command = Main.traverse.execute();
             SmartDashboard.putString("currentCommand", command);
             cmdList.setCurrentCommand(command);
             cmdList.addCommand();
             flag = false; 
-        } 
+        } else if(flag && !autonomousMode) {
+            String command = Main.logic.getNextCommand();
+            SmartDashboard.putString("currentCommand", command);
+            cmdList.setCurrentCommand(command);
+            cmdList.addCommand();
+            flag = false;
+        }
     }    
 
     @Override

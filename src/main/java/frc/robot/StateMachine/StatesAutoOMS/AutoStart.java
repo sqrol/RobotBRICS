@@ -52,7 +52,7 @@ public class AutoStart implements IState {
     public void initialize() {
         Main.camMap.put("currentColorIndex", 0.0);
         // Main.sensorsMap.put("camTask", 0.0);
-        Main.motorControllerMap.put("servoGrab", 18.0);
+        Main.motorControllerMap.put("servoGrab", 19.0);
         Main.motorControllerMap.put("servoGripRotate", GRIP_ROTATE);
         Main.sensorsMap.put("camTask", CAM_TASK);
         realStartTime = Timer.getFPGATimestamp();

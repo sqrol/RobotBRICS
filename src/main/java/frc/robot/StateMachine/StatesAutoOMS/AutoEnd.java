@@ -39,6 +39,6 @@ public class AutoEnd implements IState {
 
     @Override
     public boolean isFinished() {
-        return Main.switchMap.get("liftStop") && Main.switchMap.get("rotateStop") && Main.switchMap.get("glideStop") && StateMachine.iterationTime > 2;
+        return Main.switchMap.get("liftStop") && Main.switchMap.get("rotateStop") && Main.switchMap.get("limitSwitchGlide") && StateMachine.iterationTime > 2;
     }
 }
