@@ -103,9 +103,9 @@ public class LogicCore {
             firstCallForInit = false;
 
         }
-        for (String command : arrayWithLogic) {
-            System.out.println(command);
-        }
+        // for (String command : arrayWithLogic) {
+        //     System.out.println(command);
+        // }
     }
 
     /**

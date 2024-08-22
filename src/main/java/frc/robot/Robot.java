@@ -65,7 +65,7 @@ public class Robot extends TimedRobot {
 
   private void initMaps() {
 
-    Main.stringDutyMap.put("detectedFruit", "none");
+    Main.stringMap.put("detectedFruit", "none");
 
     Main.sensorsMap.put("currentGlidePos", 0.0);
     Main.switchMap.put("startButton", false);
@@ -179,7 +179,7 @@ public class Robot extends TimedRobot {
 
   private void sendSmartDashBoard() {
 
-    SmartDashboard.putString("detectedFruit", Main.stringDutyMap.get("detectedFruit"));
+    SmartDashboard.putString("detectedFruit", Main.stringMap.get("detectedFruit"));
 
     SmartDashboard.putNumber("targetAngle", Main.camMap.get("targetAngle"));
     
@@ -245,7 +245,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("objectFind", Main.sensorsMap.get("objectFind"));
 
     SmartDashboard.putNumber("iterationTime", StateMachine.iterationTime);
-    
+
     if (StateMachine.states.size() > 0) {
       SmartDashboard.putString("currentState", StateMachine.currentState.getClass().getSimpleName());
     } else {

@@ -26,7 +26,7 @@ public class AutoGlide implements IState {
     private boolean glideStop = false;
     private boolean keepTrack = true;
     
-    private int camMiddleForGrab = 25;
+    private int camMiddleForGrab = 26;
     
     private static final double[][] speedForGlideServo = { { 0, 1, 4, 10, 20, 40, 60, 80, 100 }, { 0, 0.1, 0.1, 0.1, 0.1, 0.25, 0.3, 0.4, 0.4} };
 
@@ -49,8 +49,6 @@ public class AutoGlide implements IState {
         else Main.sensorsMap.put("camTask", 6.0);
 
         Main.motorControllerMap.put("servoGripRotate", GRIP_ROTATE);
-        Main.motorControllerMap.put("servoGrab", 15.0);
-        
         // Main.switchMap.put("glideStop", false);
         glideStop = false;
     }
@@ -107,12 +105,12 @@ public class AutoGlide implements IState {
             stateEnd = true;
         }
 
-        if (glideStop && treeMode && StateMachine.iterationTime > 2) {
-            SmartDashboard.putNumber("AUTOGLIDE CHECK", 222);
-            newStates.add(new AutoGrab(true)); 
-            StateMachine.states.addAll(StateMachine.index + 1, newStates);
-            stateEnd = true;
-        }
+        // if (glideStop && treeMode && StateMachine.iterationTime > 2) {
+        //     SmartDashboard.putNumber("AUTOGLIDE CHECK", 222);
+        //     newStates.add(new AutoGrab(true)); 
+        //     StateMachine.states.addAll(StateMachine.index + 1, newStates);
+        //     stateEnd = true;
+        // }
 
         if (glideStop && !treeMode && StateMachine.iterationTime > 2) {
             SmartDashboard.putNumber("AUTOGLIDE CHECK", 333);
@@ -126,7 +124,6 @@ public class AutoGlide implements IState {
     public void finilize() {
         Main.motorControllerMap.put("setGlideSpeed", 0.0);
         // Main.motorControllerMap.put("glideMode", 0.0);
-        Main.motorControllerMap.put("servoGrab", 19.0);
         Main.sensorsMap.put("camTask", 0.0);
 
         Main.motorControllerMap.put("speedX", 0.0);

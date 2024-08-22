@@ -17,7 +17,7 @@ public class CheckRotten implements IState {
 
     @Override
     public void execute() {
-        if(Main.stringDutyMap.get("detectedFruit").equals(Constants.ROTTEN_PEAR) || Main.stringDutyMap.get("detectedFruit").equals(Constants.SMALL_ROTTEN_APPLE) || Main.stringDutyMap.get("detectedFruit").equals(Constants.BIG_ROTTEN_APPLE)) {
+        if(Main.stringMap.get("detectedFruit").equals(Constants.ROTTEN_PEAR) || Main.stringMap.get("detectedFruit").equals(Constants.SMALL_ROTTEN_APPLE) || Main.stringMap.get("detectedFruit").equals(Constants.BIG_ROTTEN_APPLE)) {
             Main.sensorsMap.put("indicationMode", 2.0);
             if(Main.switchMap.get("startButton")) {
                 exit = true;

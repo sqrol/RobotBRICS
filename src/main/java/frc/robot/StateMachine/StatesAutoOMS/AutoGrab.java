@@ -17,7 +17,8 @@ public class AutoGrab implements IState {
 
     private boolean treeMode = false;
 
-    private boolean flag, stateEnd = false;
+    private boolean flag = false;
+    private boolean stateEnd = false;
     
     private boolean objectСaptured = false;
 
@@ -25,6 +26,7 @@ public class AutoGrab implements IState {
     private int branchNumber = 0;
 
     private double lastUpdateTime = 0.0;
+    private double startTime = 0.0;
 
     private static final double STEP = 1.0;
     private static final double DELAY = 0.01;
@@ -33,14 +35,14 @@ public class AutoGrab implements IState {
 
     private static final HashMap<String, Double> GRAB_MAP = new HashMap<>() {
         {
-            put(Constants.BIG_RED_APPLE, 42.0);
-            put(Constants.BIG_ROTTEN_APPLE, 42.0);
+            put(Constants.BIG_RED_APPLE, 50.0);
+            put(Constants.BIG_ROTTEN_APPLE, 50.0);
 
-            put(Constants.SMALL_RED_APPLE, 50.0);
-            put(Constants.SMALL_ROTTEN_APPLE, 50.0);
+            put(Constants.SMALL_RED_APPLE, 58.0);
+            put(Constants.SMALL_ROTTEN_APPLE, 58.0);
 
-            put(Constants.YELLOW_PEAR, 43.0);
-            put(Constants.ROTTEN_PEAR, 43.0);
+            put(Constants.YELLOW_PEAR, 50.0);
+            put(Constants.ROTTEN_PEAR, 50.0);
         }
     };
 
@@ -64,6 +66,8 @@ public class AutoGrab implements IState {
     public AutoGrab(boolean treeMode) {
         this.treeMode = treeMode;
         index = 2;
+        this.flag = false;
+        this.stateEnd = false;
     }
 
     @Override
@@ -71,49 +75,44 @@ public class AutoGrab implements IState {
         this.flag = false;
         this.stateEnd = false;
         Main.switchMap.put("liftStop", false);
+        startTime = Timer.getFPGATimestamp();
     }
 
     @Override
     public void execute() {
+        
+        double targetLiftPos = LIFT_MAP.getOrDefault(Main.stringMap.get("detectedFruit"), 0.0);
+        double targetGrabAngle = GRAB_MAP.getOrDefault(Main.stringMap.get("detectedFruit"), 0.0);
 
-        switch (index) {
-            case 1:
-            // здесь он пропускает момент с проверкой iterationTime и сразу переходит на второй кейс
-                Main.motorControllerMap.put("servoGrab", 19.0);
-                if(LIFT_MAP.get(Main.stringDutyMap.get("detectedFruit")) != null) {
-                    Main.motorControllerMap.put("targetLiftPos", LIFT_MAP.get(Main.stringDutyMap.get("detectedFruit")));
-                    if(Main.switchMap.get("liftStop")) {
-                        if(StateMachine.iterationTime > 5) {
-                            index++;
-                            break;
-                        }
-                        
-                    }
-                } else {
-                    index++;
-                    break;
-                }
-                
-            case 2:
-                if(GRAB_MAP.get(Main.stringDutyMap.get("detectedFruit")) != null) {
-                    if(smoothServoMovement(GRAB_MAP.get(Main.stringDutyMap.get("detectedFruit")), DELAY)) {
-                        if (!flag) {
-                            index++;
-                            flag = true;
-                        }
-                        break;
-                    }
-                }
-                else {
-                    index++;
-                    break;
-                }
-        }
-
-        if (index == 3) {
+        if(targetLiftPos == 0.0 || targetGrabAngle == 0.0) {
+            flag = true;
             newStates.add(new AutoEnd()); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             stateEnd = true;
+        }
+
+        if(!flag) {
+            
+            if(index == 1 && targetLiftPos != 0.0) {
+                Main.motorControllerMap.put("targetLiftPos", targetLiftPos);
+                if(Main.switchMap.get("liftStop") && StateMachine.iterationTime > 2) {
+                    index++;
+                }
+            }
+
+            if(index == 2 && targetGrabAngle != 0.0) {
+                if(smoothServoMovement(targetGrabAngle, DELAY)); {
+                    if(StateMachine.iterationTime > 4) {
+                        index++;
+                    }
+                }
+            }
+
+            if (index == 3) {
+                newStates.add(new AutoEnd()); 
+                StateMachine.states.addAll(StateMachine.index + 1, newStates);
+                stateEnd = true;
+            }
         }
     }
 

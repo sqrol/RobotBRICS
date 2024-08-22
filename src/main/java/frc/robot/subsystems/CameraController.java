@@ -173,13 +173,13 @@ public class CameraController implements Runnable {
         Mat square = cropSquareFromCenter(mask, size);
 
         if(Viscad.ImageTrueArea(square) >= 700) {
-            Main.stringDutyMap.put("detectedFruit", Constants.BIG_RED_APPLE);
+            Main.stringMap.put("detectedFruit", Constants.BIG_RED_APPLE);
             Main.camMap.put("targetFound", 1.0);
         } else if(Viscad.ImageTrueArea(square) < 700 && Viscad.ImageTrueArea(square) >= 100) {
-            Main.stringDutyMap.put("detectedFruit", Constants.SMALL_RED_APPLE);
+            Main.stringMap.put("detectedFruit", Constants.SMALL_RED_APPLE);
             Main.camMap.put("targetFound", 1.0);
         } else {
-            Main.stringDutyMap.put("detectedFruit", "none");
+            Main.stringMap.put("detectedFruit", "none");
         }
     
         SmartDashboard.putNumber("ImageAreaGlideSquare", Viscad.ImageTrueArea(square));
@@ -278,11 +278,11 @@ public class CameraController implements Runnable {
 
         Mat square = cropSquareFromCenter(mask, 57);
 
-        if(Main.stringDutyMap.get("detectedFruit").equals(Constants.BIG_RED_APPLE)) {
+        if(Main.stringMap.get("detectedFruit").equals(Constants.BIG_RED_APPLE)) {
             stop = 120;
         } 
 
-        if(Main.stringDutyMap.get("detectedFruit").equals(Constants.SMALL_RED_APPLE)) {
+        if(Main.stringMap.get("detectedFruit").equals(Constants.SMALL_RED_APPLE)) {
             stop = 100;
         } 
 
@@ -478,9 +478,9 @@ public class CameraController implements Runnable {
         thresh.putFrame(dilate);
 
         if(Viscad.ImageTrueArea(dilate) > 3000) {
-            Main.stringDutyMap.put("detectedFruit", "RottenPear"); // пока не получается определять конкретный гнилой фрукт
+            Main.stringMap.put("detectedFruit", "RottenPear"); // пока не получается определять конкретный гнилой фрукт
         } else {                                                   // для базового модуля пока так
-            Main.stringDutyMap.put("detectedFruit", "none");
+            Main.stringMap.put("detectedFruit", "none");
         }
 
         releaseMats(threshold, blur, hsvImage, dilate);

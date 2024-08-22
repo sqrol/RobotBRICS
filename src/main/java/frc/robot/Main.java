@@ -17,7 +17,7 @@ public final class Main {
   public static HashMap<String, Double> sensorsMap = new HashMap<String, Double>();
   public static HashMap<String, Boolean> switchMap = new HashMap<String, Boolean>();
   public static HashMap<String, Double> camMap = new HashMap<String, Double>();
-  public static HashMap<String, String> stringDutyMap = new HashMap<String, String>();
+  public static HashMap<String, String> stringMap = new HashMap<String, String>();
 
   public static TreeTraverse traverse = new TreeTraverse();
   public static LogicCore logic = new LogicCore();

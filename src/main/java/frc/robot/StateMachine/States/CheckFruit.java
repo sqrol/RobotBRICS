@@ -15,17 +15,17 @@ public class CheckFruit implements IState {
 
     @Override
     public void execute() {
-        if(Main.stringDutyMap.get("detectedFruit").equals(Constants.BIG_RED_APPLE)) {
+        if(Main.stringMap.get("detectedFruit").equals(Constants.BIG_RED_APPLE)) {
             Main.sensorsMap.put("indicationMode", 4.0);
             if(Main.switchMap.get("startButton")) {
                 exit = true;
             }
-        } else if(Main.stringDutyMap.get("detectedFruit").equals(Constants.SMALL_RED_APPLE)) {
+        } else if(Main.stringMap.get("detectedFruit").equals(Constants.SMALL_RED_APPLE)) {
             Main.sensorsMap.put("indicationMode", 4.0);
             if(Main.switchMap.get("startButton")) {
                 exit = true;
             }
-        } else if(Main.stringDutyMap.get("detectedFruit").equals(Constants.YELLOW_PEAR)) {
+        } else if(Main.stringMap.get("detectedFruit").equals(Constants.YELLOW_PEAR)) {
             Main.sensorsMap.put("indicationMode", 4.0);
             if(Main.switchMap.get("startButton")) {
                 exit = true;
