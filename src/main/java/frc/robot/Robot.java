@@ -165,7 +165,8 @@ public class Robot extends TimedRobot {
 
     Main.camMap.put("targetAngle", 0.0);
 
-    Main.camMap.put("currentColorIndex", 1.0);
+    Main.camMap.put("currentColorIndex", 0.0);
+    Main.camMap.put("targetColorFound", 0.0);
 
 
     Main.camMap.put("branchesChecked", 0.0); // 3.0 - upper, 2.0 - middle, 3.0 - lower
@@ -243,6 +244,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("glideServoSpeed", Main.motorControllerMap.get("glideServoSpeed"));
 
     SmartDashboard.putNumber("objectFind", Main.sensorsMap.get("objectFind"));
+
+    SmartDashboard.putNumber("currentColorIndex", Main.camMap.get("currentColorIndex"));
 
     SmartDashboard.putNumber("iterationTime", StateMachine.iterationTime);
 
