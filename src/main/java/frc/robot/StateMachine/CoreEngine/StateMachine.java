@@ -21,8 +21,10 @@ public class StateMachine {
 
     public void initStates() { 
         states.add(new StartPos());
-        states.add(new InitLogic());
-        states.add(new Transition());
+        states.add(new CameraTest());
+        // states.add(new CameraTest());
+        // states.add(new CameraTest());
+        // states.add(new CameraTest());
         states.add(new End());
     }
 

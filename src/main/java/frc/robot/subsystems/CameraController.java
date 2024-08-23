@@ -6,6 +6,7 @@ import frc.robot.Constants;
 import frc.robot.Main;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -28,6 +29,10 @@ public class CameraController implements Runnable {
     private static CvSource outStream, outHSV, outRect, outGlide, thresh, upperBranch, middleBranch, lowerBranch;
 
     private String currentColor = "";
+
+    private double startTime = -1; // Время начала ожидания
+    private double colorIndex = 0; 
+    private double maxColorIndex = 3; 
     // private double colorIndex = 0.0;
 
     @Override
@@ -54,6 +59,8 @@ public class CameraController implements Runnable {
 
         camera = CameraServer.getInstance().startAutomaticCapture(); 
         camera.setResolution(640, 480); 
+        // camera.setResolution(320, 240); 
+        // camera.setResolution(220, 140); 
         camera.setFPS(30); 
 
         cvSink = CameraServer.getInstance().getVideo(camera); 
@@ -109,6 +116,11 @@ public class CameraController implements Runnable {
                     trackImageTrueArea(source, Main.camMap.get("currentColorIndex"));
                 }
 
+                if(Main.sensorsMap.get("camTask") == 10.0) { // Перебор масок для фруктов
+                    // thresholdSettings(source);
+                    searchDominantColorMask(source);
+                }
+
                 Main.sensorsMap.put("updateTimeCamera", cameraUpdateTime);
                 outStream.putFrame(source);
                 source.release();
@@ -125,6 +137,37 @@ public class CameraController implements Runnable {
         }
     }
 
+    
+
+    private void searchDominantColorMask(Mat source) {
+        double scanningTime = 2;
+
+        Mat resizedSource = Viscad.ReduceResolutionImage(source, 3);
+        Mat blur = Viscad.Blur(resizedSource, 4);
+        Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
+        Mat imageOut = createMask(hsvImage, setPointsForColors(colorIndex));
+        
+        outHSV.putFrame(imageOut);
+        int currentMaskArea = Viscad.ImageTrueArea(imageOut);
+        releaseMats(resizedSource, blur, hsvImage, imageOut);
+
+        if (currentMaskArea < 100 && Timer.getFPGATimestamp() - startTime > scanningTime) {
+            colorIndex++;
+            startTime = Timer.getFPGATimestamp(); 
+            return;
+        } else if (Timer.getFPGATimestamp() - startTime > scanningTime*1.5) {
+            Main.camMap.put("currentColorIndex", colorIndex);
+            Main.camMap.put("targetColorFound", 1.0);
+            colorIndex=0;
+        }
+
+        if (colorIndex >= maxColorIndex) {
+            Main.camMap.put("currentColorIndex", 0.0);
+            Main.camMap.put("targetColorFound", 1.0);
+        }
+
+    }
+
     private static void settingCameraParameters() {
         // camera.setWhiteBalanceAuto(); // Устанавливается баланс белого
         // camera.setExposureManual(100);; // Устанавливается яркость камеры
@@ -138,9 +181,9 @@ public class CameraController implements Runnable {
         ColorRange outRange = new ColorRange();
 
         // красный 
-        if (colorIndex == 1.0) { outRange = new ColorRange(new Point(0, 13), new Point(0, 255), new Point(80, 235)); }
+        if (colorIndex == 1.0) { outRange = new ColorRange(new Point(0, 15), new Point(120, 255), new Point(150, 255)); }
         // желтый
-        if (colorIndex == 2.0) { outRange = new ColorRange(new Point(16, 255), new Point(123, 255), new Point(123, 255)); }
+        if (colorIndex == 2.0) { outRange = new ColorRange(new Point(20, 255), new Point(120, 255), new Point(150, 255)); }
         // if (colorIndex == 3.0) { outRange = new ColorRange(new Point(0, 180), new Point(150, 255), new Point(80, 255)); }
 
         return outRange;
