@@ -102,7 +102,7 @@ public class MotorController implements Runnable {
                     fristCall = false;
                 }
 
-                if(Main.switchMap.get("EMSButton")) {
+                if(false) {
                     setRightMotorSpeed(0.0);
                     setLeftMotorSpeed(0.0);
                     setRotateMotorSpeed(0.0);
@@ -145,7 +145,7 @@ public class MotorController implements Runnable {
 
                 Main.motorControllerMap.put("servoGrabAngle", getServoGrabAngle());
                 Main.motorControllerMap.put("updateTime", motorsUpdateTime);      
-
+                
                 Thread.sleep(10);
             } catch (Exception e) {
                 System.err.println("!!!An error occurred in MotorController: " + e.getMessage());

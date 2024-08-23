@@ -36,7 +36,7 @@ public class AutoStart implements IState {
     
     public AutoStart() {
         this.treeMode = false;
-        GRIP_ROTATE = 70.0;
+        GRIP_ROTATE = 112.0;
         CAM_TASK = 1.0;
     }
 
@@ -44,7 +44,7 @@ public class AutoStart implements IState {
         this.treeMode = treeMode;
         this.branchNumber = branchNumber;
         oneTimeFlag = true;
-        GRIP_ROTATE = 30.0;
+        GRIP_ROTATE = 85.0;
         CAM_TASK = 4.0;
     }
 
@@ -52,7 +52,6 @@ public class AutoStart implements IState {
     public void initialize() {
         Main.camMap.put("currentColorIndex", 0.0);
         // Main.sensorsMap.put("camTask", 0.0);
-        Main.motorControllerMap.put("servoGrab", 22.0);
         Main.motorControllerMap.put("servoGripRotate", GRIP_ROTATE);
         Main.sensorsMap.put("camTask", CAM_TASK);
         realStartTime = Timer.getFPGATimestamp();
@@ -82,19 +81,20 @@ public class AutoStart implements IState {
         if(treeMode) {
         
             if (branchNumber == 1 && !treeEnd ) {
-                Main.motorControllerMap.put("servoGripRotate", 22.0);
+                Main.motorControllerMap.put("servoGripRotate", 85.0);
                 Main.motorControllerMap.put("targetRotateDegree", 26.0);
                 treeEnd = Main.switchMap.get("rotateStop") && StateMachine.iterationTime > 2; 
             }
 
             if (branchNumber == 2 && !treeEnd) {
                 Main.motorControllerMap.put("targetLiftPos", 39.0);
+                Main.motorControllerMap.put("servoGripRotate", 85.0);
                 Main.motorControllerMap.put("targetRotateDegree", -24.0);
                 treeEnd = Main.switchMap.get("rotateStop") && Main.switchMap.get("liftStop") && StateMachine.iterationTime > 2; 
             }
 
             if (branchNumber == 3 && !treeEnd) {
-                Main.motorControllerMap.put("servoGripRotate", 28.0);
+                Main.motorControllerMap.put("servoGripRotate", 85.0);
                 Main.motorControllerMap.put("targetLiftPos", 72.0);
                 Main.motorControllerMap.put("targetRotateDegree", 0.0);
                 treeEnd = Main.switchMap.get("rotateStop") && Main.switchMap.get("liftStop") && StateMachine.iterationTime > 3; 

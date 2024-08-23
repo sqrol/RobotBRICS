@@ -182,7 +182,7 @@ public class CommandList {
 // --------------------------------- ИЗ CH1 К ДЕРЕВЬЯМ ---------------------------------
 
     if(currentCommandName.equals("MOVE_FROM_CH1_TO_FIRST_LZ")) {
-        newStates.add(new SimpleDrive(10, 0));
+        newStates.add(new SimpleDrive(13, 0));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }

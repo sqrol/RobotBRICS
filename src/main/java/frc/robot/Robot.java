@@ -135,10 +135,10 @@ public class Robot extends TimedRobot {
     Main.motorControllerMap.put("currentLiftPos", 0.0);
     Main.motorControllerMap.put("targetLiftPos", 0.0);
 
-    Main.motorControllerMap.put("servoGrab", 19.0);
+    Main.motorControllerMap.put("servoGrab", 32.0);
     Main.motorControllerMap.put("grabServoAngle", 0.0);
 
-    Main.motorControllerMap.put("servoGripRotate", 77.0);
+    Main.motorControllerMap.put("servoGripRotate", 131.0);
     Main.motorControllerMap.put("glideServoSpeed", 0.0);
 
     Main.motorControllerMap.put("speedX", 0.0);
@@ -173,7 +173,7 @@ public class Robot extends TimedRobot {
     Main.motorControllerMap.put("servoGrabAngle", 0.0);
 
     Main.motorControllerMap.put("lastGlidePosition", 0.0);
-    Main.motorControllerMap.put("currentRotatePosition", 0.0);
+    Main.motorControllerMap.put("currentRotateDegree", 0.0);
 
   }
 
@@ -248,10 +248,9 @@ public class Robot extends TimedRobot {
 
     if (StateMachine.states.size() > 0) {
       SmartDashboard.putString("currentState", StateMachine.currentState.getClass().getSimpleName());
+      
     } else {
       SmartDashboard.putString("currentState", "null");
     }
-    SmartDashboard.putNumber("StateMachineSize", StateMachine.states.size());
-
   }
 }
