@@ -180,6 +180,8 @@ public class Robot extends TimedRobot {
 
   private void sendSmartDashBoard() {
 
+    SmartDashboard.putNumber("targetColorFound", Main.camMap.get("targetColorFound"));
+
     SmartDashboard.putString("detectedFruit", Main.stringMap.get("detectedFruit"));
 
     SmartDashboard.putNumber("targetAngle", Main.camMap.get("targetAngle"));

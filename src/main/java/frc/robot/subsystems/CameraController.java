@@ -35,6 +35,8 @@ public class CameraController implements Runnable {
     private double maxColorIndex = 3; 
     // private double colorIndex = 0.0;
 
+    private static final double MAX_Y = 0;
+
     @Override
     public void run() {
 
@@ -116,6 +118,10 @@ public class CameraController implements Runnable {
                     trackImageTrueArea(source, Main.camMap.get("currentColorIndex"));
                 }
 
+                if(Main.sensorsMap.get("camTask") == 7.0) {
+                    thresholdSettings(source);
+                }
+
                 if(Main.sensorsMap.get("camTask") == 10.0) { // Перебор масок для фруктов
                     // thresholdSettings(source);
                     searchDominantColorMask(source);
@@ -155,15 +161,15 @@ public class CameraController implements Runnable {
             colorIndex++;
             startTime = Timer.getFPGATimestamp(); 
             return;
-        } else if (Timer.getFPGATimestamp() - startTime > scanningTime*1.5) {
+        } else if (Timer.getFPGATimestamp() - startTime > scanningTime * 1.5) {
             Main.camMap.put("currentColorIndex", colorIndex);
             Main.camMap.put("targetColorFound", 1.0);
-            colorIndex=0;
+            colorIndex = 0;
         }
 
         if (colorIndex >= maxColorIndex) {
             Main.camMap.put("currentColorIndex", 0.0);
-            Main.camMap.put("targetColorFound", 1.0);
+            Main.camMap.put("targetColorFound", -1.0);
         }
 
     }
@@ -173,19 +179,20 @@ public class CameraController implements Runnable {
         // camera.setExposureManual(100);; // Устанавливается яркость камеры
         // camera.setBrightness(1);
         camera.getProperty("focus_auto").set(1);
+        camera.getProperty("white_balance_temperature_auto").set(0);
         camera.getProperty("focus_auto").set(0);
     }
 
-    // Бля я хуй знает как это правильно написать(
     private static ColorRange setPointsForColors(double colorIndex) {
         ColorRange outRange = new ColorRange();
 
         // красный 
-        if (colorIndex == 1.0) { outRange = new ColorRange(new Point(0, 15), new Point(120, 255), new Point(150, 255)); }
+        if (colorIndex == 1.0) { outRange = new ColorRange(new Point(0, 12), new Point(0, 255), new Point(100, 255)); }
         // желтый
-        if (colorIndex == 2.0) { outRange = new ColorRange(new Point(20, 255), new Point(120, 255), new Point(150, 255)); }
+        if (colorIndex == 2.0) { outRange = new ColorRange(new Point(22, 31), new Point(197, 255), new Point(43, 254)); }
+        // фиолетовый
         // if (colorIndex == 3.0) { outRange = new ColorRange(new Point(0, 180), new Point(150, 255), new Point(80, 255)); }
-
+        
         return outRange;
     }
 
@@ -215,12 +222,14 @@ public class CameraController implements Runnable {
 
         Mat square = cropSquareFromCenter(mask, size);
 
-        if(Viscad.ImageTrueArea(square) >= 700) {
+        if(Viscad.ImageTrueArea(square) >= 700 && Main.camMap.get("currentColorIndex") == 1.0) {
             Main.stringMap.put("detectedFruit", Constants.BIG_RED_APPLE);
             Main.camMap.put("targetFound", 1.0);
-        } else if(Viscad.ImageTrueArea(square) < 700 && Viscad.ImageTrueArea(square) >= 100) {
+        } else if(Viscad.ImageTrueArea(square) < 700 && Viscad.ImageTrueArea(square) >= 100 && Main.camMap.get("currentColorIndex") == 1.0) {
             Main.stringMap.put("detectedFruit", Constants.SMALL_RED_APPLE);
             Main.camMap.put("targetFound", 1.0);
+        } else if(Main.camMap.get("currentColorIndex") == 2.0) {
+            Main.stringMap.put("detectedFruit", Constants.YELLOW_PEAR);
         } else {
             Main.stringMap.put("detectedFruit", "none");
         }
@@ -294,7 +303,8 @@ public class CameraController implements Runnable {
             Main.camMap.put("targetFound", 1.0);
 
             Main.camMap.put("currentCenterX", lowestObjectCordinate.x);
-            // Main.camMap.put("currentCenterY", lowestObjectCordinate.y);
+            Main.camMap.put("currentCenterY", lowestObjectCordinate.y);
+
         } else {
             Main.camMap.put("targetFound", 0.0);
 
@@ -321,27 +331,27 @@ public class CameraController implements Runnable {
 
         Mat square = cropSquareFromCenter(mask, 57);
 
+        if(Viscad.ImageTrueArea(square) > stop) {
+            keepTrack = true;
+        } else {
+            keepTrack = false;
+        }
+
         if(Main.stringMap.get("detectedFruit").equals(Constants.BIG_RED_APPLE)) {
             stop = 120;
         } 
 
         if(Main.stringMap.get("detectedFruit").equals(Constants.SMALL_RED_APPLE)) {
             stop = 100;
-        } 
-
-        if(Viscad.ImageTrueArea(square) > stop) {
-            keepTrack = true;
-            
-        } else {
-            keepTrack = false;
         }
+
+        Main.switchMap.put("trackImageArea", keepTrack);
         SmartDashboard.putNumber("trackedImageArea", Viscad.ImageTrueArea(square));
         outRect.putFrame(square);
 
-        releaseMats(resizedImage, blur, hsvImage, mask, square);
-
-        Main.switchMap.put("trackImageArea", keepTrack);
+        releaseMats(resizedImage, blur, hsvImage, mask, square);        
     }
+
 
     private static Point findLowestObject(Mat inImage, List<Rect> currentCoordinate) {
         Rect lowestObject = null;

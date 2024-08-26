@@ -6,9 +6,13 @@ import frc.robot.StateMachine.CoreEngine.IState;
 import frc.robot.StateMachine.CoreEngine.StateMachine;
 
 public class AutoEnd implements IState {
-    private boolean finish = false;
+    private boolean finish, treeMode = false;
     public AutoEnd() {
 
+    }
+
+    public AutoEnd(boolean treeMode) {
+        this.treeMode = treeMode;
     }
 
     @Override
@@ -20,18 +24,35 @@ public class AutoEnd implements IState {
 
     @Override
     public void execute() {
-        // boolean stop = Main.switchMap.get("rotateStop");
-
-        // SmartDashboard.putBoolean("AutoEnd.rotateStop", stop);
-        Main.motorControllerMap.put("targetLiftPos", 0.0);
-        if(Main.switchMap.get("liftStop")) {
+        if(treeMode) {
             Main.motorControllerMap.put("glideMode", 1.0);
-            Main.motorControllerMap.put("setGlideSpeed", -0.32);
-            // Main.motorControllerMap.put("servoGripRotate", 79.0);
-            if(Main.switchMap.get("limitSwitchGlide")) {
-                Main.motorControllerMap.put("targetRotateDegree", 0.0);
-                if(Main.switchMap.get("rotateStop")) {
-                    finish = true;
+            if(StateMachine.iterationTime < 1.3) {
+                SmartDashboard.putNumber("AutoEnd check", 1111);
+                Main.motorControllerMap.put("setGlideSpeed", -0.2);
+            } else {
+                Main.motorControllerMap.put("targetLiftPos", 0.0);
+                if(Main.switchMap.get("limitSwitchLift")) {
+                    SmartDashboard.putNumber("AutoEnd check", 2222);
+                    Main.motorControllerMap.put("targetRotateDegree", 0.0);
+                    if(Main.switchMap.get("rotateStop")) {
+                        SmartDashboard.putNumber("AutoEnd check", 3333);
+                        Main.motorControllerMap.put("setGlideSpeed", -0.32);
+                        if(Main.switchMap.get("limitSwitchGlide")) {
+                            finish = true;
+                        }
+                    }
+                }
+            }
+        } else {
+            Main.motorControllerMap.put("targetLiftPos", 0.0);
+            if(Main.switchMap.get("liftStop")) {
+                Main.motorControllerMap.put("glideMode", 1.0);
+                Main.motorControllerMap.put("setGlideSpeed", -0.32);
+                if(Main.switchMap.get("limitSwitchGlide")) {
+                    Main.motorControllerMap.put("targetRotateDegree", 0.0);
+                    if(Main.switchMap.get("rotateStop")) {
+                        finish = true;
+                    }
                 }
             }
         }
@@ -39,13 +60,13 @@ public class AutoEnd implements IState {
 
     @Override
     public void finilize() {
-        Main.motorControllerMap.put("servoGripRotate", 76.0);
+        Main.motorControllerMap.put("servoGripRotate", 70.0);
         Main.camMap.put("targetFound", 0.0);
     }
 
     @Override
     public boolean isFinished() {
-        return finish ;
+        return finish;
         // return Main.switchMap.get("liftStop") && Main.switchMap.get("rotateStop") && Main.switchMap.get("limitSwitchGlide") && StateMachine.iterationTime > 2;
     }
 }

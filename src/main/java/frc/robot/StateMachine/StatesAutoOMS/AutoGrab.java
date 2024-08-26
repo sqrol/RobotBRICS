@@ -51,8 +51,8 @@ public class AutoGrab implements IState {
             put(Constants.BIG_RED_APPLE, 73.0);
             put(Constants.BIG_ROTTEN_APPLE, 73.0);
 
-            put(Constants.SMALL_RED_APPLE, 76.0);
-            put(Constants.SMALL_ROTTEN_APPLE, 76.0);
+            put(Constants.SMALL_RED_APPLE, 80.0);
+            put(Constants.SMALL_ROTTEN_APPLE, 80.0);
 
             put(Constants.YELLOW_PEAR, 75.0);
             put(Constants.ROTTEN_PEAR, 75.0);
@@ -89,6 +89,7 @@ public class AutoGrab implements IState {
             newStates.add(new AutoEnd()); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             stateEnd = true;
+
         }
 
         if(!flag) {
@@ -102,7 +103,7 @@ public class AutoGrab implements IState {
 
             if(index == 2 && targetGrabAngle != 0.0) {
                 if(smoothServoMovement(targetGrabAngle, DELAY)); {
-                    if(StateMachine.iterationTime > 4) {
+                    if(StateMachine.iterationTime > 3) {
                         index++;
                     }
                 }
@@ -114,11 +115,17 @@ public class AutoGrab implements IState {
                 stateEnd = true;
             }
         }
+
+        if(treeMode) {
+            newStates.add(new AutoEnd(true)); 
+            StateMachine.states.addAll(StateMachine.index + 1, newStates);
+            stateEnd = true;
+        }
     }
 
     @Override
     public void finilize() {
-        fruit = "";
+        // fruit = "";
     }
 
     @Override

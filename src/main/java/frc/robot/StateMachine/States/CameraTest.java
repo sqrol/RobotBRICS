@@ -15,7 +15,7 @@ public class CameraTest implements IState {
 
     @Override
     public void execute() {
-
+        Main.motorControllerMap.put("servoGripRotate", 112.0);
     }
 
     @Override
@@ -26,6 +26,7 @@ public class CameraTest implements IState {
 
     @Override
     public boolean isFinished() {
-        return Main.camMap.get("targetColorFound") == 1.0;
+        // return Main.camMap.get("targetColorFound") == 1.0;
+        return false;
     }
 }

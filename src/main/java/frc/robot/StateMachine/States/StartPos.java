@@ -38,6 +38,7 @@ public class StartPos implements IState {
         }
         Main.motorControllerMap.put("speedX", 0.0);
         Main.motorControllerMap.put("speedZ", 0.0);
+        Main.motorControllerMap.put("servoGrab", 45.0);
     }    
 
     @Override
@@ -51,5 +52,6 @@ public class StartPos implements IState {
     @Override
     public boolean isFinished() {
         return succesInit && StateMachine.iterationTime > 0.5;
+        // return false;
     }
 }

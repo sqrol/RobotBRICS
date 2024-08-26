@@ -7,7 +7,7 @@ public class ThreshCheck implements IState {
 
     @Override
     public void initialize() {
-        Main.sensorsMap.put("camTask", 3.0);
+        Main.sensorsMap.put("camTask", 7.0);
 
     }
 

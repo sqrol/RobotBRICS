@@ -3,6 +3,7 @@ package frc.robot.Logic;
 import java.util.HashMap;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Main;
 
 public class TreeTraverse {
@@ -50,7 +51,7 @@ public class TreeTraverse {
             outCommand = initializeFirstCommand();
             firstCall = false;
         } else {
-            findFruitName = getGrippedFruit();
+            findFruitName = Main.stringMap.get("detectedFruit");
             outCommand = commandBuildProcess();
         }
         // System.out.println(outCommand);
@@ -58,7 +59,7 @@ public class TreeTraverse {
     }
 
     private String initializeFirstCommand() {
-        final String outIndex = "MOV_IN_START_CH1";
+        final String outIndex = "MOVE_FROM_START_TO_CH1";
         setLastCheckpoint("CH1");
         return outIndex;
     }
@@ -67,13 +68,13 @@ public class TreeTraverse {
         String outIndex = "none";
         if (step == 0) {
             final String[] replaceZone = getLastTreeZone().split("_");
-            outIndex = "MOV_IN_" + getLastTreeZone() + "_TO_"
+            outIndex = "MOVE_FROM_" + getLastTreeZone() + "_TO_"
                     + choosingBestZoneForCheck(replaceZone[1], replaceZone[0]);
             setLastCheckpoint(choosingBestZoneForCheck(replaceZone[1], replaceZone[0]));
         } else if (step == 1) {
-            outIndex = "MOV_IN_" + getLastCheckpoint() + "_TO_" + "FINISH";
+            outIndex = "MOVE_FROM_" + getLastCheckpoint() + "_TO_" + "FINISH";
         } else if (step == 2) {
-            outIndex = "LogicEnd";
+            outIndex = "END";
         }
         return outIndex;
     }
@@ -88,17 +89,17 @@ public class TreeTraverse {
 
                     if (treeNumberChange) {
                         if (currentTreeNumber == 0 && currentTreeZoneNumber == 0) {
-                            outCommand = "MOV_IN_" + getLastCheckpoint() + "_TO_" + currentTreeZone;
+                            outCommand = "MOVE_FROM_" + getLastCheckpoint() + "_TO_" + currentTreeZone;
                             treeNumberChange = false;
                         } else {
                             if (currentTreeZoneSteps == 0) {
                                 final String[] replaceZone = currentTreeZone.split("_");
-                                outCommand = "MOV_IN_" + getLastTreeZone() + "_TO_"
+                                outCommand = "MOVE_FROM_" + getLastTreeZone() + "_TO_"
                                         + choosingBestZoneForCheck(replaceZone[1], replaceZone[0]);
                                 setLastCheckpoint(choosingBestZoneForCheck(replaceZone[1], replaceZone[0]));
                             }
                             if (currentTreeZoneSteps == 1) {
-                                outCommand = "MOV_IN_" + getLastCheckpoint() + "_TO_" + currentTreeZone;
+                                outCommand = "MOVE_FROM_" + getLastCheckpoint() + "_TO_" + currentTreeZone;
                             }
                             if (currentTreeZoneSteps == 2) {
                                 outCommand = getGrabModeInArray(TREE_ZONE_NAMES[currentTreeZoneNumber]);
@@ -114,16 +115,16 @@ public class TreeTraverse {
 
                         if (fruitFind && checkFruit) {
                             if (currentTreeZoneSteps == 0) {
-                                outCommand = "MOV_IN_" + getLastTreeZone() + "_TO_" + getLastCheckpoint();
+                                outCommand = "MOVE_FROM_" + getLastTreeZone() + "_TO_" + getLastCheckpoint();
                                 currentTreeZoneNumber = currentTreeZoneNumber - 1;
                             } else if (currentTreeZoneSteps == 1) {
-                                outCommand = "MOV_IN_" + getLastCheckpoint() + "_TO_" + getConForFruit(findFruitName);
+                                outCommand = "MOVE_FROM_" + getLastCheckpoint() + "_TO_" + getConForFruit(findFruitName);
                             } else if (currentTreeZoneSteps == 2) {
                                 outCommand = "RESET_FRUIT";
                             } else if (currentTreeZoneSteps == 3) {
-                                outCommand = "MOV_IN_" + getConForFruit(findFruitName) + "_TO_" + getLastCheckpoint();
+                                outCommand = "MOVE_FROM_" + getConForFruit(findFruitName) + "_TO_" + getLastCheckpoint();
                             } else if (currentTreeZoneSteps == 4) {
-                                outCommand = "MOV_IN_" + getLastCheckpoint() + "_TO_" + getLastTreeZone();
+                                outCommand = "MOVE_FROM_" + getLastCheckpoint() + "_TO_" + getLastTreeZone();
                             } else if (currentTreeZoneSteps == 5) {
                                 outCommand = getGrabModeInArray(TREE_ZONE_NAMES[currentTreeZoneNumber]);
 
@@ -136,7 +137,7 @@ public class TreeTraverse {
                         } else {
 
                             if (currentTreeZoneSteps == 0) {
-                                outCommand = "MOV_IN_" + getLastTreeZone() + "_TO_" + currentTreeZone;
+                                outCommand = "MOVE_FROM_" + getLastTreeZone() + "_TO_" + currentTreeZone;
                                 checkFruit = false;
                             }
 
@@ -189,29 +190,6 @@ public class TreeTraverse {
     private void resetTreeZone() {
         currentTreeZoneNumber = 0;
         currentTreeNumber++;
-    }
-
-    private String getGrippedFruit() {
-        String detectionResult = "";
-        switch (Main.camMap.get("grippedFruit").intValue()) {
-        case 1:
-            detectionResult = "AppleBigRed";
-            fruitFind = true;
-            break;
-        case 2:
-            detectionResult = "AppleSmallRed";
-            fruitFind = true;
-            break;
-        case 3:
-            detectionResult = "PearYellow";
-            fruitFind = true;
-            break;
-        default:
-            detectionResult = "";
-            fruitFind = false;
-            break;
-        }
-        return detectionResult;
     }
 
     private String choosingBestZoneForCheck(final String currentZoneName, final String zoneName) {

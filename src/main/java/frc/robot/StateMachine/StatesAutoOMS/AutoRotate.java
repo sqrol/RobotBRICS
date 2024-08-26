@@ -23,7 +23,7 @@ public class AutoRotate implements IState {
 
     private double GRIP_ROTATE = 0.0;
 
-    private double LIFT_POS = 60.0;
+    private double LIFT_POS = 65.0;
 
     private double lastRotateDegree, currentTargetDegree = 0;
     private double treeModeMultiplier = 0;
@@ -90,7 +90,7 @@ public class AutoRotate implements IState {
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             stateEnd = true;
         } else if(rotateStop && !treeMode) {
-            // Main.motorControllerMap.put("targetLiftPos", LIFT_POS);
+            Main.motorControllerMap.put("targetLiftPos", LIFT_POS);
             if(StateMachine.iterationTime > 3) {
                 newStates.add(new AutoGlide()); 
                 StateMachine.states.addAll(StateMachine.index + 1, newStates);
