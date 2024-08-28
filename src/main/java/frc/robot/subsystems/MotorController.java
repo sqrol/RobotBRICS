@@ -102,7 +102,7 @@ public class MotorController implements Runnable {
                     fristCall = false;
                 }
 
-                if(false) {
+                if(Main.switchMap.get("EMSButton")) {
                     setRightMotorSpeed(0.0);
                     setLeftMotorSpeed(0.0);
                     setRotateMotorSpeed(0.0);

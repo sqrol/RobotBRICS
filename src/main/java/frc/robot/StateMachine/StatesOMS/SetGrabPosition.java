@@ -11,6 +11,7 @@ public class SetGrabPosition implements IState{
     private String fruit = "";
     private boolean smooth, endMovement = false;
     private double lastUpdateTime = 0;
+    private double  val = 0;
 
     private int index = 0; 
 
@@ -22,8 +23,8 @@ public class SetGrabPosition implements IState{
         this.lastUpdateTime = Timer.getFPGATimestamp();
     }
 
-    public SetGrabPosition(int index) {
-        this.index = index;
+    public SetGrabPosition(double val) {
+        this.val = val;
     }
 
     @Override
@@ -34,46 +35,7 @@ public class SetGrabPosition implements IState{
 
     @Override
     public void execute() {
-        if (fruit.equals("BIG APPLE")) {
-            if (smooth) {
-                endMovement = smoothServoMovement(30.0, 0.05);
-            } else {
-                endMovement = smoothServoMovement(30.0, 0.01);
-            }
-        }
-
-        if (fruit.equals("SMALL APPLE")) {
-            if (smooth) {
-                endMovement = smoothServoMovement(50.0, 0.05);
-            } else {
-                endMovement = smoothServoMovement(50.0, 0.01);
-            }
-        }
-
-        if (fruit.equals("PEAR")) {
-            if (smooth) {
-                endMovement = smoothServoMovement(66.0, 0.05);
-            } else {
-                endMovement = smoothServoMovement(66.0, 0.01);
-            }
-        }
-
-        if (fruit.equals("OPEN")) {
-            if (smooth) {
-                endMovement = smoothServoMovement(15.0, 0.05);
-            } else {
-                endMovement = smoothServoMovement(15.0, 0.01);
-            }
-                
-        }
-
-        if (fruit.equals("OPEN SMALL APPLE")) {
-            if (smooth) {
-                endMovement = smoothServoMovement(29.0, 0.05);
-            } else {
-                endMovement = smoothServoMovement(29.0, 0.01);
-            }
-        }
+        Main.motorControllerMap.put("servoGrab", val);
     }
 
     @Override

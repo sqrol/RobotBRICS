@@ -80,7 +80,7 @@ public class Robot extends TimedRobot {
     Main.switchMap.put("glideStop", false);
     Main.switchMap.put("rotateStop", false);
 
-    Main.switchMap.put("trackImageArea", false);
+    Main.switchMap.put("trackImageArea", true);
 
     Main.switchMap.put("resizeForGlide", false);
 
@@ -135,10 +135,10 @@ public class Robot extends TimedRobot {
     Main.motorControllerMap.put("currentLiftPos", 0.0);
     Main.motorControllerMap.put("targetLiftPos", 0.0);
 
-    Main.motorControllerMap.put("servoGrab", 32.0);
+    Main.motorControllerMap.put("servoGrab", 55.0);
     Main.motorControllerMap.put("grabServoAngle", 0.0);
 
-    Main.motorControllerMap.put("servoGripRotate", 131.0);
+    Main.motorControllerMap.put("servoGripRotate", 140.0);
     Main.motorControllerMap.put("glideServoSpeed", 0.0);
 
     Main.motorControllerMap.put("speedX", 0.0);
@@ -242,8 +242,6 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putBoolean("initLift", Main.switchMap.get("initLift"));
     SmartDashboard.putBoolean("initGlide", Main.switchMap.get("initGlide"));
-
-    SmartDashboard.putNumber("glideServoSpeed", Main.motorControllerMap.get("glideServoSpeed"));
 
     SmartDashboard.putNumber("objectFind", Main.sensorsMap.get("objectFind"));
 

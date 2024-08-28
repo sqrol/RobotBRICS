@@ -35,14 +35,14 @@ public class AutoGrab implements IState {
 
     private static final HashMap<String, Double> GRAB_MAP = new HashMap<>() {
         {
-            put(Constants.BIG_RED_APPLE, 50.0);
-            put(Constants.BIG_ROTTEN_APPLE, 50.0);
+            put(Constants.BIG_RED_APPLE, 69.0);
+            put(Constants.BIG_ROTTEN_APPLE, 69.0);
 
-            put(Constants.SMALL_RED_APPLE, 58.0);
-            put(Constants.SMALL_ROTTEN_APPLE, 58.0);
+            put(Constants.SMALL_RED_APPLE, 76.0);
+            put(Constants.SMALL_ROTTEN_APPLE, 76.0);
 
-            put(Constants.YELLOW_PEAR, 50.0);
-            put(Constants.ROTTEN_PEAR, 50.0);
+            put(Constants.YELLOW_PEAR, 69.0);
+            put(Constants.ROTTEN_PEAR, 69.0);
         }
     };
 
@@ -64,7 +64,7 @@ public class AutoGrab implements IState {
     }
 
     public AutoGrab(boolean treeMode) {
-        this.treeMode = treeMode;
+        // this.treeMode = treeMode;
         index = 2;
         this.flag = false;
         this.stateEnd = false;
@@ -84,6 +84,9 @@ public class AutoGrab implements IState {
         double targetLiftPos = LIFT_MAP.getOrDefault(Main.stringMap.get("detectedFruit"), 0.0);
         double targetGrabAngle = GRAB_MAP.getOrDefault(Main.stringMap.get("detectedFruit"), 0.0);
 
+        SmartDashboard.putNumber("targetLiftPosGRAB", targetLiftPos);
+        SmartDashboard.putNumber("targetGrabAngle", targetGrabAngle);
+
         if(targetLiftPos == 0.0 || targetGrabAngle == 0.0) {
             flag = true;
             newStates.add(new AutoEnd()); 
@@ -93,7 +96,7 @@ public class AutoGrab implements IState {
         }
 
         if(!flag) {
-            
+
             if(index == 1 && targetLiftPos != 0.0) {
                 Main.motorControllerMap.put("targetLiftPos", targetLiftPos);
                 if(Main.switchMap.get("liftStop") && StateMachine.iterationTime > 2) {
@@ -102,7 +105,7 @@ public class AutoGrab implements IState {
             }
 
             if(index == 2 && targetGrabAngle != 0.0) {
-                if(smoothServoMovement(targetGrabAngle, DELAY)); {
+                if(smoothServoMovement(targetGrabAngle, DELAY)) {
                     if(StateMachine.iterationTime > 3) {
                         index++;
                     }
@@ -110,17 +113,17 @@ public class AutoGrab implements IState {
             }
 
             if (index == 3) {
-                newStates.add(new AutoEnd()); 
+                newStates.add(new AutoEnd(true)); 
                 StateMachine.states.addAll(StateMachine.index + 1, newStates);
                 stateEnd = true;
             }
         }
 
-        if(treeMode) {
-            newStates.add(new AutoEnd(true)); 
-            StateMachine.states.addAll(StateMachine.index + 1, newStates);
-            stateEnd = true;
-        }
+        // if(treeMode) {
+        //     newStates.add(new AutoEnd(true)); 
+        //     StateMachine.states.addAll(StateMachine.index + 1, newStates);
+        //     stateEnd = true;
+        // }
     }
 
     @Override

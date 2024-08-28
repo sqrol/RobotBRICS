@@ -1,6 +1,14 @@
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2018-2019 FIRST. All Rights Reserved.                        */
+/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
+/*----------------------------------------------------------------------------*/
+
 package frc.robot;
 
-public class Constants {
+public final class Constants
+{
     public static final int TITAN_ID                                  = 42;
 
     public static final int MOTOR_RIGHT                               = 3;
@@ -27,22 +35,22 @@ public class Constants {
     public static final int SHARP_LEFT                                = 1;
 
 
-    public static final int LIMIT_SWITCH_LIFT                         = 1;
-    public static final int LIMIT_SWITCH_GLIDE                        = 7;
-    public static final int START_BUTTON                              = 2;
-    public static final int EMS_BUTTON                                = 3;
+    public static final int LIMIT_SWITCH_LIFT                         = 5;
+    public static final int LIMIT_SWITCH_GLIDE                        = 3;
+    public static final int START_BUTTON                              = 0;
+    public static final int EMS_BUTTON                                = 1;
 
     public static final int RED_LED                                   = 20;
     public static final int GREEN_LED                                 = 21;
 
-    public static final int SONIC_ECHO_RIGHT                          = 4;
-    public static final int SONIC_PING_RIGHT                          = 5;
+    public static final int SONIC_ECHO_RIGHT                          = 10;
+    public static final int SONIC_PING_RIGHT                          = 11;
     
-    public static final int SONIC_ECHO_LEFT                           = 8;
-    public static final int SONIC_PING_LEFT                           = 9;
+    public static final int SONIC_ECHO_LEFT                           = 6;
+    public static final int SONIC_PING_LEFT                           = 7;
 
     ///////////////////////
-    
+
     public static final String BIG_RED_APPLE                          = "BigRedApple";
     public static final String SMALL_RED_APPLE                        = "SmallRedApple";
     public static final String BIG_GREEN_APPLE                        = "BigGreenApple";
@@ -53,3 +61,6 @@ public class Constants {
     public static final String SMALL_ROTTEN_APPLE                     = "SmallRottenApple";
     public static final String ROTTEN_PEAR                            = "RottenPear";
 }
+
+
+

@@ -197,8 +197,8 @@ public class SensorController implements Runnable{
     }
 
     private boolean getEMSButton() {
-        // return EMS_BUTTON.get();
-        return false;
+        return EMS_BUTTON.get();
+        // return false;
     }
 
     private void setGreenLED(boolean state) {

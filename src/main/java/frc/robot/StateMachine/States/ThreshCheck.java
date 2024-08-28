@@ -13,7 +13,7 @@ public class ThreshCheck implements IState {
 
     @Override
     public void execute() {
-        Main.motorControllerMap.put("servoGripRotate", 112.0);
+        Main.motorControllerMap.put("servoGripRotate", 115.0);
     }
 
     @Override

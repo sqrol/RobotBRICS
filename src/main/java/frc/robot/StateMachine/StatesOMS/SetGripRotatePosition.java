@@ -20,23 +20,24 @@ public class SetGripRotatePosition implements IState{
 
     @Override
     public void execute() {
-        switch(position) {
-            case "FLOOR":
-                Main.motorControllerMap.put("servoGripRotate", 75.0);
-                break;
-            case "BRANCH":
-                Main.motorControllerMap.put("servoGripRotate", 20.0);
-                break;
-            case "ANGLE":
-                Main.motorControllerMap.put("servoGripRotate", 70.0);
-                break;
-            case "FOR DROP":
-                Main.motorControllerMap.put("servoGripRotate", 20.0);
-                break;
-            case "SMALL ANGLE":
-                Main.motorControllerMap.put("servoGripRotate", 52.0);
-                break;
-        }
+        // switch(position) {
+        //     case "FLOOR":
+        //         Main.motorControllerMap.put("servoGripRotate", 75.0);
+        //         break;
+        //     case "BRANCH":
+        //         Main.motorControllerMap.put("servoGripRotate", 20.0);
+        //         break;
+        //     case "ANGLE":
+        //         Main.motorControllerMap.put("servoGripRotate", 70.0);
+        //         break;
+        //     case "FOR DROP":
+        //         Main.motorControllerMap.put("servoGripRotate", 20.0);
+        //         break;
+        //     case "SMALL ANGLE":
+        //         Main.motorControllerMap.put("servoGripRotate", 52.0);
+        //         break;
+        // }
+        Main.motorControllerMap.put("servoGripRotate", 100.0);
     }
 
     @Override

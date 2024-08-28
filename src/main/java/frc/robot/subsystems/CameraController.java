@@ -15,6 +15,7 @@ import org.opencv.imgproc.Imgproc;
 
 import frc.robot.MachineVision.ColorRange;
 import frc.robot.MachineVision.Viscad;
+import frc.robot.Maths.Common.Functions;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.CvSink;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -187,7 +188,7 @@ public class CameraController implements Runnable {
         ColorRange outRange = new ColorRange();
 
         // красный 
-        if (colorIndex == 1.0) { outRange = new ColorRange(new Point(0, 12), new Point(0, 255), new Point(100, 255)); }
+        if (colorIndex == 1.0) { outRange = new ColorRange(new Point(0, 11), new Point(254, 255), new Point(45, 255)); }
         // желтый
         if (colorIndex == 2.0) { outRange = new ColorRange(new Point(22, 31), new Point(197, 255), new Point(43, 254)); }
         // фиолетовый
@@ -228,7 +229,7 @@ public class CameraController implements Runnable {
         } else if(Viscad.ImageTrueArea(square) < 700 && Viscad.ImageTrueArea(square) >= 100 && Main.camMap.get("currentColorIndex") == 1.0) {
             Main.stringMap.put("detectedFruit", Constants.SMALL_RED_APPLE);
             Main.camMap.put("targetFound", 1.0);
-        } else if(Main.camMap.get("currentColorIndex") == 2.0) {
+        } else if(Main.camMap.get("currentColorIndex") == 2.0 && Viscad.ImageTrueArea(square) > 100) {
             Main.stringMap.put("detectedFruit", Constants.YELLOW_PEAR);
         } else {
             Main.stringMap.put("detectedFruit", "none");
@@ -321,6 +322,7 @@ public class CameraController implements Runnable {
 
         double stop = 0;
 
+        // ColorRange currentColor = setPointsForColors(colorIndex);
         ColorRange currentColor = setPointsForColors(colorIndex);
 
         Mat resizedImage = Viscad.ReduceResolutionImage(orig, 3);
@@ -329,21 +331,21 @@ public class CameraController implements Runnable {
         Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
         Mat mask = createMask(hsvImage, currentColor);
 
-        Mat square = cropSquareFromCenter(mask, 57);
-
-        if(Viscad.ImageTrueArea(square) > stop) {
-            keepTrack = true;
-        } else {
-            keepTrack = false;
-        }
+        Mat square = cropSquareFromCenter(mask, 65);
 
         if(Main.stringMap.get("detectedFruit").equals(Constants.BIG_RED_APPLE)) {
-            stop = 120;
+            stop = 3700;
         } 
 
         if(Main.stringMap.get("detectedFruit").equals(Constants.SMALL_RED_APPLE)) {
-            stop = 100;
+            stop = 2200;
         }
+
+        if(Main.stringMap.get("detectedFruit").equals(Constants.YELLOW_PEAR)) {
+            stop = 4100;
+        }
+
+        keepTrack = !(Viscad.ImageTrueArea(square) >= stop); // не менять
 
         Main.switchMap.put("trackImageArea", keepTrack);
         SmartDashboard.putNumber("trackedImageArea", Viscad.ImageTrueArea(square));
@@ -351,7 +353,6 @@ public class CameraController implements Runnable {
 
         releaseMats(resizedImage, blur, hsvImage, mask, square);        
     }
-
 
     private static Point findLowestObject(Mat inImage, List<Rect> currentCoordinate) {
         Rect lowestObject = null;

@@ -14,8 +14,6 @@ public class StartPos implements IState {
         Main.sensorsMap.put("resetGyro", 1.0);
         Main.motorControllerMap.put("resetEncs", 1.0);
         Main.motorControllerMap.put("resetPID", 1.0);
-        // Main.motorControllerMap.put("glideServoSpeed", 0.0);
-        
         Main.motorControllerMap.put("glideMode", 0.0);
     }
 
@@ -31,14 +29,12 @@ public class StartPos implements IState {
         
         if(Main.switchMap.get("limitSwitchLift") && Main.switchMap.get("limitSwitchGlide")){
             Main.switchMap.put("initLift", false);
-            SmartDashboard.putNumber("startPos check", 111);
             Main.switchMap.put("initGlide", false);
             Main.motorControllerMap.put("resetEncLift", 1.0);
             succesInit = Main.switchMap.get("limitSwitchLift") && Main.switchMap.get("limitSwitchGlide");
         }
         Main.motorControllerMap.put("speedX", 0.0);
         Main.motorControllerMap.put("speedZ", 0.0);
-        Main.motorControllerMap.put("servoGrab", 45.0);
     }    
 
     @Override

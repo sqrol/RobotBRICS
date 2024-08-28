@@ -36,7 +36,7 @@ public class AutoStart implements IState {
     
     public AutoStart() {
         this.treeMode = false;
-        GRIP_ROTATE = 112.0;
+        GRIP_ROTATE = 131.0;
         CAM_TASK = 1.0;
     }
 
