@@ -30,7 +30,7 @@ public class CommandList {
     if(currentCommandName.equals("RESET_FRUIT")) {
         newStates.add(new SetGrabPosition("OPEN", true));
         newStates.add(new SetGripRotatePosition("FLOOR"));
-        
+        newStates.add(new ResetCameraValues());
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }

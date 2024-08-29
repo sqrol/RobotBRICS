@@ -7,7 +7,7 @@ public class End implements IState {
 
     @Override
     public void initialize() {
-       
+       Main.sensorsMap.put("indicationMode", 3.0);
     }
 
     @Override

@@ -31,7 +31,7 @@ public class TreeTraverse {
         }
     };
 
-    private static boolean fruitFind = true; 
+    private static boolean fruitFind = false; 
     private static boolean checkFruit = false; 
 
     // Для setter и getter для чекпойнта
@@ -55,6 +55,7 @@ public class TreeTraverse {
             firstCall = false;
         } else {
             findFruitName = Main.stringMap.get("detectedFruit");
+            // findFruitName = "SmallRedApple";
             outCommand = commandBuildProcess();
         }
         // System.out.println(outCommand);
@@ -115,7 +116,7 @@ public class TreeTraverse {
                         setLastTreeZone(currentTreeZone);
 
                     } else {
-
+                        fruitFind = !Main.stringMap.get("detectedFruit").equals("none");
                         if (fruitFind && checkFruit) {
                             if (currentTreeZoneSteps == 0) {
                                 outCommand = "MOVE_FROM_" + getLastTreeZone() + "_TO_" + getConForFruit(findFruitName);

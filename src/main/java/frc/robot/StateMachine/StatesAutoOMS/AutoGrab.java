@@ -38,8 +38,8 @@ public class AutoGrab implements IState {
             put(Constants.BIG_RED_APPLE, 69.0);
             put(Constants.BIG_ROTTEN_APPLE, 69.0);
 
-            put(Constants.SMALL_RED_APPLE, 76.0);
-            put(Constants.SMALL_ROTTEN_APPLE, 76.0);
+            put(Constants.SMALL_RED_APPLE, 79.0);
+            put(Constants.SMALL_ROTTEN_APPLE, 79.0);
 
             put(Constants.YELLOW_PEAR, 69.0);
             put(Constants.ROTTEN_PEAR, 69.0);
@@ -51,8 +51,8 @@ public class AutoGrab implements IState {
             put(Constants.BIG_RED_APPLE, 73.0);
             put(Constants.BIG_ROTTEN_APPLE, 73.0);
 
-            put(Constants.SMALL_RED_APPLE, 80.0);
-            put(Constants.SMALL_ROTTEN_APPLE, 80.0);
+            put(Constants.SMALL_RED_APPLE, 76.0);
+            put(Constants.SMALL_ROTTEN_APPLE, 76.0);
 
             put(Constants.YELLOW_PEAR, 75.0);
             put(Constants.ROTTEN_PEAR, 75.0);
@@ -99,14 +99,14 @@ public class AutoGrab implements IState {
 
             if(index == 1 && targetLiftPos != 0.0) {
                 Main.motorControllerMap.put("targetLiftPos", targetLiftPos);
-                if(Main.switchMap.get("liftStop") && StateMachine.iterationTime > 7) {
+                if(Main.switchMap.get("liftStop") && StateMachine.iterationTime > 3) {
                     index++;
                 }
             }
 
             if(index == 2 && targetGrabAngle != 0.0) {
                 if(smoothServoMovement(targetGrabAngle, DELAY)) {
-                    if(StateMachine.iterationTime > 7) {
+                    if(StateMachine.iterationTime > 4) {
                         index++;
                     }
                 }

@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Main;
 import frc.robot.Logic.CommandList;
 import frc.robot.StateMachine.CoreEngine.IState;
+import frc.robot.StateMachine.CoreEngine.StateMachine;
 
 public class Transition implements IState {
 
@@ -20,6 +21,12 @@ public class Transition implements IState {
 
     @Override
     public void execute() {
+        // if (flag) {
+        //     String command = Main.traverse.execute();
+        //     SmartDashboard.putString("currentCommand", command);
+        //     flag = false;
+        // }
+
         if (flag && autonomousMode) {
             String command = Main.traverse.execute();
             SmartDashboard.putString("currentCommand", command);
@@ -43,5 +50,6 @@ public class Transition implements IState {
     @Override
     public boolean isFinished() {
         return !flag;
+        // return !flag && StateMachine.iterationTime > 3;
     }
 }

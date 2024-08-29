@@ -88,11 +88,17 @@ public class CameraController implements Runnable {
                 if (cvSink.grabFrame(source) == 0) {
                     continue;
                 }
-
+                // очистка значений в хешмапах, связанных с фруктами, координатами, флагами при нахождении фруктов и тд.
+                if(Main.sensorsMap.get("camTask") == 25.0) {
+                    Main.stringMap.put("detectedFruit", "none");
+                    Main.camMap.put("currentColorIndex", 0.0);
+                    Main.camMap.put("targetFound", 0.0);
+                    Main.camMap.put("currentCenterX", 0.0);
+                    Main.camMap.put("currentCenterY", 0.0);
+                }
+                // лайтовая очистка: координаты, флаги нахождения фруктов и прочего.
                 if (Main.sensorsMap.get("camTask") == 0.0) {
                     Main.camMap.put("targetFound", 0.0);
-                    Main.camMap.put("currentColorIndex", 0.0);
-                    Main.stringMap.put("detectedFruit", "none");
                     Main.camMap.put("currentCenterX", 0.0);
                     Main.camMap.put("currentCenterY", 0.0);
                 }
