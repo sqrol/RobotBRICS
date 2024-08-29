@@ -30,6 +30,7 @@ public class CommandList {
     if(currentCommandName.equals("RESET_FRUIT")) {
         newStates.add(new SetGrabPosition("OPEN", true));
         newStates.add(new SetGripRotatePosition("FLOOR"));
+        
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
@@ -831,6 +832,7 @@ public class CommandList {
 
 
     if(currentCommandName.equals("MOVE_FROM_FIRST_LZ_TO_CON3")) {
+        newStates.add(new SimpleDrive(-5, 0));
         newStates.add(new SimpleDrive(0, 90));
         newStates.add(new DriveSonic(56));
         newStates.add(new SimpleDrive(0, -90));

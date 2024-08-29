@@ -31,11 +31,14 @@ public class SetGrabPosition implements IState{
     public void initialize() {
         Main.motorControllerMap.put("speedX", 0.0);
         Main.motorControllerMap.put("speedZ", 0.0);
+        Main.sensorsMap.put("camTask", 0.0);
     }
 
     @Override
     public void execute() {
-        Main.motorControllerMap.put("servoGrab", val);
+        if(fruit.equals("OPEN")) {
+            endMovement = smoothServoMovement(55.0, 0.01);
+        }
     }
 
     @Override

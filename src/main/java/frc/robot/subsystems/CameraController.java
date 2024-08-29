@@ -89,8 +89,10 @@ public class CameraController implements Runnable {
                     continue;
                 }
 
-                if (Main.sensorsMap.get("camTask") == 0) {
+                if (Main.sensorsMap.get("camTask") == 0.0) {
                     Main.camMap.put("targetFound", 0.0);
+                    Main.camMap.put("currentColorIndex", 0.0);
+                    Main.stringMap.put("detectedFruit", "none");
                     Main.camMap.put("currentCenterX", 0.0);
                     Main.camMap.put("currentCenterY", 0.0);
                 }
@@ -100,7 +102,7 @@ public class CameraController implements Runnable {
                 }
 
                 if (Main.sensorsMap.get("camTask") == 2.0) {
-                    searchForGrab(source, 80);
+                    searchForGrab(source, 80, Main.camMap.get("currentColorIndex"));
                 }
 
                 if(Main.sensorsMap.get("camTask") == 3.0) {
@@ -112,7 +114,7 @@ public class CameraController implements Runnable {
                 }
 
                 if(Main.sensorsMap.get("camTask") == 5.0) {
-                    searchForGrab(source, 70);
+                    searchForGrab(source, 70, Main.camMap.get("currentColorIndex"));
                 }
 
                 if(Main.sensorsMap.get("camTask") == 6.0) {
@@ -147,7 +149,7 @@ public class CameraController implements Runnable {
     
 
     private void searchDominantColorMask(Mat source) {
-        double scanningTime = 2;
+        double scanningTime = 1;
 
         Mat resizedSource = Viscad.ReduceResolutionImage(source, 3);
         Mat blur = Viscad.Blur(resizedSource, 4);
@@ -156,21 +158,22 @@ public class CameraController implements Runnable {
         
         outHSV.putFrame(imageOut);
         int currentMaskArea = Viscad.ImageTrueArea(imageOut);
+        SmartDashboard.putNumber("imageOutAREA", currentMaskArea);
         releaseMats(resizedSource, blur, hsvImage, imageOut);
 
-        if (currentMaskArea < 100 && Timer.getFPGATimestamp() - startTime > scanningTime) {
+        if (currentMaskArea < 50 && Timer.getFPGATimestamp() - startTime > scanningTime) {
             colorIndex++;
             startTime = Timer.getFPGATimestamp(); 
             return;
         } else if (Timer.getFPGATimestamp() - startTime > scanningTime * 1.5) {
             Main.camMap.put("currentColorIndex", colorIndex);
-            Main.camMap.put("targetColorFound", 1.0);
+            Main.switchMap.put("targetColorFound", true);
             colorIndex = 0;
         }
 
         if (colorIndex >= maxColorIndex) {
             Main.camMap.put("currentColorIndex", 0.0);
-            Main.camMap.put("targetColorFound", -1.0);
+            Main.switchMap.put("targetColorFound", false);
         }
 
     }
@@ -181,6 +184,7 @@ public class CameraController implements Runnable {
         // camera.setBrightness(1);
         camera.getProperty("focus_auto").set(1);
         camera.getProperty("white_balance_temperature_auto").set(0);
+        camera.getProperty("brightness").set(15);
         camera.getProperty("focus_auto").set(0);
     }
 
@@ -188,15 +192,14 @@ public class CameraController implements Runnable {
         ColorRange outRange = new ColorRange();
 
         // красный 
-        if (colorIndex == 1.0) { outRange = new ColorRange(new Point(0, 11), new Point(254, 255), new Point(45, 255)); }
+        if (colorIndex == 1.0) { outRange = new ColorRange(new Point(0, 10), new Point(200, 255), new Point(156, 255)); }
         // желтый
-        if (colorIndex == 2.0) { outRange = new ColorRange(new Point(22, 31), new Point(197, 255), new Point(43, 254)); }
+        if (colorIndex == 2.0) { outRange = new ColorRange(new Point(19, 31), new Point(197, 255), new Point(139, 254)); }
         // фиолетовый
-        // if (colorIndex == 3.0) { outRange = new ColorRange(new Point(0, 180), new Point(150, 255), new Point(80, 255)); }
+        // if (colorIndex == 3.0) { outRange = new ColorRange(new Point(123, 200), new Point(145, 255), new Point(51, 89)); }
         
         return outRange;
     }
-
 
     private static Mat createMask(Mat hsvImage, ColorRange colorRange) {
         Mat mask = Viscad.Threshold(hsvImage, colorRange.getHue(), colorRange.getSaturation(), colorRange.getValue());
@@ -206,12 +209,13 @@ public class CameraController implements Runnable {
         return dilated;
     }
 
-    private void searchForGrab(Mat source, int size) {
+    private void searchForGrab(Mat source, int size, double colorIndex) {
         List<Rect> currentCordinate = new ArrayList<>();
 
-        Point HueBound = new Point(0, 180);
-        Point SaturationBound = new Point(150, 255);
-        Point ValueBound = new Point(80, 255);
+        ColorRange currentColor = setPointsForColors(colorIndex);
+        // Point HueBound = new Point(0, 180);
+        // Point SaturationBound = new Point(150, 255);
+        // Point ValueBound = new Point(80, 255);
 
         // Снижение разрешения изображения
         Mat resizedSource = new Mat();
@@ -219,16 +223,15 @@ public class CameraController implements Runnable {
     
         Mat blur = Viscad.Blur(resizedSource, 4);
         Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
-        Mat mask = Viscad.Threshold(hsvImage, HueBound, SaturationBound, ValueBound);
+        Mat mask = createMask(hsvImage, currentColor);
 
         Mat square = cropSquareFromCenter(mask, size);
-
-        if(Viscad.ImageTrueArea(square) >= 700 && Main.camMap.get("currentColorIndex") == 1.0) {
-            Main.stringMap.put("detectedFruit", Constants.BIG_RED_APPLE);
-            Main.camMap.put("targetFound", 1.0);
-        } else if(Viscad.ImageTrueArea(square) < 700 && Viscad.ImageTrueArea(square) >= 100 && Main.camMap.get("currentColorIndex") == 1.0) {
+        if(Viscad.ImageTrueArea(square) < 2000 && Viscad.ImageTrueArea(square) >= 100 && Main.camMap.get("currentColorIndex") == 1.0) {
             Main.stringMap.put("detectedFruit", Constants.SMALL_RED_APPLE);
             Main.camMap.put("targetFound", 1.0);
+        } else if(Viscad.ImageTrueArea(square) >= 2500 && Main.camMap.get("currentColorIndex") == 1.0) {
+            Main.stringMap.put("detectedFruit", Constants.BIG_RED_APPLE);
+            Main.camMap.put("targetFound", 1.0); 
         } else if(Main.camMap.get("currentColorIndex") == 2.0 && Viscad.ImageTrueArea(square) > 100) {
             Main.stringMap.put("detectedFruit", Constants.YELLOW_PEAR);
         } else {
@@ -322,7 +325,6 @@ public class CameraController implements Runnable {
 
         double stop = 0;
 
-        // ColorRange currentColor = setPointsForColors(colorIndex);
         ColorRange currentColor = setPointsForColors(colorIndex);
 
         Mat resizedImage = Viscad.ReduceResolutionImage(orig, 3);

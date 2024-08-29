@@ -23,7 +23,7 @@ public class AutoRotate implements IState {
 
     private double GRIP_ROTATE = 0.0;
 
-    private double LIFT_POS = 65.0;
+    private double LIFT_POS = 60.0;
 
     private double lastRotateDegree, currentTargetDegree = 0;
     private double treeModeMultiplier = 0;
@@ -34,7 +34,7 @@ public class AutoRotate implements IState {
 
     // private static final double[][] arrForRotate = { { 1, 106, 213} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
     // private static final double[][] arrForRotate = { { 1, 50, 106, 260, 340} , { -60, -55, -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
-    private static final double[][] arrForRotate = { { 1, 50,  106, 213, 300} , { -45, -20, 0, 45, 60} };
+    private static final double[][] arrForRotate = { { 1, 50, 106, 213, 300} , { -45, -25, 0, 45, 60} };
     public AutoRotate() {
         GRIP_ROTATE = 131.0; // 70
     }

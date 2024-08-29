@@ -23,10 +23,8 @@ public class StateMachine {
         states.add(new StartPos());
         // states.add(new InitLogic());
         // states.add(new Transition());
-        // states.add(new SetGrabPosition(30));
+        // states.add(new ThreshCheck());
         states.add(new AutoStart());
-        // states.add(new ThreshCheck());
-        // states.add(new ThreshCheck());
         states.add(new End());
     }
 

@@ -99,21 +99,21 @@ public class AutoGrab implements IState {
 
             if(index == 1 && targetLiftPos != 0.0) {
                 Main.motorControllerMap.put("targetLiftPos", targetLiftPos);
-                if(Main.switchMap.get("liftStop") && StateMachine.iterationTime > 2) {
+                if(Main.switchMap.get("liftStop") && StateMachine.iterationTime > 7) {
                     index++;
                 }
             }
 
             if(index == 2 && targetGrabAngle != 0.0) {
                 if(smoothServoMovement(targetGrabAngle, DELAY)) {
-                    if(StateMachine.iterationTime > 3) {
+                    if(StateMachine.iterationTime > 7) {
                         index++;
                     }
                 }
             }
 
             if (index == 3) {
-                newStates.add(new AutoEnd(true)); 
+                newStates.add(new AutoEnd()); 
                 StateMachine.states.addAll(StateMachine.index + 1, newStates);
                 stateEnd = true;
             }

@@ -84,6 +84,8 @@ public class Robot extends TimedRobot {
 
     Main.switchMap.put("resizeForGlide", false);
 
+    Main.switchMap.put("targetColorFound", false);
+
     Main.sensorsMap.put("indicationMode", 1.0);
 
     Main.sensorsMap.put("sharpRight", 0.0);

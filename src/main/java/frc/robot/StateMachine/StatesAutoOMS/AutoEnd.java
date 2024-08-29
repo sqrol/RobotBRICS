@@ -64,8 +64,8 @@ public class AutoEnd implements IState {
 
     @Override
     public void finilize() {
-        Main.motorControllerMap.put("servoGripRotate", 85.0);
-        Main.camMap.put("targetFound", 0.0);
+        Main.motorControllerMap.put("servoGripRotate", 82.0);
+        // Main.camMap.put("targetFound", 0.0);
     }
 
     @Override

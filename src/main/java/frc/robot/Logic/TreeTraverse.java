@@ -13,10 +13,13 @@ public class TreeTraverse {
 
     private final HashMap<String, String> containersForFruits = new HashMap<String, String>() {
         {
-            put("rotten", "CON2");
-            put("AppleSmallRed", "CON4");
-            put("AppleBigRed", "CON1");
-            put("PearYellow", "CON3");
+            put(Constants.ROTTEN_PEAR, "CON2");
+            put(Constants.BIG_ROTTEN_APPLE, "CON2");
+            put(Constants.SMALL_ROTTEN_APPLE, "CON2");
+
+            put(Constants.BIG_RED_APPLE, "CON4");
+            put(Constants.SMALL_RED_APPLE, "CON1");
+            put(Constants.YELLOW_PEAR, "CON3");
         }
     };
 
@@ -115,17 +118,14 @@ public class TreeTraverse {
 
                         if (fruitFind && checkFruit) {
                             if (currentTreeZoneSteps == 0) {
-                                outCommand = "MOVE_FROM_" + getLastTreeZone() + "_TO_" + getLastCheckpoint();
-                                currentTreeZoneNumber = currentTreeZoneNumber - 1;
+                                outCommand = "MOVE_FROM_" + getLastTreeZone() + "_TO_" + getConForFruit(findFruitName);
                             } else if (currentTreeZoneSteps == 1) {
-                                outCommand = "MOVE_FROM_" + getLastCheckpoint() + "_TO_" + getConForFruit(findFruitName);
-                            } else if (currentTreeZoneSteps == 2) {
                                 outCommand = "RESET_FRUIT";
-                            } else if (currentTreeZoneSteps == 3) {
+                            } else if (currentTreeZoneSteps == 2) {
                                 outCommand = "MOVE_FROM_" + getConForFruit(findFruitName) + "_TO_" + getLastCheckpoint();
-                            } else if (currentTreeZoneSteps == 4) {
+                            } else if (currentTreeZoneSteps == 3) {
                                 outCommand = "MOVE_FROM_" + getLastCheckpoint() + "_TO_" + getLastTreeZone();
-                            } else if (currentTreeZoneSteps == 5) {
+                            } else if (currentTreeZoneSteps == 4) {
                                 outCommand = getGrabModeInArray(TREE_ZONE_NAMES[currentTreeZoneNumber]);
 
                                 // Сбрасываем переменные для захвата
