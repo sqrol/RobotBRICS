@@ -51,6 +51,17 @@ public final class Constants
 
     ///////////////////////
 
+    public static final double GRAB_OPEN                              = 55.0;
+    public static final double GRAB_BIG_APPLE                         = 69.0;
+    public static final double GRAB_SMALL_APPLE                       = 79.0;
+    public static final double GRAB_PEAR                              = 69.0;
+
+    public static final double GRIP_ROTATE_FLOOR                      = 140.0;
+    public static final double GRIP_ROTATE_DROP                       = 82.0;
+    public static final double GRIP_ROTATE_CHECK_ZONE                 = 131.0;
+
+    ///////////////////////
+
     public static final String BIG_RED_APPLE                          = "BigRedApple";
     public static final String SMALL_RED_APPLE                        = "SmallRedApple";
     public static final String BIG_GREEN_APPLE                        = "BigGreenApple";

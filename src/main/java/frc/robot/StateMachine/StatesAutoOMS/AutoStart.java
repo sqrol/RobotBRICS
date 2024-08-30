@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Main;
 
 public class AutoStart implements IState {
@@ -24,7 +25,6 @@ public class AutoStart implements IState {
     private int branchNumber = 0;
     
     private double GRIP_ROTATE, CAM_TASK = 0.0;
-    private double currentColorIndex = 0; 
 
     private static double startTime = 0;
 
@@ -50,10 +50,13 @@ public class AutoStart implements IState {
 
     @Override
     public void initialize() {
-        Main.camMap.put("currentColorIndex", 0.0);
-        // Main.sensorsMap.put("camTask", 0.0);
-        Main.motorControllerMap.put("servoGripRotate", GRIP_ROTATE);
         Main.sensorsMap.put("camTask", CAM_TASK);
+        Main.camMap.put("currentColorIndex", 0.0);
+        Main.stringMap.put("detectedFruit", "none");
+
+        Main.motorControllerMap.put("servoGripRotate", GRIP_ROTATE);
+        Main.motorControllerMap.put("servoGrab", Constants.GRAB_OPEN);
+
         realStartTime = Timer.getFPGATimestamp();
 
         Main.motorControllerMap.put("speedX", 0.0);
@@ -64,16 +67,6 @@ public class AutoStart implements IState {
 
     @Override
     public void execute() {
-        
-        // Перебераем цвета 
-        double currentTime = Timer.getFPGATimestamp();
-
-        // if (currentTime - startTime >= 1) {
-        //     startTime = currentTime;
-        //     if (Main.camMap.get("targetFound") == 0) {
-        //         currentColorIndex++; 
-        //     }   
-        // }
 
         if(Main.switchMap.get("targetColorFound")) {
             Main.sensorsMap.put("camTask", 2.0);
@@ -132,7 +125,11 @@ public class AutoStart implements IState {
             }
             SmartDashboard.putBoolean("flagCheck", flag);
         } else {
-
+            if(StateMachine.iterationTime > 5) {
+                newStates.add(new AutoEnd());
+                StateMachine.states.addAll(StateMachine.index + 1, newStates);
+                stateEnd = true;
+            }
         }
 
         // SmartDashboard.putNumber("currentColorIndex", currentColorIndex);

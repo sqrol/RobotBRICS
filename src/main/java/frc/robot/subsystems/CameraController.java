@@ -41,14 +41,14 @@ public class CameraController implements Runnable {
     @Override
     public void run() {
 
-        SmartDashboard.putNumber("RED1", 0.0);
-        SmartDashboard.putNumber("RED2", 0.0);
+        // SmartDashboard.putNumber("RED1", 0.0);
+        // SmartDashboard.putNumber("RED2", 0.0);
 
-        SmartDashboard.putNumber("GREEN1", 0.0);
-        SmartDashboard.putNumber("GREEN2", 0.0);
+        // SmartDashboard.putNumber("GREEN1", 0.0);
+        // SmartDashboard.putNumber("GREEN2", 0.0);
 
-        SmartDashboard.putNumber("BLUE1", 0.0);
-        SmartDashboard.putNumber("BLUE2", 0.0);
+        // SmartDashboard.putNumber("BLUE1", 0.0);
+        // SmartDashboard.putNumber("BLUE2", 0.0);
 
 
         // SmartDashboard.putNumber("Hue1", 0.0);
@@ -88,6 +88,7 @@ public class CameraController implements Runnable {
                 if (cvSink.grabFrame(source) == 0) {
                     continue;
                 }
+                
                 // очистка значений в хешмапах, связанных с фруктами, координатами, флагами при нахождении фруктов и тд.
                 if(Main.sensorsMap.get("camTask") == 25.0) {
                     Main.stringMap.put("detectedFruit", "none");
@@ -96,6 +97,7 @@ public class CameraController implements Runnable {
                     Main.camMap.put("currentCenterX", 0.0);
                     Main.camMap.put("currentCenterY", 0.0);
                 }
+
                 // лайтовая очистка: координаты, флаги нахождения фруктов и прочего.
                 if (Main.sensorsMap.get("camTask") == 0.0) {
                     Main.camMap.put("targetFound", 0.0);

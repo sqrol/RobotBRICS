@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.StateMachine.CoreEngine.StateMachine;
 import frc.robot.subsystems.MotorController;
 import frc.robot.subsystems.SensorController;
+import frc.robot.Logic.TreeTraverse;
 import frc.robot.StateMachine.CoreEngine.CommandAdapter;
 import frc.robot.StateMachine.CoreEngine.IState;
 
@@ -137,10 +138,10 @@ public class Robot extends TimedRobot {
     Main.motorControllerMap.put("currentLiftPos", 0.0);
     Main.motorControllerMap.put("targetLiftPos", 0.0);
 
-    Main.motorControllerMap.put("servoGrab", 55.0);
+    Main.motorControllerMap.put("servoGrab", Constants.GRAB_OPEN);
     Main.motorControllerMap.put("grabServoAngle", 0.0);
 
-    Main.motorControllerMap.put("servoGripRotate", 140.0);
+    Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_FLOOR);
     Main.motorControllerMap.put("glideServoSpeed", 0.0);
 
     Main.motorControllerMap.put("speedX", 0.0);
@@ -182,80 +183,98 @@ public class Robot extends TimedRobot {
 
   private void sendSmartDashBoard() {
 
-    SmartDashboard.putNumber("targetColorFound", Main.camMap.get("targetColorFound"));
+    // SmartDashboard.putNumber("targetColorFound", Main.camMap.get("targetColorFound"));
 
     SmartDashboard.putString("detectedFruit", Main.stringMap.get("detectedFruit"));
 
-    SmartDashboard.putNumber("targetAngle", Main.camMap.get("targetAngle"));
+    // SmartDashboard.putNumber("targetAngle", Main.camMap.get("targetAngle"));
     
-    SmartDashboard.putBoolean("targetFound", Main.camMap.get("targetFound") == 1.0);
-    SmartDashboard.putNumber("currentCenterX", Main.camMap.get("currentCenterX"));
-    SmartDashboard.putNumber("currentCenterY", Main.camMap.get("currentCenterY"));
+    // SmartDashboard.putBoolean("targetFound", Main.camMap.get("targetFound") == 1.0);
+    // SmartDashboard.putNumber("currentCenterX", Main.camMap.get("currentCenterX"));
+    // SmartDashboard.putNumber("currentCenterY", Main.camMap.get("currentCenterY"));
 
-    SmartDashboard.putNumber("sharpRight", Main.sensorsMap.get("sharpRight"));
-    SmartDashboard.putNumber("sharpLeft", Main.sensorsMap.get("sharpLeft"));
+    // SmartDashboard.putNumber("sharpRight", Main.sensorsMap.get("sharpRight"));
+    // SmartDashboard.putNumber("sharpLeft", Main.sensorsMap.get("sharpLeft"));
 
-    SmartDashboard.putNumber("sonicLeft", Main.sensorsMap.get("sonicLeft"));
-    SmartDashboard.putNumber("sonicRight", Main.sensorsMap.get("sonicRight"));
+    // SmartDashboard.putNumber("sonicLeft", Main.sensorsMap.get("sonicLeft"));
+    // SmartDashboard.putNumber("sonicRight", Main.sensorsMap.get("sonicRight"));
 
-    SmartDashboard.putBoolean("isResetZ", Main.sensorsMap.get("resetGyro") == 1.0);
-    SmartDashboard.putBoolean("isResetEncs", Main.motorControllerMap.get("resetAllEncoders") == 1.0);
+    // SmartDashboard.putBoolean("isResetZ", Main.sensorsMap.get("resetGyro") == 1.0);
+    // SmartDashboard.putBoolean("isResetEncs", Main.motorControllerMap.get("resetAllEncoders") == 1.0);
 
-    SmartDashboard.putNumber("rpmRight", Main.motorControllerMap.get("rpmRight"));
-    SmartDashboard.putNumber("rpmLeft", Main.motorControllerMap.get("rpmLeft"));
-    SmartDashboard.putNumber("rpmRotate", Main.motorControllerMap.get("rpmRotate"));
-    SmartDashboard.putNumber("rpmLift", Main.motorControllerMap.get("rpmLift"));
+    // SmartDashboard.putNumber("rpmRight", Main.motorControllerMap.get("rpmRight"));
+    // SmartDashboard.putNumber("rpmLeft", Main.motorControllerMap.get("rpmLeft"));
+    // SmartDashboard.putNumber("rpmRotate", Main.motorControllerMap.get("rpmRotate"));
+    // SmartDashboard.putNumber("rpmLift", Main.motorControllerMap.get("rpmLift"));
 
-    SmartDashboard.putNumber("encRight", Main.motorControllerMap.get("encRight"));
-    SmartDashboard.putNumber("encLeft", Main.motorControllerMap.get("encLeft"));
-    SmartDashboard.putNumber("encRotate", Main.motorControllerMap.get("encRotate"));
-    SmartDashboard.putNumber("encLift", Main.motorControllerMap.get("encLift"));
+    // SmartDashboard.putNumber("encRight", Main.motorControllerMap.get("encRight"));
+    // SmartDashboard.putNumber("encLeft", Main.motorControllerMap.get("encLeft"));
+    // SmartDashboard.putNumber("encRotate", Main.motorControllerMap.get("encRotate"));
+    // SmartDashboard.putNumber("encLift", Main.motorControllerMap.get("encLift"));
 
-    SmartDashboard.putNumber("speedX", Main.motorControllerMap.get("speedX"));
-    SmartDashboard.putNumber("speedZ", Main.motorControllerMap.get("speedZ"));
+    // SmartDashboard.putNumber("speedX", Main.motorControllerMap.get("speedX"));
+    // SmartDashboard.putNumber("speedZ", Main.motorControllerMap.get("speedZ"));
 
-    SmartDashboard.putNumber("posX", Main.motorControllerMap.get("posX"));
-    SmartDashboard.putNumber("posZ", Main.sensorsMap.get("posZ"));
+    // SmartDashboard.putNumber("posX", Main.motorControllerMap.get("posX"));
+    // SmartDashboard.putNumber("posZ", Main.sensorsMap.get("posZ"));
 
     SmartDashboard.putNumber("camTask", Main.sensorsMap.get("camTask"));
 
+    // SmartDashboard.putNumber("index", StateMachine.index);
+    // SmartDashboard.putNumber("updateTimeMotors", Main.motorControllerMap.get("updateTime"));
+    // SmartDashboard.putNumber("updateTimeSensors", Main.sensorsMap.get("updateTime"));
+    // SmartDashboard.putNumber("updateTimeCamera", Main.sensorsMap.get("updateTimeCamera"));
+
+    // SmartDashboard.putNumber("cobraVoltage", Main.sensorsMap.get("cobraVoltage"));
+
+    // SmartDashboard.putNumber("targetGlidePos", Main.sensorsMap.get("targetGlidePos"));
+    // SmartDashboard.putNumber("currentGlidePos", Main.sensorsMap.get("currentGlidePos"));
+    // SmartDashboard.putNumber("targetLiftPos", Main.motorControllerMap.get("targetLiftPos"));
+    // SmartDashboard.putNumber("currentLiftPos", Main.motorControllerMap.get("currentLiftPos"));
+
+    // SmartDashboard.putBoolean("EMS", Main.switchMap.get("EMSButton"));
+    // SmartDashboard.putBoolean("startButton", Main.switchMap.get("startButton"));
+    // SmartDashboard.putBoolean("limitSwitchLift", Main.switchMap.get("limitSwitchLift"));
+    // SmartDashboard.putBoolean("limitSwitchGlide", Main.switchMap.get("limitSwitchGlide"));
+
+    // SmartDashboard.putBoolean("trackImageArea", Main.switchMap.get("trackImageArea"));
+
+    // SmartDashboard.putBoolean("liftStop", Main.switchMap.get("liftStop"));
+    // SmartDashboard.putBoolean("glideStop", Main.switchMap.get("glideStop"));
+    // SmartDashboard.putBoolean("rotateStop", Main.switchMap.get("rotateStop"));
+
+    // SmartDashboard.putBoolean("initLift", Main.switchMap.get("initLift"));
+    // SmartDashboard.putBoolean("initGlide", Main.switchMap.get("initGlide"));
+
+    // SmartDashboard.putNumber("objectFind", Main.sensorsMap.get("objectFind"));
+
+    // SmartDashboard.putNumber("currentColorIndex", Main.camMap.get("currentColorIndex"));
+
+    // SmartDashboard.putNumber("iterationTime", StateMachine.iterationTime);
     SmartDashboard.putNumber("index", StateMachine.index);
-    SmartDashboard.putNumber("updateTimeMotors", Main.motorControllerMap.get("updateTime"));
-    SmartDashboard.putNumber("updateTimeSensors", Main.sensorsMap.get("updateTime"));
-    SmartDashboard.putNumber("updateTimeCamera", Main.sensorsMap.get("updateTimeCamera"));
-
-    SmartDashboard.putNumber("cobraVoltage", Main.sensorsMap.get("cobraVoltage"));
-
-    SmartDashboard.putNumber("targetGlidePos", Main.sensorsMap.get("targetGlidePos"));
-    SmartDashboard.putNumber("currentGlidePos", Main.sensorsMap.get("currentGlidePos"));
-    SmartDashboard.putNumber("targetLiftPos", Main.motorControllerMap.get("targetLiftPos"));
-    SmartDashboard.putNumber("currentLiftPos", Main.motorControllerMap.get("currentLiftPos"));
-
-    SmartDashboard.putBoolean("EMS", Main.switchMap.get("EMSButton"));
-    SmartDashboard.putBoolean("startButton", Main.switchMap.get("startButton"));
-    SmartDashboard.putBoolean("limitSwitchLift", Main.switchMap.get("limitSwitchLift"));
-    SmartDashboard.putBoolean("limitSwitchGlide", Main.switchMap.get("limitSwitchGlide"));
-
-    SmartDashboard.putBoolean("trackImageArea", Main.switchMap.get("trackImageArea"));
-
-    SmartDashboard.putBoolean("liftStop", Main.switchMap.get("liftStop"));
-    SmartDashboard.putBoolean("glideStop", Main.switchMap.get("glideStop"));
-    SmartDashboard.putBoolean("rotateStop", Main.switchMap.get("rotateStop"));
-
-    SmartDashboard.putBoolean("initLift", Main.switchMap.get("initLift"));
-    SmartDashboard.putBoolean("initGlide", Main.switchMap.get("initGlide"));
-
-    SmartDashboard.putNumber("objectFind", Main.sensorsMap.get("objectFind"));
-
-    SmartDashboard.putNumber("currentColorIndex", Main.camMap.get("currentColorIndex"));
-
-    SmartDashboard.putNumber("iterationTime", StateMachine.iterationTime);
-
     if (StateMachine.states.size() > 0) {
       SmartDashboard.putString("currentState", StateMachine.currentState.getClass().getSimpleName());
       
     } else {
       SmartDashboard.putString("currentState", "null");
     }
+
+    SmartDashboard.putBoolean("firstCall", TreeTraverse.firstCall);
+    SmartDashboard.putBoolean("fruitFind", TreeTraverse.fruitFind);
+    SmartDashboard.putBoolean("checkFruit", TreeTraverse.checkFruit);
+    SmartDashboard.putBoolean("treeNumberChange", TreeTraverse.treeNumberChange);
+    SmartDashboard.putBoolean("resetSteps", TreeTraverse.resetSteps);
+
+    SmartDashboard.putString("lastCheckpoint", TreeTraverse.lastCheckpoint);
+    SmartDashboard.putString("treeZone", TreeTraverse.treeZone);
+    SmartDashboard.putString("conName", TreeTraverse.conName);
+    SmartDashboard.putString("findFruitName", TreeTraverse.findFruitName);
+
+    SmartDashboard.putNumber("stepsForEnd", TreeTraverse.stepsForEnd);
+    SmartDashboard.putNumber("currentTreeNumber", TreeTraverse.currentTreeNumber);
+    SmartDashboard.putNumber("currentTreeZoneSteps", TreeTraverse.currentTreeZoneSteps);
+    SmartDashboard.putNumber("currentTreeZoneNumber", TreeTraverse.currentTreeZoneNumber);
+
+
   }
 }

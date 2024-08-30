@@ -1,6 +1,7 @@
 package frc.robot.StateMachine.StatesAutoOMS;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Main;
 import frc.robot.StateMachine.CoreEngine.IState;
 import frc.robot.StateMachine.CoreEngine.StateMachine;
@@ -64,9 +65,9 @@ public class AutoEnd implements IState {
 
     @Override
     public void finilize() {
-        Main.motorControllerMap.put("servoGripRotate", 82.0);
+        Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_DROP);
         Main.sensorsMap.put("camTask", 0.0);
-        // Main.camMap.put("targetFound", 0.0);
+        Main.switchMap.put("targetColorFound", false);
     }
 
     @Override

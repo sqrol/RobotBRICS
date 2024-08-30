@@ -35,14 +35,14 @@ public class AutoGrab implements IState {
 
     private static final HashMap<String, Double> GRAB_MAP = new HashMap<>() {
         {
-            put(Constants.BIG_RED_APPLE, 69.0);
-            put(Constants.BIG_ROTTEN_APPLE, 69.0);
+            put(Constants.BIG_RED_APPLE, Constants.GRAB_BIG_APPLE);
+            put(Constants.BIG_ROTTEN_APPLE, Constants.GRAB_BIG_APPLE);
 
-            put(Constants.SMALL_RED_APPLE, 79.0);
-            put(Constants.SMALL_ROTTEN_APPLE, 79.0);
+            put(Constants.SMALL_RED_APPLE, Constants.GRAB_SMALL_APPLE);
+            put(Constants.SMALL_ROTTEN_APPLE, Constants.GRAB_SMALL_APPLE);
 
-            put(Constants.YELLOW_PEAR, 69.0);
-            put(Constants.ROTTEN_PEAR, 69.0);
+            put(Constants.YELLOW_PEAR, Constants.GRAB_PEAR);
+            put(Constants.ROTTEN_PEAR, Constants.GRAB_PEAR);
         }
     };
 

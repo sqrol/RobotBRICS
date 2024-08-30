@@ -123,7 +123,7 @@ public class AutoGlide implements IState {
     @Override
     public void finilize() {
         Main.motorControllerMap.put("setGlideSpeed", 0.0);
-        // Main.motorControllerMap.put("glideMode", 0.0);
+        
         Main.sensorsMap.put("camTask", 1.0);
 
         Main.motorControllerMap.put("speedX", 0.0);

@@ -10,6 +10,9 @@ public class Transition implements IState {
 
     private CommandList cmdList;
     private boolean flag = true; 
+    private static int count = 0; 
+
+    private Boolean end = false; 
 
     private boolean autonomousMode = true;
     
@@ -17,6 +20,7 @@ public class Transition implements IState {
     public void initialize() {
         cmdList = new CommandList();
         flag = true; 
+        end = false; 
     }
 
     @Override
@@ -26,12 +30,18 @@ public class Transition implements IState {
         //     SmartDashboard.putString("currentCommand", command);
         //     flag = false;
         // }
+        Main.motorControllerMap.put("speedX", 0.0);
+        Main.motorControllerMap.put("speedZ", 0.0);
 
         if (flag && autonomousMode) {
             String command = Main.traverse.execute();
             SmartDashboard.putString("currentCommand", command);
             cmdList.setCurrentCommand(command);
             cmdList.addCommand();
+            count++; 
+            if (!command.equals("none")) {
+                end = true; 
+            }
             flag = false; 
         } else if(flag && !autonomousMode) {
             String command = Main.logic.getNextCommand();
@@ -40,16 +50,18 @@ public class Transition implements IState {
             cmdList.addCommand();
             flag = false;
         }
+
+
     }    
 
     @Override
     public void finilize() {
-
+        SmartDashboard.putNumber("Count123: ", count); 
     }
 
     @Override
     public boolean isFinished() {
-        return !flag;
+        return !flag && end && StateMachine.iterationTime > 4;
         // return !flag && StateMachine.iterationTime > 3;
     }
 }

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import frc.robot.StateMachine.CoreEngine.IState;
 import frc.robot.StateMachine.CoreEngine.StateMachine;
 import frc.robot.StateMachine.States.*;
-import frc.robot.StateMachine.StatesAutoOMS.AutoEnd;
 import frc.robot.StateMachine.StatesAutoOMS.AutoStart;
 import frc.robot.StateMachine.StatesOMS.*;
 
@@ -30,8 +29,9 @@ public class CommandList {
     if(currentCommandName.equals("RESET_FRUIT")) {
         newStates.add(new SetGrabPosition("OPEN", true));
         newStates.add(new SetGripRotatePosition("FLOOR"));
-        newStates.add(new ResetCameraValues());
         newStates.add(new Transition());
+        newStates.add(new ResetCameraValues());
+        // newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
 
