@@ -1,19 +1,24 @@
 package frc.robot.Logic;
 
 import java.util.HashMap;
+
+import frc.robot.Constants;
 import frc.robot.Main;
 
 public class TreeTraverse {
 
-    private static final String[] TREE_ZONE_NAMES = {"LZ", "TZ", "RZ"};
+    private static final String[] TREE_ZONE_NAMES = {"LZ", "TZ", "LOZ", "RZ"};
     private static final String[] TREE_NUMBER = {"FIRST", "SECOND", "THIRD"};
 
-    private static final HashMap<String, String> containersForFruits = new HashMap<String, String>() {
+    private final HashMap<String, String> containersForFruits = new HashMap<String, String>() {
         {
-            put("rotten", "CON2");
-            put("AppleSmallRed", "CON4");
-            put("AppleBigRed", "CON1");
-            put("PearYellow", "CON3");
+            put(Constants.ROTTEN_PEAR, "CON2");
+            put(Constants.BIG_ROTTEN_APPLE, "CON2");
+            put(Constants.SMALL_ROTTEN_APPLE, "CON2");
+
+            put(Constants.BIG_RED_APPLE, "CON4");
+            put(Constants.SMALL_RED_APPLE, "CON1");
+            put(Constants.YELLOW_PEAR, "CON3");
         }
     };
 
@@ -22,6 +27,7 @@ public class TreeTraverse {
             put("LZ", "AUTO_GRAB_UPPER");
             put("RZ", "AUTO_GRAB_UPPER");
             put("TZ", "AUTO_GRAB_UPPER");
+            put("LOZ", "AUTO_GRAB_UPPER");
         }
     };
 
@@ -42,7 +48,7 @@ public class TreeTraverse {
     private static boolean autoGrabCheck = false;
 
     private static int stepsForEnd = 0;
-    private static String findFruitName = "AppleSmallRed";
+    private static String findFruitName = "";
     private static int currentTreeNumber, currentTreeZoneNumber, currentTreeZoneSteps = 0;
     private static int lastCurrentTreeNumber, lastCurrentTreeZoneNumber = 0;
 
@@ -207,58 +213,67 @@ public class TreeTraverse {
         if (zoneName.equals("FIRST")) {
             switch (currentZoneName) {
                 case "LZ":
-                    out = "CH1";
-                    break;
-                case "RZ":
-                    out = "CH1";
-                    break;
-                case "TZ":
-                    out = "CH1";
-                    break;
-                case "START":
-                    out = "CH1";
-                    break;
-                default:
-                    out = "null";
-                    break;
+                out = "CH1";
+                break;
+            case "RZ":
+                out = "CH1";
+                break;
+            case "LOZ":
+                out = "CH1";
+                break;
+            case "TZ":
+                out = "CH1";
+                break;
+            case "START":
+                out = "CH1";
+                break;
+            default:
+                out = "null";
+                break;
             }
         }
         if (zoneName.equals("SECOND")) {
             switch (currentZoneName) {
                 case "LZ":
-                    out = "CH2";
-                    break;
-                case "RZ":
-                    out = "CH2";
-                    break;
-                case "TZ":
-                    out = "CH2";
-                    break;
-                case "START":
-                    out = "CH2";
-                    break;
-                default:
-                    out = "null";
-                    break;
+                out = "CH2";
+                break;
+            case "RZ":
+                out = "CH2";
+                break;
+            case "LOZ":
+                out = "CH2";
+                break;
+            case "TZ":
+                out = "CH2";
+                break;
+            case "START":
+                out = "CH2";
+                break;
+            default:
+                out = "null";
+                break;
             }
         }
         if (zoneName.equals("THIRD")) {
             switch (currentZoneName) {
                 case "LZ":
-                    out = "CH2";
-                    break;
-                case "RZ":
-                    out = "CH3";
-                    break;
-                case "TZ":
-                    out = "CH3";
-                    break;
-                case "START":
-                    out = "CH3";
-                    break;
-                default:
-                    out = "null";
-                    break;
+                out = "CH2";
+                break;
+            case "RZ":
+                out = "CH3";
+                break;
+            case "LOZ":
+                out = "CH3";
+                break;
+            case "TZ":
+                out = "CH3";
+                break;
+            case "START":
+                out = "CH3";
+                break;
+            default:
+                out = "null";
+                break;
             }
         }
         return out;
@@ -272,7 +287,7 @@ public class TreeTraverse {
         return containersForFruits.getOrDefault(fruitName, "none");
     }
 
-    private void setLastCheckpoint(final String lastCheckpoint) {
+    private void setLastCheckpoint(String lastCheckpoint) {
         TreeTraverse.lastCheckpoint = lastCheckpoint;
     }
 
@@ -285,6 +300,6 @@ public class TreeTraverse {
     }
 
     private String getLastCheckpoint() {
-        return lastCheckpoint;
+        return TreeTraverse.lastCheckpoint;
     }
 }
