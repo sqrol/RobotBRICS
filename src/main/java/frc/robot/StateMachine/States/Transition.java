@@ -12,6 +12,11 @@ public class Transition implements IState {
     private boolean flag = true; 
     private static int count = 0; 
 
+    private String[] cmd = { 
+        "", 
+        "", 
+        ""};
+
     private Boolean end = false; 
 
     private boolean autonomousMode = true;
@@ -25,6 +30,7 @@ public class Transition implements IState {
 
     @Override
     public void execute() {
+        // String command = cmd[count];
         // if (flag) {
         //     String command = Main.traverse.execute();
         //     SmartDashboard.putString("currentCommand", command);
@@ -50,9 +56,7 @@ public class Transition implements IState {
             cmdList.addCommand();
             flag = false;
         }
-
-
-    }    
+    }
 
     @Override
     public void finilize() {
@@ -61,7 +65,7 @@ public class Transition implements IState {
 
     @Override
     public boolean isFinished() {
-        return !flag && end && StateMachine.iterationTime > 4;
-        // return !flag && StateMachine.iterationTime > 3;
+        return !flag && end;
+        // return !flag && StateMachine.iterationTime > 2;
     }
 }

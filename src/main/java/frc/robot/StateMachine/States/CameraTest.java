@@ -8,7 +8,7 @@ public class CameraTest implements IState {
 
     @Override
     public void initialize() {
-        Main.sensorsMap.put("camTask", 10.0);
+        Main.sensorsMap.put("camTask", 11.0);
         Main.camMap.put("targetColorFound", 0.0);
         Main.camMap.put("currentColorIndex", 0.0);
     }
@@ -16,6 +16,7 @@ public class CameraTest implements IState {
     @Override
     public void execute() {
         Main.motorControllerMap.put("servoGripRotate", 112.0);
+        Main.motorControllerMap.put("servoGrab", 79.0);
     }
 
     @Override

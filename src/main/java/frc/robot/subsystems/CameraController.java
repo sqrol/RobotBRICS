@@ -33,7 +33,7 @@ public class CameraController implements Runnable {
 
     private double startTime = -1; // Время начала ожидания
     private double colorIndex = 0; 
-    private double maxColorIndex = 3; 
+    private double maxColorIndex = 4; 
     // private double colorIndex = 0.0;
 
     private static final double MAX_Y = 0;
@@ -41,14 +41,14 @@ public class CameraController implements Runnable {
     @Override
     public void run() {
 
-        // SmartDashboard.putNumber("RED1", 0.0);
-        // SmartDashboard.putNumber("RED2", 0.0);
+        SmartDashboard.putNumber("RED1", 0.0);
+        SmartDashboard.putNumber("RED2", 0.0);
 
-        // SmartDashboard.putNumber("GREEN1", 0.0);
-        // SmartDashboard.putNumber("GREEN2", 0.0);
+        SmartDashboard.putNumber("GREEN1", 0.0);
+        SmartDashboard.putNumber("GREEN2", 0.0);
 
-        // SmartDashboard.putNumber("BLUE1", 0.0);
-        // SmartDashboard.putNumber("BLUE2", 0.0);
+        SmartDashboard.putNumber("BLUE1", 0.0);
+        SmartDashboard.putNumber("BLUE2", 0.0);
 
 
         // SmartDashboard.putNumber("Hue1", 0.0);
@@ -91,8 +91,9 @@ public class CameraController implements Runnable {
                 
                 // очистка значений в хешмапах, связанных с фруктами, координатами, флагами при нахождении фруктов и тд.
                 if(Main.sensorsMap.get("camTask") == 25.0) {
-                    Main.stringMap.put("detectedFruit", "none");
-                    Main.camMap.put("currentColorIndex", 0.0);
+                    // Main.stringMap.put("detectedFruit", "none");
+                    Main.switchMap.put("targetColorFound", false);
+                    // Main.camMap.put("currentColorIndex", 0.0);
                     Main.camMap.put("targetFound", 0.0);
                     Main.camMap.put("currentCenterX", 0.0);
                     Main.camMap.put("currentCenterY", 0.0);
@@ -138,6 +139,10 @@ public class CameraController implements Runnable {
                     searchDominantColorMask(source);
                 }
 
+                if(Main.sensorsMap.get("camTask") == 11.0) {
+                    checkGrippedFruit(source, Main.camMap.get("currentColorIndex"), 260);
+                }
+
                 Main.sensorsMap.put("updateTimeCamera", cameraUpdateTime);
                 outStream.putFrame(source);
                 source.release();
@@ -165,6 +170,7 @@ public class CameraController implements Runnable {
         Mat imageOut = createMask(hsvImage, setPointsForColors(colorIndex));
         
         outHSV.putFrame(imageOut);
+
         int currentMaskArea = Viscad.ImageTrueArea(imageOut);
         SmartDashboard.putNumber("imageOutAREA", currentMaskArea);
         releaseMats(resizedSource, blur, hsvImage, imageOut);
@@ -172,6 +178,7 @@ public class CameraController implements Runnable {
         if (currentMaskArea < 50 && Timer.getFPGATimestamp() - startTime > scanningTime) {
             colorIndex++;
             startTime = Timer.getFPGATimestamp(); 
+            
             return;
         } else if (Timer.getFPGATimestamp() - startTime > scanningTime * 1.5) {
             Main.camMap.put("currentColorIndex", colorIndex);
@@ -180,10 +187,10 @@ public class CameraController implements Runnable {
         }
 
         if (colorIndex >= maxColorIndex) {
+            colorIndex = 0;
             Main.camMap.put("currentColorIndex", 0.0);
             Main.switchMap.put("targetColorFound", false);
         }
-
     }
 
     private static void settingCameraParameters() {
@@ -200,11 +207,11 @@ public class CameraController implements Runnable {
         ColorRange outRange = new ColorRange();
 
         // красный 
-        if (colorIndex == 1.0) { outRange = new ColorRange(new Point(0, 10), new Point(200, 255), new Point(156, 255)); }
+        if (colorIndex == 3.0) { outRange = new ColorRange(new Point(0, 10), new Point(200, 255), new Point(156, 255)); }
         // желтый
-        if (colorIndex == 2.0) { outRange = new ColorRange(new Point(19, 31), new Point(197, 255), new Point(139, 254)); }
+        if (colorIndex == 2.0) { outRange = new ColorRange(new Point(19, 30), new Point(196, 255), new Point(139, 254)); }
         // фиолетовый
-        // if (colorIndex == 3.0) { outRange = new ColorRange(new Point(123, 200), new Point(145, 255), new Point(51, 89)); }
+        if (colorIndex == 1.0) { outRange = new ColorRange(new Point(123, 200), new Point(67, 255), new Point(12, 255)); }
         
         return outRange;
     }
@@ -234,16 +241,18 @@ public class CameraController implements Runnable {
         Mat mask = createMask(hsvImage, currentColor);
 
         Mat square = cropSquareFromCenter(mask, size);
-        if(Viscad.ImageTrueArea(square) < 2000 && Viscad.ImageTrueArea(square) >= 100 && Main.camMap.get("currentColorIndex") == 1.0) {
-            Main.stringMap.put("detectedFruit", Constants.SMALL_RED_APPLE);
-            Main.camMap.put("targetFound", 1.0);
-        } else if(Viscad.ImageTrueArea(square) >= 2500 && Main.camMap.get("currentColorIndex") == 1.0) {
-            Main.stringMap.put("detectedFruit", Constants.BIG_RED_APPLE);
-            Main.camMap.put("targetFound", 1.0); 
-        } else if(Main.camMap.get("currentColorIndex") == 2.0 && Viscad.ImageTrueArea(square) > 100) {
-            Main.stringMap.put("detectedFruit", Constants.YELLOW_PEAR);
+
+        if(Viscad.ImageTrueArea(square) > 1000) {
+            double startTime = Timer.getFPGATimestamp();
         } else {
-            Main.stringMap.put("detectedFruit", "none");
+            startTime = 0;
+        }
+
+        if(Timer.getFPGATimestamp() - startTime > 2.5) {
+            Main.switchMap.put("stopAutoGlide", true);
+        } else {
+            startTime = 0;
+            Main.switchMap.put("stopAutoGlide", false);
         }
     
         SmartDashboard.putNumber("ImageAreaGlideSquare", Viscad.ImageTrueArea(square));
@@ -446,7 +455,7 @@ public class CameraController implements Runnable {
         Rect rectCrop = new Rect(xStart, yStart, sideLength, sideLength);
 
         Mat croppedImage = new Mat(source, rectCrop);
-        
+        outGlide.putFrame(croppedImage);
         return croppedImage;
     }
 
@@ -515,8 +524,34 @@ public class CameraController implements Runnable {
         releaseMats(threshold, blur, hsvImage, dilate);
     }
 
-    private static void checkFruit(Mat orig) {
+    private static void checkGrippedFruit(Mat orig, double colorIndex, int size) {
+
+        ColorRange currentColor = setPointsForColors(colorIndex);
+
+        Mat blur = Viscad.Blur(orig, 4);
+        Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
+        Mat mask = createMask(hsvImage, currentColor);
+
+        Mat square = cropSquareFromCenter(mask, size);
         
+        thresh.putFrame(square);
+        if(Viscad.ImageTrueArea(square) < 10000 && Viscad.ImageTrueArea(square) >= 100 && colorIndex == 3.0) {
+            Main.stringMap.put("detectedFruit", Constants.SMALL_RED_APPLE);
+            Main.camMap.put("targetFound", 1.0);
+        } else if(Viscad.ImageTrueArea(square) >= 20000 && colorIndex == 3.0) {
+            Main.stringMap.put("detectedFruit", Constants.BIG_RED_APPLE);
+            Main.camMap.put("targetFound", 1.0); 
+        } else if(colorIndex == 2.0 && Viscad.ImageTrueArea(square) > 15000) {
+            Main.stringMap.put("detectedFruit", Constants.YELLOW_PEAR);
+            Main.camMap.put("targetFound", 1.0); 
+        } else if(colorIndex == 1.0 && Viscad.ImageTrueArea(square) > 100){
+            Main.stringMap.put("detectedFruit", Constants.SMALL_ROTTEN_APPLE);
+            Main.camMap.put("targetFound", 1.0);
+        } else {
+            Main.camMap.put("targetFound", 0.0); 
+            Main.stringMap.put("detectedFruit", "none");
+        }
+        SmartDashboard.putNumber("grippedFruitImageArea", Viscad.ImageTrueArea(square));
     }
 
     private static void checkRotten(Mat orig) {

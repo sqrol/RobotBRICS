@@ -28,10 +28,7 @@ public class CommandList {
 
     if(currentCommandName.equals("RESET_FRUIT")) {
         newStates.add(new SetGrabPosition("OPEN", true));
-        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new Transition());
-        newStates.add(new ResetCameraValues());
-        // newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
 
@@ -405,10 +402,12 @@ public class CommandList {
 // ------------------------------ ПРОМЕЖУТОЧНЫЕ МЕЖДУ ЗОНАМИ ДЕРЕВА ------------------------------
 
     if(currentCommandName.equals("MOVE_FROM_FIRST_LZ_TO_FIRST_TZ")) {
+        newStates.add(new ResetCameraValues());
+        newStates.add(new SimpleDrive(-5, 0));
         newStates.add(new SimpleDrive(0, 90));
         newStates.add(new DriveSonic(50));
         newStates.add(new SimpleDrive(0, -90));
-        newStates.add(new SimpleDrive(48, 0));
+        newStates.add(new SimpleDrive(52, 0));
         newStates.add(new SimpleDrive(0, -90));
         newStates.add(new SimpleDrive(20, 0));
         newStates.add(new Transition());
@@ -416,35 +415,39 @@ public class CommandList {
     }
 
     if(currentCommandName.equals("MOVE_FROM_FIRST_TZ_TO_FIRST_LOZ")) {
+        newStates.add(new ResetCameraValues());
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
 
     if(currentCommandName.equals("MOVE_FROM_FIRST_LOZ_TO_FIRST_RZ")) {
+        newStates.add(new ResetCameraValues());
         newStates.add(new SimpleDrive(-10, 0));
         newStates.add(new SimpleDrive(0, 90));
-        newStates.add(new SimpleDrive(10, 0));
+        newStates.add(new SimpleDrive(15, 0));
         newStates.add(new SimpleDrive(0, -90));
         newStates.add(new SimpleDrive(15, 0));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
 
-    if(currentCommandName.equals("MOVE_FROM_FIRST_RZ_TO_CH1")) {
-        newStates.add(new SimpleDrive(-20, 0));
-        newStates.add(new SimpleDrive(0, -90));
-        newStates.add(new SimpleDrive(95, 0));
+    if(currentCommandName.equals("MOVE_FROM_FIRST_RZ_TO_CH2")) {
+        newStates.add(new ResetCameraValues());
+        newStates.add(new SimpleDrive(-60, 0));
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new SimpleDrive(0, 90));
         newStates.add(new AlignSharp(14));
-        newStates.add(new SimpleDrive(0, 90));
-        newStates.add(new DriveSonic(82));
+        newStates.add(new SimpleDrive(0, -90));
+        newStates.add(new DriveSonic(10));
         newStates.add(new Reset());
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
 
     if(currentCommandName.equals("MOVE_FROM_SECOND_LZ_TO_SECOND_TZ")) {
+        newStates.add(new ResetCameraValues());
         newStates.add(new SimpleDrive(-10, 0));
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new SimpleDrive(0, 90));
         newStates.add(new SimpleDrive(20, 0));
         newStates.add(new SimpleDrive(0, -90));
@@ -454,11 +457,15 @@ public class CommandList {
     }
 
     if(currentCommandName.equals("MOVE_FROM_SECOND_TZ_TO_SECOND_LOZ")) {
+        newStates.add(new ResetCameraValues());
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
 
     if(currentCommandName.equals("MOVE_FROM_SECOND_LOZ_TO_SECOND_RZ")) {
+        newStates.add(new ResetCameraValues());
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new SimpleDrive(-10, 0));
         newStates.add(new SimpleDrive(0, 90));
         newStates.add(new SimpleDrive(60, 0));
@@ -471,6 +478,8 @@ public class CommandList {
     }
 
     if(currentCommandName.equals("MOVE_FROM_SECOND_RZ_TO_CH2")) {
+        newStates.add(new ResetCameraValues());
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new DriveSonic(10));
         newStates.add(new Reset());
         newStates.add(new Transition());
@@ -479,17 +488,20 @@ public class CommandList {
 
     if(currentCommandName.equals("MOVE_FROM_THIRD_LZ_TO_THIRD_TZ")) {
         newStates.add(new DriveSonic(20));
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new SimpleDrive(0, 90));
         newStates.add(new DriveSonic(50));
         newStates.add(new SimpleDrive(0, -90));
         newStates.add(new SimpleDrive(87, 0));
         newStates.add(new SimpleDrive(0, -90));
-        newStates.add(new SimpleDrive(12, 0));
+        newStates.add(new SimpleDrive(6, 0));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
 
     if(currentCommandName.equals("MOVE_FROM_THIRD_TZ_TO_THIRD_LOZ")) {
+        newStates.add(new ResetCameraValues());
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
@@ -653,6 +665,7 @@ public class CommandList {
         newStates.add(new DriveSonic(20));
         newStates.add(new SimpleDrive(0, -90));
         newStates.add(new AlignSharp(14));
+        
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
@@ -955,7 +968,7 @@ public class CommandList {
 
 
     if(currentCommandName.equals("MOVE_FROM_FIRST_LZ_TO_CON4")) {
-        newStates.add(new SimpleDrive(-4, 0));
+        newStates.add(new SimpleDrive(-8, 0));
         newStates.add(new SimpleDrive(0, 90));
         newStates.add(new AlignSharp(14));
         newStates.add(new Transition());
@@ -1084,6 +1097,7 @@ public class CommandList {
 
     if(currentCommandName.equals("MOVE_FROM_CON1_TO_CH1")) {
         newStates.add(new SimpleDrive(0, -90));
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new DriveSonic(15));
         newStates.add(new SimpleDrive(0, 180));
         newStates.add(new AlignSharp(14));
@@ -1096,6 +1110,7 @@ public class CommandList {
 
     if(currentCommandName.equals("MOVE_FROM_CON1_TO_CH2")) {
         newStates.add(new SimpleDrive(-280, 0));
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new SimpleDrive(0, -90));
         newStates.add(new SimpleDrive(30, 0));
         newStates.add(new SimpleDrive(0, -90));
@@ -1109,6 +1124,7 @@ public class CommandList {
 
     if(currentCommandName.equals("MOVE_FROM_CON1_TO_CH3")) {
         newStates.add(new SimpleDrive(0, 90));
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new DriveSonic(15));
         newStates.add(new SimpleDrive(0, 180));
         newStates.add(new AlignSharp(14));
@@ -1122,6 +1138,7 @@ public class CommandList {
 
     if(currentCommandName.equals("MOVE_FROM_CON2_TO_CH1")) {
         newStates.add(new SimpleDrive(0, 90));
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new DriveSonic(80));
         newStates.add(new Reset());
         newStates.add(new Transition());
@@ -1130,6 +1147,7 @@ public class CommandList {
 
     if(currentCommandName.equals("MOVE_FROM_CON2_TO_CH2")) {
         newStates.add(new SimpleDrive(0, 90));
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new DriveSonic(80));
         newStates.add(new SimpleDrive(0, 90));
         newStates.add(new DriveSonic(75));
@@ -1148,6 +1166,7 @@ public class CommandList {
 
     if(currentCommandName.equals("MOVE_FROM_CON2_TO_CH3")) {
         newStates.add(new SimpleDrive(0, 90));
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new DriveSonic(80));
         newStates.add(new SimpleDrive(0, 90));
         newStates.add(new AlignSharp(14));
@@ -1161,6 +1180,7 @@ public class CommandList {
 
     if(currentCommandName.equals("MOVE_FROM_CON3_TO_CH1")) {
         newStates.add(new SimpleDrive(-60, 0));
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new SimpleDrive(0, -90));
         newStates.add(new SimpleDrive(225, 0));
         newStates.add(new SimpleDrive(0, 90));
@@ -1174,6 +1194,7 @@ public class CommandList {
 
     if(currentCommandName.equals("MOVE_FROM_CON3_TO_CH2")) {
         newStates.add(new SimpleDrive(-90, 0));
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new SimpleDrive(0, 90));
         newStates.add(new AlignSharp(14));
         newStates.add(new SimpleDrive(0, -90));
@@ -1185,6 +1206,7 @@ public class CommandList {
 
     if(currentCommandName.equals("MOVE_FROM_CON3_TO_CH3")) {
         newStates.add(new SimpleDrive(-80, 0));
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new SimpleDrive(0, -90));
         newStates.add(new SimpleDrive(220, 0));
         newStates.add(new SimpleDrive(0, -90));
@@ -1198,6 +1220,8 @@ public class CommandList {
 
 
     if(currentCommandName.equals("MOVE_FROM_CON4_TO_CH1")) {
+        newStates.add(new SimpleDrive(-100, 0));
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new DriveSonic(80));
         newStates.add(new SimpleDrive(0, 90));
         newStates.add(new SimpleDrive(30, 0));
@@ -1212,6 +1236,7 @@ public class CommandList {
 
     if(currentCommandName.equals("MOVE_FROM_CON4_TO_CH2")) {
         newStates.add(new SimpleDrive(-50, 0));
+        newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new SimpleDrive(0, -90));
         newStates.add(new AlignSharp(14));
         newStates.add(new SimpleDrive(0, -90));
@@ -1224,7 +1249,8 @@ public class CommandList {
     if(currentCommandName.equals("MOVE_FROM_CON4_TO_CH3")) {
         newStates.add(new SimpleDrive(0, -90));
         newStates.add(new DriveSonic(80));
-        newStates.add(new Reset());
+        newStates.add(new SetGripRotatePosition("FLOOR"));
+        newStates.add(new Reset()); 
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
@@ -1268,5 +1294,47 @@ public class CommandList {
         newStates.add(new End()); 
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
-    }
+
+    // if(currentCommandName.matches("(.*)_START_(.*)_0")) {
+    //     // newStates.add(new SimpleDrive(45, 0));
+    //     newStates.add(new Transition());
+    //     StateMachine.states.addAll(StateMachine.index + 1, newStates);
+
+    // }
+    // if(currentCommandName.matches("MOVE_FROM_CH2_(.*)_0")) {
+    //     newStates.add(new Transition());
+    //     StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    // }
+    // if(currentCommandName.equals("RESET_FRUIT_0")) {
+    //     newStates.add(new SimpleDrive(-50, 0));     
+    //     newStates.add(new SetGrabPosition("OPEN", true));
+    //     newStates.add(new Transition());
+    //     StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    // }
+
+    // if(currentCommandName.matches("MOVE_FROM_CH(.*)_0")) {
+    //     newStates.add(new ResetCameraValues());
+    //     newStates.add(new SimpleDrive(50, 0));
+    //     newStates.add(new Transition());
+    //     StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    // }
+
+    // if(currentCommandName.matches("MOVE_FROM_CON(.*)_TO_CH(.*)_0")) {
+    //     newStates.add(new Transition());
+    //     StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    // }
+
+    // if(currentCommandName.matches("MOVE_FROM_(.*)Z_TO_CON(.*)_0")) {
+    //     newStates.add(new ResetCameraValues());
+    //     newStates.add(new Transition());
+    //     StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    // }
+
+    // if(currentCommandName.matches("MOVE_FROM_(.*)Z_0")) {
+    //     newStates.add(new Transition());
+    //     StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    // }
+
+    
+}
 }

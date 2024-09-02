@@ -52,7 +52,8 @@ public class AutoStart implements IState {
     public void initialize() {
         Main.sensorsMap.put("camTask", CAM_TASK);
         Main.camMap.put("currentColorIndex", 0.0);
-        Main.stringMap.put("detectedFruit", "none");
+        // Main.stringMap.put("detectedFruit", "none");
+        Main.switchMap.put("targetColorFound", false);
 
         Main.motorControllerMap.put("servoGripRotate", GRIP_ROTATE);
         Main.motorControllerMap.put("servoGrab", Constants.GRAB_OPEN);
@@ -69,7 +70,6 @@ public class AutoStart implements IState {
     public void execute() {
 
         if(Main.switchMap.get("targetColorFound")) {
-            Main.sensorsMap.put("camTask", 2.0);
             if(treeMode) {
         
                 if (branchNumber == 1 && !treeEnd ) {
@@ -103,13 +103,15 @@ public class AutoStart implements IState {
                 }
             } else {
                 Main.sensorsMap.put("camTask", 1.0);
-                    
+
                 if(Main.camMap.get("targetFound") == 1.0) {
+                    SmartDashboard.putNumber("perperper", 1); 
                     if(treeMode) {
                         newStates.add(new AutoRotate());
                         StateMachine.states.addAll(StateMachine.index + 1, newStates);
                         stateEnd = true;  
                     } else {
+                        SmartDashboard.putNumber("perperper", 2); 
                         Main.sensorsMap.put("camTask", 2.0);
                         newStates.add(new AutoRotate());
                         StateMachine.states.addAll(StateMachine.index + 1, newStates);
@@ -125,7 +127,7 @@ public class AutoStart implements IState {
             }
             SmartDashboard.putBoolean("flagCheck", flag);
         } else {
-            if(StateMachine.iterationTime > 5) {
+            if(StateMachine.iterationTime > 10) {
                 newStates.add(new AutoEnd());
                 StateMachine.states.addAll(StateMachine.index + 1, newStates);
                 stateEnd = true;

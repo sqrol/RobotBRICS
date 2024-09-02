@@ -56,7 +56,7 @@ public final class Constants
     public static final double GRAB_SMALL_APPLE                       = 79.0;
     public static final double GRAB_PEAR                              = 69.0;
 
-    public static final double GRIP_ROTATE_FLOOR                      = 140.0;
+    public static final double GRIP_ROTATE_FLOOR                      = 141.0;
     public static final double GRIP_ROTATE_DROP                       = 82.0;
     public static final double GRIP_ROTATE_CHECK_ZONE                 = 131.0;
 

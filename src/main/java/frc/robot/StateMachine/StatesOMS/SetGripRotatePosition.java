@@ -1,5 +1,6 @@
 package frc.robot.StateMachine.StatesOMS;
 
+import frc.robot.Constants;
 import frc.robot.Main;
 import frc.robot.StateMachine.CoreEngine.IState;
 import frc.robot.StateMachine.CoreEngine.StateMachine;
@@ -22,7 +23,7 @@ public class SetGripRotatePosition implements IState{
     public void execute() {
         switch(position) {
             case "FLOOR":
-                Main.motorControllerMap.put("servoGripRotate", 141.0);
+                Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_FLOOR);
                 break;
             case "BRANCH":
                 Main.motorControllerMap.put("servoGripRotate", 20.0);
@@ -46,6 +47,6 @@ public class SetGripRotatePosition implements IState{
 
     @Override
     public boolean isFinished() {
-        return StateMachine.iterationTime > 0.33;
+        return true;
     }
 }

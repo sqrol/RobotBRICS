@@ -3,6 +3,7 @@ package frc.robot.StateMachine.StatesAutoOMS;
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Main;
 import frc.robot.StateMachine.CoreEngine.IState;
 import frc.robot.StateMachine.CoreEngine.StateMachine;
@@ -26,13 +27,13 @@ public class AutoGlide implements IState {
     private boolean glideStop = false;
     private boolean keepTrack = true;
     
-    private int camMiddleForGrab = 15;
+    private int camMiddleForGrab = 25;
     
     private static final double[][] speedForGlideServo = { { 0, 1, 4, 10, 20, 40, 60, 80, 100 }, { 0, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15} };
 
     public AutoGlide() {
         flag = false; 
-        GRIP_ROTATE = 141.0;
+        GRIP_ROTATE = Constants.GRIP_ROTATE_FLOOR;
     }
 
     public AutoGlide(boolean treeMode, int branchNumber) {
@@ -112,7 +113,7 @@ public class AutoGlide implements IState {
         //     stateEnd = true;
         // }
 
-        if (glideStop && !treeMode && StateMachine.iterationTime > 2) {
+        if ((glideStop && !treeMode && StateMachine.iterationTime > 2)) {
             SmartDashboard.putNumber("AUTOGLIDE CHECK", 333);
             newStates.add(new AutoGrab()); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
