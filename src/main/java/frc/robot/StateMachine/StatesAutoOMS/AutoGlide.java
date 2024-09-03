@@ -15,7 +15,7 @@ public class AutoGlide implements IState {
     private double fruitPosY = 0;
     
     private int branchNumber = 0;
-    private final int MAX_GLIDE_POS = 25;
+    private final int MAX_GLIDE_POS = 30;
 
     private double glideServoSpeed, GRIP_ROTATE = 0; 
     

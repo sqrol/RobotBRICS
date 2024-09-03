@@ -36,7 +36,7 @@ public class AutoStart implements IState {
     
     public AutoStart() {
         this.treeMode = false;
-        GRIP_ROTATE = 131.0;
+        GRIP_ROTATE = Constants.GRIP_ROTATE_CHECK_ZONE;
         CAM_TASK = 10.0;
     }
 
@@ -127,7 +127,7 @@ public class AutoStart implements IState {
             }
             SmartDashboard.putBoolean("flagCheck", flag);
         } else {
-            if(StateMachine.iterationTime > 10) {
+            if(StateMachine.iterationTime > 5) {
                 newStates.add(new AutoEnd());
                 StateMachine.states.addAll(StateMachine.index + 1, newStates);
                 stateEnd = true;

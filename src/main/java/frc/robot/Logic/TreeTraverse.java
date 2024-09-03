@@ -31,7 +31,7 @@ public class TreeTraverse {
         }
     };
 
-    private static boolean fruitFind = true;
+    private static boolean fruitFind = false;
 
     // Для setter и getter для чекпойнта
     private static String lastCheckpoint = "";
@@ -150,8 +150,9 @@ public class TreeTraverse {
                 currentTreeNumber = lastCurrentTreeNumber;
 
                 // Тут нужно сбросить переменные с нахождением и название фрукта
-                Main.stringMap.put("detectedFruit", ""); // findFruitName == "" и fruitFind == false
-
+                Main.stringMap.put("detectedFruit", "none"); 
+                findFruitName = "none";
+                fruitFind = false;
                 removal = false;
                 autoGrabCheck = false;
                 currentTreeZoneSteps = 0;
@@ -211,7 +212,7 @@ public class TreeTraverse {
     private String choosingBestZoneForCheck(final String currentZoneName, final String zoneName) {
         String out = "";
         if (zoneName.equals("FIRST")) {
-            switch (currentZoneName) {
+            switch(currentZoneName) {
                 case "LZ":
                 out = "CH1";
                 break;
@@ -233,7 +234,7 @@ public class TreeTraverse {
             }
         }
         if (zoneName.equals("SECOND")) {
-            switch (currentZoneName) {
+            switch(currentZoneName) {
                 case "LZ":
                 out = "CH2";
                 break;
@@ -255,7 +256,7 @@ public class TreeTraverse {
             }
         }
         if (zoneName.equals("THIRD")) {
-            switch (currentZoneName) {
+            switch(currentZoneName) {
                 case "LZ":
                 out = "CH2";
                 break;

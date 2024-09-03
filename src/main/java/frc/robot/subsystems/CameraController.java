@@ -535,20 +535,20 @@ public class CameraController implements Runnable {
         Mat square = cropSquareFromCenter(mask, size);
         
         thresh.putFrame(square);
-        if(Viscad.ImageTrueArea(square) < 10000 && Viscad.ImageTrueArea(square) >= 100 && colorIndex == 3.0) {
+        if(Viscad.ImageTrueArea(square) < 14000 && Viscad.ImageTrueArea(square) >= 100 && colorIndex == 3.0) {
             Main.stringMap.put("detectedFruit", Constants.SMALL_RED_APPLE);
             Main.camMap.put("targetFound", 1.0);
         } else if(Viscad.ImageTrueArea(square) >= 20000 && colorIndex == 3.0) {
             Main.stringMap.put("detectedFruit", Constants.BIG_RED_APPLE);
-            Main.camMap.put("targetFound", 1.0); 
+            Main.camMap.put("targetFound", 1.0);
         } else if(colorIndex == 2.0 && Viscad.ImageTrueArea(square) > 15000) {
             Main.stringMap.put("detectedFruit", Constants.YELLOW_PEAR);
-            Main.camMap.put("targetFound", 1.0); 
+            Main.camMap.put("targetFound", 1.0);
         } else if(colorIndex == 1.0 && Viscad.ImageTrueArea(square) > 100){
             Main.stringMap.put("detectedFruit", Constants.SMALL_ROTTEN_APPLE);
             Main.camMap.put("targetFound", 1.0);
         } else {
-            Main.camMap.put("targetFound", 0.0); 
+            Main.camMap.put("targetFound", 0.0);
             Main.stringMap.put("detectedFruit", "none");
         }
         SmartDashboard.putNumber("grippedFruitImageArea", Viscad.ImageTrueArea(square));

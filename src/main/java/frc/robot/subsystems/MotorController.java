@@ -456,6 +456,7 @@ public class MotorController implements Runnable {
 
         if(inSpeed < 0 && Main.switchMap.get("limitSwitchGlide")) {
             glideSpeed = 0;
+            currentGlidePosition = 0;
         }
 
         if (inSpeed > 0.0) {

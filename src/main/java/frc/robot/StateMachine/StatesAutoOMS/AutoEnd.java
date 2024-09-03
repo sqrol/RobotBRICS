@@ -18,7 +18,10 @@ public class AutoEnd implements IState {
 
     @Override
     public void initialize() {
-        Main.sensorsMap.put("camTask", 11.0);
+        if(Main.camMap.get("targetFound") == 1.0) {
+            Main.sensorsMap.put("camTask", 11.0);
+        }
+
         Main.switchMap.put("liftStop", false);
         Main.switchMap.put("rotateStop", false);
         Main.switchMap.put("glideStop", false);        
@@ -62,22 +65,19 @@ public class AutoEnd implements IState {
                 }
             }
         }
-
-        
-        // if(!Main.stringMap.get("detectedFruit").equals("none")) {
-        //     Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_DROP);
-        //     Main.sensorsMap.put("camTask", 0.0);
-        // } else {
-        //     Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_FLOOR);
-        //     Main.sensorsMap.put("camTask", 0.0);
-        // }
-
     }
 
     @Override
     public void finilize() {
-        
-        // Main.switchMap.put("targetColorFound", false);
+        Main.sensorsMap.put("camTask", 0.0);
+        Main.camMap.put("targetFound", 0.0);
+        if(!Main.stringMap.get("detectedFruit").equals("none")) {
+            Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_DROP);
+            Main.sensorsMap.put("camTask", 0.0);
+        } else {
+            Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_FLOOR);
+            Main.sensorsMap.put("camTask", 0.0);
+        }
     }
 
     @Override

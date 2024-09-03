@@ -207,7 +207,7 @@ public class CommandList {
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
 
-    if(currentCommandName.equals("MOVE_FROM_CH1_TO_FRIST_RZ")) {
+    if(currentCommandName.equals("MOVE_FROM_CH1_TO_FIRST_RZ")) {
         newStates.add(new SimpleDrive(0, 90));
         newStates.add(new DriveSonic(40));
         newStates.add(new SimpleDrive(0, -90));
@@ -312,10 +312,11 @@ public class CommandList {
     if(currentCommandName.equals("MOVE_FROM_CH2_TO_SECOND_LZ")) {
         newStates.add(new DriveSonic(60));
         newStates.add(new SimpleDrive(0, -90));
-        newStates.add(new DriveSonic(53 ));
+        newStates.add(new DriveSonic(53));
         newStates.add(new SimpleDrive(0, 90));
         newStates.add(new AlignSharp(23));
         newStates.add(new SimpleDrive(0, 90));
+        newStates.add(new SimpleDrive(5, 0));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
@@ -343,7 +344,27 @@ public class CommandList {
     }
 
     if(currentCommandName.equals("MOVE_FROM_CH2_TO_SECOND_RZ")) {
-        newStates.add(new DriveSonic(70));
+        newStates.add(new DriveSonic(67));
+        newStates.add(new Transition());
+        StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    }
+
+    if(currentCommandName.equals("MOVE_FROM_CH2_TO_THIRD_LOZ")) {
+        newStates.add(new DriveSonic(50));
+        newStates.add(new SimpleDrive(0, -90));
+        newStates.add(new DriveSonic(80));
+        newStates.add(new SimpleDrive(10, 0));
+        newStates.add(new SimpleDrive(0, -90));
+        newStates.add(new Transition());
+        StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    }
+
+    if(currentCommandName.equals("MOVE_FROM_CH2_TO_THIRD_TZ")) {
+        newStates.add(new DriveSonic(50));
+        newStates.add(new SimpleDrive(0, -90));
+        newStates.add(new DriveSonic(80));
+        newStates.add(new SimpleDrive(10, 0));
+        newStates.add(new SimpleDrive(0, -90));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
@@ -472,7 +493,7 @@ public class CommandList {
         newStates.add(new SimpleDrive(0, -90));
         newStates.add(new AlignSharp(14));
         newStates.add(new SimpleDrive(0, -90));
-        newStates.add(new DriveSonic(70));
+        newStates.add(new DriveSonic(67));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
@@ -532,6 +553,7 @@ public class CommandList {
     }
 
     if(currentCommandName.equals("MOVE_FROM_THIRD_RZ_TO_CH3")) {
+        newStates.add(new SimpleDrive(-150, 0));
         newStates.add(new DriveSonic(80));
         newStates.add(new Reset());
         newStates.add(new Transition());
@@ -1112,7 +1134,7 @@ public class CommandList {
         newStates.add(new SimpleDrive(-280, 0));
         newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new SimpleDrive(0, -90));
-        newStates.add(new SimpleDrive(30, 0));
+        newStates.add(new SimpleDrive(18, 0));
         newStates.add(new SimpleDrive(0, -90));
         newStates.add(new AlignSharp(14));
         newStates.add(new SimpleDrive(0, -90));
@@ -1222,9 +1244,8 @@ public class CommandList {
     if(currentCommandName.equals("MOVE_FROM_CON4_TO_CH1")) {
         newStates.add(new SimpleDrive(-100, 0));
         newStates.add(new SetGripRotatePosition("FLOOR"));
-        newStates.add(new DriveSonic(80));
         newStates.add(new SimpleDrive(0, 90));
-        newStates.add(new SimpleDrive(30, 0));
+        newStates.add(new SimpleDrive(20, 0));
         newStates.add(new SimpleDrive(0, 90));
         newStates.add(new AlignSharp(14));
         newStates.add(new SimpleDrive(0, 90));
@@ -1286,6 +1307,14 @@ public class CommandList {
         newStates.add(new SimpleDrive(-70, 0));
         newStates.add(new SimpleDrive(0, -90));
         newStates.add(new SimpleDrive(75, 0));
+        newStates.add(new End());
+        StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    }
+
+    if(currentCommandName.equals("MOVE_FROM_CH3_TO_FINISH")) {
+        newStates.add(new SimpleDrive(87, 0));
+        newStates.add(new SimpleDrive(0, -90));
+        newStates.add(new SimpleDrive(78, 0));
         newStates.add(new End());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
