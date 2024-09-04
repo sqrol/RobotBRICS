@@ -98,7 +98,7 @@ public class AutoGrab implements IState {
         if(!flag) {
 
             if(index == 1) {
-                Main.motorControllerMap.put("targetLiftPos", 77.0);
+                Main.motorControllerMap.put("targetLiftPos", 78.0);
                 if(Main.switchMap.get("liftStop") && StateMachine.iterationTime > 2) {
                     index++;
                 }

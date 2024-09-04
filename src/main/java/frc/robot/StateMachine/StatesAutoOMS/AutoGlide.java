@@ -25,7 +25,6 @@ public class AutoGlide implements IState {
 
     private boolean treeEnd = false;
     private boolean glideStop = false;
-    private boolean keepTrack = true;
     
     private int camMiddleForGrab = 25;
     
@@ -39,7 +38,11 @@ public class AutoGlide implements IState {
     public AutoGlide(boolean treeMode, int branchNumber) {
         this.treeMode = treeMode;
         this.branchNumber = branchNumber;
-        GRIP_ROTATE = 28.0;
+        if(branchNumber == 2 || branchNumber == 3) {
+            GRIP_ROTATE = Constants.GRIP_ROTATE_FLOOR;
+        } else {
+            GRIP_ROTATE = Constants.GRIP_ROTATE_DROP;
+        }
     }
 
     @Override
@@ -58,16 +61,21 @@ public class AutoGlide implements IState {
     public void execute() {
         
         if(treeMode) {
-                
-            SmartDashboard.putBoolean("GLIDE STOP AUTO", glideStop);
+
             Main.sensorsMap.put("camTask", 2.0);
-            Main.motorControllerMap.put("glideMode", 0.0);
+            
+            fruitPosY = Main.camMap.get("fruitPosY");
+
             if(branchNumber == 1 && !treeEnd) {
-                Main.sensorsMap.put("targetGlidePos", 21.0);
+                Main.motorControllerMap.put("glideMode", 0.0);
+                Main.motorControllerMap.put("targetLiftPos", 3.0);
+                Main.sensorsMap.put("targetGlidePos", 19.0);
                 treeEnd = Main.switchMap.get("glideStop") && StateMachine.iterationTime > 4;
             }
 
             if(branchNumber == 2 && !treeEnd) {
+                // добавить сюда выдвижение по Y !!!!!!
+                Main.motorControllerMap.put("targetLiftPos", 20.0);
                 Main.sensorsMap.put("targetGlidePos", 21.0);
                 treeEnd = Main.switchMap.get("glideStop") && StateMachine.iterationTime > 4;
             }
@@ -94,7 +102,7 @@ public class AutoGlide implements IState {
             }
 
             Main.motorControllerMap.put("setGlideSpeed", glideServoSpeed);
-            glideStop = Functions.BooleanInRange(camMiddleForGrab - fruitPosY, -2, 2);
+            glideStop = Functions.BooleanInRange(camMiddleForGrab - fruitPosY, -2, 2) || Main.switchMap.get("stopAutoGlide");
 
             SmartDashboard.putBoolean("glideStop", glideStop);
         }

@@ -241,19 +241,6 @@ public class CameraController implements Runnable {
         Mat mask = createMask(hsvImage, currentColor);
 
         Mat square = cropSquareFromCenter(mask, size);
-
-        if(Viscad.ImageTrueArea(square) > 1000) {
-            double startTime = Timer.getFPGATimestamp();
-        } else {
-            startTime = 0;
-        }
-
-        if(Timer.getFPGATimestamp() - startTime > 2.5) {
-            Main.switchMap.put("stopAutoGlide", true);
-        } else {
-            startTime = 0;
-            Main.switchMap.put("stopAutoGlide", false);
-        }
     
         SmartDashboard.putNumber("ImageAreaGlideSquare", Viscad.ImageTrueArea(square));
 
@@ -265,6 +252,12 @@ public class CameraController implements Runnable {
             Main.camMap.put("currentCenterY", (double) firstRect.y);
         } else {
             Main.camMap.put("currentCenterY", 0.0);
+        }
+
+        if(Viscad.ImageTrueArea(square) > 6200) {
+            Main.switchMap.put("stopAutoGlide", true);
+        } else {
+            Main.switchMap.put("stopAutoGlide", false);
         }
 
         outRect.putFrame(square);
@@ -492,6 +485,7 @@ public class CameraController implements Runnable {
         if(highestFruit.x != 0 && highestFruit.y != 0 && Viscad.ImageTrueArea(mask) > 100) {
             Main.camMap.put("targetFound", 1.0);
             Main.camMap.put("currentCenterX", highestFruit.x);
+            Main.camMap.put("currentCenterY", highestFruit.y);
         } else {
             Main.camMap.put("targetFound", 0.0);
             Main.camMap.put("currentCenterX", 0.0);

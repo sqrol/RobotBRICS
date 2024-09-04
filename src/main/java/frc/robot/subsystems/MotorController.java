@@ -6,7 +6,6 @@ import com.studica.frc.TitanQuadEncoder;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.MotorSafety;
 import edu.wpi.first.wpilibj.Servo;
 import frc.robot.Constants;
 import frc.robot.Main;
@@ -242,7 +241,9 @@ public class MotorController implements Runnable {
 
         if (Main.switchMap.get("initLift")) {
             if (Main.switchMap.get("limitSwitchLift")) {
+                targetPosition = 0.0;
                 outLiftSpeed = 0.0;
+                liftStop = true;
                 ENC_LIFT.reset();
             } else {
                 outLiftSpeed = 60.0; 

@@ -2,13 +2,25 @@ package frc.robot.Logic;
 
 import java.util.HashMap;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Main;
 
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
+import java.util.logging.FileHandler;
+import java.util.logging.ConsoleHandler;
+
 public class TreeTraverse {
 
-    private static final String[] TREE_ZONE_NAMES = {"LZ", "TZ", "LOZ", "RZ"};
-    private static final String[] TREE_NUMBER = {"FIRST", "SECOND", "THIRD"};
+    private static final String[] TREE_ZONE_NAMES = { "LZ", "LOZ", "TZ", "RZ" };
+    private static final String[] TREE_NUMBER = { "FIRST", "SECOND", "THIRD" };
 
     private final HashMap<String, String> containersForFruits = new HashMap<String, String>() {
         {
@@ -57,15 +69,36 @@ public class TreeTraverse {
     private static boolean testForDebug = false;
     private static boolean lastStepDel = false;
 
+    private static String outCommand;
+
+    private static Logger LOGGER;
+    private static boolean createLogger = true;
+
+    private static FileHandler handler;
+
     public String execute() {
-        String outCommand = "";
+        
+        
+        outCommand = "";
         if (firstCall){
             outCommand = initializeFirstCommand();
             firstCall = false;
         } else {
             outCommand = commandBuildProcess();
         }
-        // System.out.println(outCommand);
+
+        if(createLogger) {
+            try(FileInputStream ins = new FileInputStream("C:/Users/asdfc/OneDrive/Рабочий стол/RobotBRICS/src/main/resources/log.txt")){ 
+                LogManager.getLogManager().readConfiguration(ins);
+                LOGGER = Logger.getLogger(Main.class.getName());
+                LOGGER.log(Level.INFO, outCommand);
+            }catch (Exception ignore){
+                ignore.printStackTrace();
+            }
+            createLogger = false;
+        }
+        
+        
         return outCommand;
     }
 
@@ -160,7 +193,7 @@ public class TreeTraverse {
                 currentTreeNumber = lastCurrentTreeNumber;
 
                 // Тут нужно сбросить переменные с нахождением и название фрукта
-//                Main.stringMap.put("detectedFruit", "none");
+                Main.stringMap.put("detectedFruit", "none");
                 lastStepDel = true;
                 findFruitName = "none";
                 fruitFind = false;
@@ -199,7 +232,6 @@ public class TreeTraverse {
                         setLastTreeZone(currentTreeName + "_" + currentTreeZoneName);
                         currentTreeZoneSteps = 0;
                         treeNumberChange = false;
-
                     }
                     // !!!
                 }

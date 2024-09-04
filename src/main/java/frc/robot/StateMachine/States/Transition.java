@@ -9,23 +9,20 @@ import frc.robot.StateMachine.CoreEngine.StateMachine;
 public class Transition implements IState {
 
     private CommandList cmdList;
-    private boolean flag = true; 
-    private static int count = 0; 
+    private boolean flag = true;
+    private static int count = 0;
 
-    private String[] cmd = { 
-        "", 
-        "", 
-        ""};
-
-    private Boolean end = false; 
+    private Boolean end = false;
 
     private boolean autonomousMode = true;
-    
+
     @Override
     public void initialize() {
         cmdList = new CommandList();
-        flag = true; 
-        end = false; 
+        flag = true;
+        end = false;
+
+        
     }
 
     @Override
@@ -41,6 +38,7 @@ public class Transition implements IState {
 
         if (flag && autonomousMode) {
             String command = Main.traverse.execute();
+            
             SmartDashboard.putString("currentCommand", command);
             cmdList.setCurrentCommand(command);
             cmdList.addCommand();

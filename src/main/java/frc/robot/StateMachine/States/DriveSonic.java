@@ -12,8 +12,8 @@ public class DriveSonic implements IState {
 
     private boolean finishX, finishZ = false;
 
-    private double[][] sonicArray = { { 0, 1, 2.5, 5, 10, 12, 14, 18, 35, 50, 100}, 
-                                      { 0, 3, 10, 12, 18, 25, 35, 50, 75, 85, 95} };
+    private double[][] sonicArray = { { 0, 1, 2.5, 5, 10, 14, 18, 35, 50, 100 }, 
+                                      { 0, 3, 10, 12, 18, 35, 50, 65, 78, 80 } };
 
     private static double[][] degFunction = { { 0.1, 2, 4, 8, 12, 15, 20, 25 },
                                                { 5, 9, 11, 18, 24, 26, 33, 35 } };

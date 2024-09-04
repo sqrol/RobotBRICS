@@ -26,6 +26,12 @@ public class CommandList {
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
 
+    if(currentCommandName.equals("AUTO_GRAB_TREE")) {
+        newStates.add(new AutoStart(true, 1));
+        newStates.add(new Transition());
+        StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    }
+
     if(currentCommandName.equals("RESET_FRUIT")) {
         newStates.add(new SetGrabPosition("OPEN", true));
         newStates.add(new Transition());
@@ -422,7 +428,7 @@ public class CommandList {
 
 // ------------------------------ ПРОМЕЖУТОЧНЫЕ МЕЖДУ ЗОНАМИ ДЕРЕВА ------------------------------
 
-    if(currentCommandName.equals("MOVE_FROM_FIRST_LZ_TO_FIRST_TZ")) {
+    if(currentCommandName.equals("MOVE_FROM_FIRST_LZ_TO_FIRST_LOZ")) {
         newStates.add(new ResetCameraValues());
         newStates.add(new SimpleDrive(-5, 0));
         newStates.add(new SimpleDrive(0, 90));
@@ -435,13 +441,13 @@ public class CommandList {
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
 
-    if(currentCommandName.equals("MOVE_FROM_FIRST_TZ_TO_FIRST_LOZ")) {
+    if(currentCommandName.equals("MOVE_FROM_FIRST_LOZ_TO_FIRST_TZ")) {
         newStates.add(new ResetCameraValues());
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
 
-    if(currentCommandName.equals("MOVE_FROM_FIRST_LOZ_TO_FIRST_RZ")) {
+    if(currentCommandName.equals("MOVE_FROM_FIRST_TZ_TO_FIRST_RZ")) {
         newStates.add(new ResetCameraValues());
         newStates.add(new SimpleDrive(-10, 0));
         newStates.add(new SimpleDrive(0, 90));
@@ -465,7 +471,7 @@ public class CommandList {
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
 
-    if(currentCommandName.equals("MOVE_FROM_SECOND_LZ_TO_SECOND_TZ")) {
+    if(currentCommandName.equals("MOVE_FROM_SECOND_LZ_TO_SECOND_LOZ")) {
         newStates.add(new ResetCameraValues());
         newStates.add(new SimpleDrive(-10, 0));
         newStates.add(new SetGripRotatePosition("FLOOR"));
@@ -477,14 +483,14 @@ public class CommandList {
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
 
-    if(currentCommandName.equals("MOVE_FROM_SECOND_TZ_TO_SECOND_LOZ")) {
+    if(currentCommandName.equals("MOVE_FROM_SECOND_LOZ_TO_SECOND_TZ")) {
         newStates.add(new ResetCameraValues());
         newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
 
-    if(currentCommandName.equals("MOVE_FROM_SECOND_LOZ_TO_SECOND_RZ")) {
+    if(currentCommandName.equals("MOVE_FROM_SECOND_TZ_TO_SECOND_RZ")) {
         newStates.add(new ResetCameraValues());
         newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new SimpleDrive(-10, 0));
@@ -507,7 +513,7 @@ public class CommandList {
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
 
-    if(currentCommandName.equals("MOVE_FROM_THIRD_LZ_TO_THIRD_TZ")) {
+    if(currentCommandName.equals("MOVE_FROM_THIRD_LZ_TO_THIRD_LOZ")) {
         newStates.add(new DriveSonic(20));
         newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new SimpleDrive(0, 90));
@@ -520,14 +526,14 @@ public class CommandList {
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
 
-    if(currentCommandName.equals("MOVE_FROM_THIRD_TZ_TO_THIRD_LOZ")) {
+    if(currentCommandName.equals("MOVE_FROM_THIRD_LOZ_TO_THIRD_TZ")) {
         newStates.add(new ResetCameraValues());
         newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
 
-    if(currentCommandName.equals("MOVE_FROM_THIRD_LOZ_TO_THIRD_RZ")) {
+    if(currentCommandName.equals("MOVE_FROM_THIRD_TZ_TO_THIRD_RZ")) {
         newStates.add(new SimpleDrive(-15, 0));
         newStates.add(new SimpleDrive(0, 90));
         newStates.add(new SimpleDrive(75, 0));
