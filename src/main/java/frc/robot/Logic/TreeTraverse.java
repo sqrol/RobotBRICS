@@ -54,6 +54,9 @@ public class TreeTraverse {
 
     private static boolean cycleWork = true;
 
+    private static boolean testForDebug = false;
+    private static boolean lastStepDel = false;
+
     public String execute() {
         String outCommand = "";
         if (firstCall){
@@ -92,8 +95,8 @@ public class TreeTraverse {
         if (currentTreeNumber < TREE_NUMBER.length) {
             if (currentTreeZoneNumber < TREE_ZONE_NAMES.length) {
                 if (currentTreeZoneSteps <= 7) {
-                    findFruitName = Main.stringMap.get("detectedFruit");
-                    fruitFind = !Main.stringMap.get("detectedFruit").equals("none");
+                   findFruitName = Main.stringMap.get("detectedFruit");
+                   fruitFind = !Main.stringMap.get("detectedFruit").equals("none");
 
                     outCommand = createPathForScanning(currentTreeNumber, currentTreeZoneNumber, currentTreeZoneSteps);
 
@@ -108,19 +111,26 @@ public class TreeTraverse {
 
                 // Сброс задач этого блока
                 if (currentTreeZoneNumber >= TREE_ZONE_NAMES.length) {
+                    treeNumberChange = true;
                     resetTreeZone();
                 }
             }
+
         } else {
             outCommand = processEnd(stepsForEnd);
             stepsForEnd++;
         }
+
+        // // Debug
+        // if (outCommand.equals("MOVE_FROM_SECOND_LOZ_TO_SECOND_RZ") || outCommand.equals("MOVE_FROM_CH2_TO_SECOND_RZ")) {
+        //     testForDebug = true;
+        // }
 //
-        if (outCommand.equals("none") || outCommand.equals("none1")) {
-            System.out.println("currentTreeNumber: " + currentTreeNumber);
-            System.out.println("currentTreeZoneNumber: " + currentTreeZoneNumber);
-            System.out.println("currentTreeZoneSteps: " + currentTreeZoneSteps);
-        }
+        // if (outCommand.equals("none") || outCommand.equals("")) {
+        //     System.out.println("currentTreeNumber: " + currentTreeNumber);
+        //     System.out.println("currentTreeZoneNumber: " + currentTreeZoneNumber);
+        //     System.out.println("currentTreeZoneSteps: " + currentTreeZoneSteps);
+        // }
 
 
         return outCommand;
@@ -150,10 +160,12 @@ public class TreeTraverse {
                 currentTreeNumber = lastCurrentTreeNumber;
 
                 // Тут нужно сбросить переменные с нахождением и название фрукта
-                Main.stringMap.put("detectedFruit", "none"); 
+//                Main.stringMap.put("detectedFruit", "none");
+                lastStepDel = true;
                 findFruitName = "none";
                 fruitFind = false;
                 removal = false;
+                testForDebug = false;
                 autoGrabCheck = false;
                 currentTreeZoneSteps = 0;
             }
@@ -165,14 +177,35 @@ public class TreeTraverse {
                     setLastCheckpoint(choosingBestZoneForCheck(currentTreeZoneName, currentTreeName));
                 }
                 if (currentTreeZoneSteps2 == 1) { // Получаем текущую зону и от него возвращаемся на чекпоинт
-                    outCommand = "MOVE_FROM_" + getLastCheckpoint() + "_TO_" + currentTreeName + "_" + currentTreeZoneName;
-                    setLastTreeZone(currentTreeName + "_" + currentTreeZoneName);
-                    currentTreeZoneSteps = 0;
-                    treeNumberChange = false;
+                    if (lastStepDel) { // Тут тоже вызывается AutoGrab так что имей ввиду
+                        outCommand = getGrabModeInArray(currentTreeZoneName);
+
+                        // Запоминаем номера на котором мы ушли отсюда
+                        lastCurrentTreeNumber = currentTreeNumber2;
+                        lastCurrentTreeZoneNumber = currentTreeZoneNumber2;
+
+                        // Узнаем следующий шаг будет следующее дерево
+                        treeNumberChange = currentTreeZoneNumber >= TREE_ZONE_NAMES.length - 1;
+                        autoGrabCheck = true;
+                        resetSteps = true;
+                        lastStepDel = false;
+
+                        if (testForDebug) {
+                            findFruitName = "SmallRedApple";
+                            fruitFind = true;
+                        }
+                    } else {
+                        outCommand = "MOVE_FROM_" + getLastCheckpoint() + "_TO_" + currentTreeName + "_" + currentTreeZoneName;
+                        setLastTreeZone(currentTreeName + "_" + currentTreeZoneName);
+                        currentTreeZoneSteps = 0;
+                        treeNumberChange = false;
+
+                    }
+                    // !!!
                 }
             } else {
                 if (currentTreeZoneSteps2 == 0) {
-                    if (cycleWork) {
+                    if (cycleWork) { // Переход с первого старта к работе
                         outCommand = "MOVE_FROM_" + getLastCheckpoint()+ "_TO_" + currentTreeName + "_" + currentTreeZoneName;
                         setLastTreeZone(currentTreeName + "_" + currentTreeZoneName);
                         cycleWork = false;
@@ -192,6 +225,17 @@ public class TreeTraverse {
                     treeNumberChange = currentTreeZoneNumber >= TREE_ZONE_NAMES.length - 1;
                     autoGrabCheck = true;
                     resetSteps = true;
+
+//                    if (treeNumberChange) {
+//                      if (currentTreeNumber2 == TREE_NUMBER.length - 1) {
+//                          currentTreeZoneNumber = 0;
+//                      }
+//                    }
+
+                    if (testForDebug) {
+                        findFruitName = "SmallRedApple";
+                        fruitFind = true;
+                    }
                 }
             }
         }
@@ -199,82 +243,82 @@ public class TreeTraverse {
         return outCommand;
     }
 
-    private void resetStepsZone() {
+    private static void resetStepsZone() {
         currentTreeZoneSteps = 0;
         currentTreeZoneNumber++;
     }
 
-    private void resetTreeZone() {
+    private static void resetTreeZone() {
         currentTreeZoneNumber = 0;
         currentTreeNumber++;
     }
 
-    private String choosingBestZoneForCheck(final String currentZoneName, final String zoneName) {
+    private static String choosingBestZoneForCheck(final String currentZoneName, final String zoneName) {
         String out = "";
         if (zoneName.equals("FIRST")) {
             switch(currentZoneName) {
                 case "LZ":
-                out = "CH1";
-                break;
-            case "RZ":
-                out = "CH1";
-                break;
-            case "LOZ":
-                out = "CH1";
-                break;
-            case "TZ":
-                out = "CH1";
-                break;
-            case "START":
-                out = "CH1";
-                break;
-            default:
-                out = "null";
-                break;
+                    out = "CH1";
+                    break;
+                case "RZ":
+                    out = "CH1";
+                    break;
+                case "LOZ":
+                    out = "CH1";
+                    break;
+                case "TZ":
+                    out = "CH1";
+                    break;
+                case "START":
+                    out = "CH1";
+                    break;
+                default:
+                    out = "null";
+                    break;
             }
         }
         if (zoneName.equals("SECOND")) {
             switch(currentZoneName) {
                 case "LZ":
-                out = "CH2";
-                break;
-            case "RZ":
-                out = "CH2";
-                break;
-            case "LOZ":
-                out = "CH2";
-                break;
-            case "TZ":
-                out = "CH2";
-                break;
-            case "START":
-                out = "CH2";
-                break;
-            default:
-                out = "null";
-                break;
+                    out = "CH2";
+                    break;
+                case "RZ":
+                    out = "CH2";
+                    break;
+                case "LOZ":
+                    out = "CH2";
+                    break;
+                case "TZ":
+                    out = "CH2";
+                    break;
+                case "START":
+                    out = "CH2";
+                    break;
+                default:
+                    out = "null";
+                    break;
             }
         }
         if (zoneName.equals("THIRD")) {
             switch(currentZoneName) {
                 case "LZ":
-                out = "CH2";
-                break;
-            case "RZ":
-                out = "CH3";
-                break;
-            case "LOZ":
-                out = "CH3";
-                break;
-            case "TZ":
-                out = "CH3";
-                break;
-            case "START":
-                out = "CH3";
-                break;
-            default:
-                out = "null";
-                break;
+                    out = "CH2";
+                    break;
+                case "RZ":
+                    out = "CH3";
+                    break;
+                case "LOZ":
+                    out = "CH3";
+                    break;
+                case "TZ":
+                    out = "CH3";
+                    break;
+                case "START":
+                    out = "CH3";
+                    break;
+                default:
+                    out = "null";
+                    break;
             }
         }
         return out;
@@ -288,7 +332,7 @@ public class TreeTraverse {
         return containersForFruits.getOrDefault(fruitName, "none");
     }
 
-    private void setLastCheckpoint(String lastCheckpoint) {
+    private  void setLastCheckpoint(String lastCheckpoint) {
         TreeTraverse.lastCheckpoint = lastCheckpoint;
     }
 
