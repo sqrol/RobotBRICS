@@ -8,7 +8,7 @@ import frc.robot.Main;
 
 public class TreeTraverse {
 
-    private static final String[] TREE_ZONE_NAMES = {"LZ", "LOZ", "TZ", "RZ"};
+    private static final String[] TREE_ZONE_NAMES = {"LZ", "TZ", "LOZ", "RZ"};
     private static final String[] TREE_NUMBER = {"FIRST", "SECOND", "THIRD"};
 
     private static final HashMap<String, String> containersForFruits = new HashMap<String, String>() {
@@ -27,7 +27,7 @@ public class TreeTraverse {
         {
             put("LZ", "AUTO_GRAB_UPPER");
             put("RZ", "AUTO_GRAB_UPPER");
-            put("TZ", "AUTO_GRAB_TREE");
+            put("TZ", "AUTO_GRAB_UPPER");
             put("LOZ", "AUTO_GRAB_UPPER");
         }
     };
@@ -41,10 +41,11 @@ public class TreeTraverse {
     private static ArrayList<String> deliveryCommand = new ArrayList<>(); // Храним команды доставки
 
     // Другие переменные
+    private static int count = 0; // Счетчик для перемещения по списку команд
     private static boolean fristCall = true;
-    private static boolean firstStep = true;
+    private static boolean fristStep = true;
     private static boolean fruitFind = false;
-    private static String findFruitName = "";
+    private static String findFruitName = "SmallRedApple";
     private static String lastCMDWithZone = "";
     private static String bestCPZone = "";
     private static boolean lastStepWasGrab = false;
@@ -69,7 +70,7 @@ public class TreeTraverse {
 
                 if (currentTreeName.equals("FIRST") && currentTreeZoneName.equals("LZ")) kastilVar = 0;  // Ебаный костыль!!! Я больше нечего не успел придумать(
 
-                bestCPZone = choosingBestZoneForCheck(currentTreeZoneName, currentTreeName);
+                bestCPZone =  choosingBestZoneForCheck(currentTreeZoneName, currentTreeName);
 
                 deliveryCommand.add("MOVE_FROM_" + currentTreeName + "_" + currentTreeZoneName + "_TO_" + getConForFruit(findFruitName));
                 deliveryCommand.add("RESET_FRUIT");
@@ -77,48 +78,49 @@ public class TreeTraverse {
                 deliveryCommand.add("MOVE_FROM_"+ bestCPZone +"_TO_" + currentTreeName + "_" + currentTreeZoneName);
                 deliveryCommand.add("AUTO_GRAB_UPPER");
 
-                logicCommand.addAll(index+kastilVar, deliveryCommand);
+                logicCommand.addAll(count+kastilVar, deliveryCommand);
                 lastStepWasGrab = false;
 
                 // Сброс переменных
                 fruitFind = false;
-                findFruitName = "none";
-                // Сброс переменных
+                findFruitName = "";
+
                 Main.stringMap.put("detectedFruit", "none");
             }
         }
 
         if (fristCall) { // Формируем все пути без доставки только один раз в самом начале
+            Boolean treeChange = false;
             for (int i = 0; i < TREE_NUMBER.length; i++) {
                 for (int j = 0; j < TREE_ZONE_NAMES.length; j++) {
 
                     currentTreeName = TREE_NUMBER[i];
                     currentTreeZoneName = TREE_ZONE_NAMES[j];
 
-                    if (firstStep) { // Переход из зоны старта в зону первого дерева
+                    if (fristStep) { // Переход из зоны старта в зону первого дерева
                         bestCPZone = choosingBestZoneForCheck(currentTreeZoneName, currentTreeName);
                         logicCommand.add("MOVE_FROM_START_TO_" + bestCPZone);
                         logicCommand.add("MOVE_FROM_" + bestCPZone +"_TO_" + currentTreeName + "_" + currentTreeZoneName);
-                        firstStep = false;
+                        fristStep = false;
                     } else {
-                        logicCommand.add("MOVE_FROM_"+ getLastTreeZone() +"_TO_" + currentTreeName + "_" + currentTreeZoneName);
+                        if (treeChange) {
+                            logicCommand.add("MOVE_FROM_"+ getLastCheckpoint() +"_TO_" + currentTreeName + "_" + currentTreeZoneName);
+                            treeChange = false;
+                        } else {
+                            logicCommand.add("MOVE_FROM_"+ getLastTreeZone() +"_TO_" + currentTreeName + "_" + currentTreeZoneName);
+                        }
                     }
-
                     logicCommand.add(getGrabModeInArray(currentTreeZoneName));
                     setLastTreeZone(currentTreeName + "_" + currentTreeZoneName);
                 }
 
                 if (i != TREE_NUMBER.length - 1) { // Если это последнее дерево условие не срабатывает
-                    currentTreeName = TREE_NUMBER[i];
-                    currentTreeZoneName = TREE_ZONE_NAMES[TREE_ZONE_NAMES.length - 1];
-                    bestCPZone = choosingBestZoneForCheck(currentTreeZoneName, currentTreeName);
                     logicCommand.add("MOVE_FROM_"+ getLastTreeZone() +"_TO_" + choosingBestZoneForCheck(TREE_ZONE_NAMES[0], TREE_NUMBER[i+1]));
-                    logicCommand.add("MOVE_FROM_"+ choosingBestZoneForCheck(TREE_ZONE_NAMES[0], TREE_NUMBER[i+1]) +"_TO_" + TREE_NUMBER[i+1] + "_" + TREE_ZONE_NAMES[0]);
-                    setLastTreeZone(currentTreeName + "_" + currentTreeZoneName);
                     setLastCheckpoint(choosingBestZoneForCheck(TREE_ZONE_NAMES[0], TREE_NUMBER[i+1]));
+                    treeChange = true;
                 }
             }
- 
+
             currentTreeName = TREE_NUMBER[TREE_NUMBER.length - 1];
             currentTreeZoneName = TREE_ZONE_NAMES[TREE_ZONE_NAMES.length - 1];
             logicCommand.add("MOVE_FROM_"+ getLastTreeZone() +"_TO_" + choosingBestZoneForCheck(currentTreeZoneName, currentTreeName));
@@ -130,14 +132,14 @@ public class TreeTraverse {
 
         outCMD = logicCommand.get(index);
 
-        if (outCMD.equals("AUTO_GRAB_UPPER") || outCMD.equals("AUTO_GRAB_TREE")) {
+        if (outCMD.equals("AUTO_GRAB_UPPER") || outCMD.equals("AUTO_GRAB_TREE")) { // Тут смотрю только один тип захвата
             lastStepWasGrab = true;
         } else {
             lastCMDWithZone = outCMD;
         }
 
         // Debug
-//        if (outCMD.equals("MOVE_FROM_CH1_TO_FIRST_LZ")) {
+//        if (outCMD.equals("MOVE_FROM_SECOND_TZ_TO_SECOND_LOZ")) {
 //            fruitFind = true;
 //            findFruitName = "SmallRedApple";
 //        }
@@ -224,6 +226,10 @@ public class TreeTraverse {
         return containersForFruits.getOrDefault(fruitName, "none");
     }
 
+    private void setLastCheckpoint(String lastCheckpoint) {
+        TreeTraverse.lastCheckpoint = lastCheckpoint;
+    }
+
     private void setLastTreeZone(final String treeZone) {
         TreeTraverse.treeZone = treeZone;
     }
@@ -234,9 +240,5 @@ public class TreeTraverse {
 
     private String getLastCheckpoint() {
         return TreeTraverse.lastCheckpoint;
-    }
-
-    private void setLastCheckpoint(String lastCP) {
-        TreeTraverse.lastCheckpoint = lastCP;
     }
 }
