@@ -12,7 +12,7 @@ public class Transition implements IState {
     private boolean flag = true;
     private static int count = 0;
 
-    private Boolean end = false;
+    private boolean end = false;
 
     private boolean autonomousMode = true;
 
@@ -27,33 +27,33 @@ public class Transition implements IState {
 
     @Override
     public void execute() {
-        // String command = cmd[count];
-        // if (flag) {
-        //     String command = Main.traverse.execute();
-        //     SmartDashboard.putString("currentCommand", command);
-        //     flag = false;
-        // }
-        Main.motorControllerMap.put("speedX", 0.0);
-        Main.motorControllerMap.put("speedZ", 0.0);
-
-        if (flag && autonomousMode) {
+        if (flag) {
             String command = Main.traverse.execute(count);
-            
             SmartDashboard.putString("currentCommand", command);
-            cmdList.setCurrentCommand(command);
-            cmdList.addCommand();
-            count++; 
-            if (!command.equals("none")) {
-                end = true; 
-            }
-            flag = false; 
-        } else if(flag && !autonomousMode) {
-            String command = Main.logic.getNextCommand();
-            SmartDashboard.putString("currentCommand", command);
-            cmdList.setCurrentCommand(command);
-            cmdList.addCommand();
+            count++;
             flag = false;
         }
+        // Main.motorControllerMap.put("speedX", 0.0);
+        // Main.motorControllerMap.put("speedZ", 0.0);
+
+        // if (flag && autonomousMode) {
+        //     String command = Main.traverse.execute(count);
+            
+        //     SmartDashboard.putString("currentCommand", command);
+        //     cmdList.setCurrentCommand(command);
+        //     cmdList.addCommand();
+        //     count++; 
+        //     if (!command.equals("none")) {
+        //         end = true; 
+        //     }
+        //     flag = false; 
+        // } else if(flag && !autonomousMode) {
+        //     String command = Main.logic.getNextCommand();
+        //     SmartDashboard.putString("currentCommand", command);
+        //     cmdList.setCurrentCommand(command);
+        //     cmdList.addCommand();
+        //     flag = false;
+        // }
     }
 
     @Override
@@ -63,7 +63,7 @@ public class Transition implements IState {
 
     @Override
     public boolean isFinished() {
-        return !flag && end;
-        // return !flag && StateMachine.iterationTime > 2;
+        // return !flag && end;
+        return !flag && StateMachine.iterationTime > 2;
     }
 }

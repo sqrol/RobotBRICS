@@ -40,15 +40,15 @@ public class CameraController implements Runnable {
 
     @Override
     public void run() {
+ 
+        // SmartDashboard.putNumber("RED1", 0.0);
+        // SmartDashboard.putNumber("RED2", 0.0);
 
-        SmartDashboard.putNumber("RED1", 0.0);
-        SmartDashboard.putNumber("RED2", 0.0);
+        // SmartDashboard.putNumber("GREEN1", 0.0);
+        // SmartDashboard.putNumber("GREEN2", 0.0);
 
-        SmartDashboard.putNumber("GREEN1", 0.0);
-        SmartDashboard.putNumber("GREEN2", 0.0);
-
-        SmartDashboard.putNumber("BLUE1", 0.0);
-        SmartDashboard.putNumber("BLUE2", 0.0);
+        // SmartDashboard.putNumber("BLUE1", 0.0);
+        // SmartDashboard.putNumber("BLUE2", 0.0);
 
 
         // SmartDashboard.putNumber("Hue1", 0.0);
