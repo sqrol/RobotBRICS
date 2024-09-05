@@ -37,7 +37,7 @@ public class Transition implements IState {
         Main.motorControllerMap.put("speedZ", 0.0);
 
         if (flag && autonomousMode) {
-            String command = Main.traverse.execute();
+            String command = Main.traverse.execute(count);
             
             SmartDashboard.putString("currentCommand", command);
             cmdList.setCurrentCommand(command);
