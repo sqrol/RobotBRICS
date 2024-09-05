@@ -74,10 +74,12 @@ public class AutoStart implements IState {
             if (branchNumber == 1 && !treeEnd) {
                 Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_CHECK_BRANCH);
                 Main.motorControllerMap.put("targetRotateDegree", 26.0);
+                SmartDashboard.putNumber("branchNumberCheck", 1);
                 treeEnd = Main.switchMap.get("rotateStop") && StateMachine.iterationTime > 2; 
             }
 
             if (branchNumber == 2 && !treeEnd) {
+                SmartDashboard.putNumber("branchNumberCheck", 2);
                 Main.motorControllerMap.put("targetLiftPos", 39.0);
                 Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_CHECK_BRANCH);
                 Main.motorControllerMap.put("targetRotateDegree", -24.0);
@@ -85,6 +87,7 @@ public class AutoStart implements IState {
             }
 
             if (branchNumber == 3 && !treeEnd) {
+                SmartDashboard.putNumber("branchNumberCheck", 3);
                 Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_CHECK_BRANCH);
                 Main.motorControllerMap.put("targetLiftPos", 50.0);
                 Main.motorControllerMap.put("targetRotateDegree", 0.0);
@@ -100,6 +103,10 @@ public class AutoStart implements IState {
                         StateMachine.states.addAll(StateMachine.index + 1, newStates);
                         stateEnd = true;
                     }
+                } else if(!Main.switchMap.get("targetColorFound") && branchNumber < 4 && StateMachine.iterationTime > 6) {
+                    newStates.add(new AutoStart(true, branchNumber + 1));
+                    StateMachine.states.addAll(StateMachine.index + 1, newStates);
+                    stateEnd = true;
                 }
             }
 
@@ -127,7 +134,7 @@ public class AutoStart implements IState {
                 }
             }
             
-            if(StateMachine.iterationTime > 5) {
+            if(StateMachine.iterationTime > 15) {
                 newStates.add(new AutoEnd());
                 StateMachine.states.addAll(StateMachine.index + 1, newStates);
                 stateEnd = true;
@@ -142,8 +149,6 @@ public class AutoStart implements IState {
     }
     @Override
     public void finilize() {
-        Main.motorControllerMap.put("speedX", 0.0);
-        Main.motorControllerMap.put("speedZ", 0.0);
     }
 
     @Override

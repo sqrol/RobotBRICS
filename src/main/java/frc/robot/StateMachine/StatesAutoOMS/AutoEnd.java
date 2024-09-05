@@ -36,9 +36,8 @@ public class AutoEnd implements IState {
                 Main.motorControllerMap.put("setGlideSpeed", -0.2);
             } else {
                 Main.motorControllerMap.put("setGlideSpeed", 0.0);
-                if(StateMachine.iterationTime > 5) {
+                if(StateMachine.iterationTime > 2.2) {
                     Main.motorControllerMap.put("targetLiftPos", 0.0);
-                    Main.motorControllerMap.put("servoGripRotate", 145.0);
                     if(Main.switchMap.get("limitSwitchLift")) {
                         SmartDashboard.putNumber("AutoEnd check", 2222);
                         Main.motorControllerMap.put("targetRotateDegree", 0.0);

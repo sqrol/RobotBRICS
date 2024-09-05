@@ -45,8 +45,8 @@ public class TreeTraverse {
     public static int count = 0; // Счетчик для перемещения по списку команд
     public static boolean firstCall = true;
     public static boolean firstStep = true;
-    public static boolean fruitFind = true;
-    public static String findFruitName = "SmallRedApple";
+    public static boolean fruitFind = false;
+    public static String findFruitName = "";
     public static String lastCMDWithZone = "";
     public static String bestCPZone = "";
     public boolean lastStepWasGrab = false;
@@ -56,10 +56,10 @@ public class TreeTraverse {
         String outCMD = "none";
         String currentTreeName = "";
         String currentTreeZoneName = "";
-        int kastilVar = 1;
+        int kastilVar = 2;
 
-        // findFruitName = Main.stringMap.get("detectedFruit");
-        // fruitFind = !Main.stringMap.get("detectedFruit").equals("none");
+        findFruitName = Main.stringMap.get("detectedFruit");
+        fruitFind = !Main.stringMap.get("detectedFruit").equals("none");
 
         if (lastStepWasGrab) { // Последняя команда было сканирование поэтому проверяем нашли мы что-нибудь
             SmartDashboard.putNumber("lastStepWasGrabCheck", 1);
@@ -83,7 +83,7 @@ public class TreeTraverse {
                 deliveryCommand.add("MOVE_FROM_"+ bestCPZone +"_TO_" + currentTreeName + "_" + currentTreeZoneName);
                 deliveryCommand.add("AUTO_GRAB_UPPER");
 
-                logicCommand.addAll(count+kastilVar, deliveryCommand);
+                logicCommand.addAll(index+kastilVar, deliveryCommand);
                 lastStepWasGrab = false;
 
                 // Сброс переменных
@@ -149,7 +149,7 @@ public class TreeTraverse {
 
         outCMD = logicCommand.get(index);
 
-        if (outCMD.equals("AUTO_GRAB_UPPER") && index >=3 || outCMD.equals("AUTO_GRAB_TREE") && index >=3) {
+        if (outCMD.equals("AUTO_GRAB_UPPER") || outCMD.equals("AUTO_GRAB_TREE")) {
             SmartDashboard.putNumber("firstCallCheck", 10);
             lastStepWasGrab = true;
         } else {
@@ -157,14 +157,10 @@ public class TreeTraverse {
         }
 
     // Debug
-       if (outCMD.equals("MOVE_FROM_SECOND_TZ_TO_SECOND_LOZ")) {
+        if (outCMD.equals("MOVE_FROM_SECOND_TZ_TO_SECOND_LOZ")) {
            fruitFind = true;
            findFruitName = "SmallRedApple";
-       }
-
-       SmartDashboard.putBoolean("FruitFind!!!", fruitFind); 
-       SmartDashboard.putBoolean("lastStepWasGrab!!!", lastStepWasGrab); 
-    
+        }
         return outCMD;
     }
 

@@ -67,9 +67,8 @@ public class AutoGrab implements IState {
     }
 
     public AutoGrab(boolean treeMode, int branchNumber) {
-        // this.treeMode = treeMode;
+        this.treeMode = treeMode;
         this.branchNumber = branchNumber;
-        index = 2;
         this.flag = false;
         this.stateEnd = false;
     }
@@ -85,11 +84,14 @@ public class AutoGrab implements IState {
     @Override
     public void execute() {
 
-        if(treeMode && !flag) {
+        if(treeMode) {
             if(branchNumber == 1) {
                 LIFT_POS = 3.0;
+            } else if(branchNumber == 2) {
+                LIFT_POS = 34.0;
+            } else if(branchNumber == 3) {
+                LIFT_POS = 50.0;
             }
-
         } else {
             LIFT_POS = 78.0;
         }
@@ -103,29 +105,28 @@ public class AutoGrab implements IState {
 
         if(index == 2) {
             if(smoothServoMovement(GRAB_POS, DELAY)) {
-                if(StateMachine.iterationTime > 3) {
+                if(StateMachine.iterationTime > 2) {
                     index++;
                 }
             }
         }
 
         if (index == 3) {
-            newStates.add(new AutoEnd()); 
+            
+            newStates.add(new AutoEnd(treeMode)); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             stateEnd = true;
         }
 
-        // if(treeMode) {
-        //     newStates.add(new AutoEnd(true)); 
-        //     StateMachine.states.addAll(StateMachine.index + 1, newStates);
-        //     stateEnd = true;
-        // }
+        if(StateMachine.iterationTime > 7) {
+            newStates.add(new AutoEnd(true)); 
+            StateMachine.states.addAll(StateMachine.index + 1, newStates);
+            stateEnd = true;
+        }
     }
 
     @Override
-    public void finilize() {
-        // fruit = "";
-    }
+    public void finilize() {}
 
     @Override
     public boolean isFinished() {
