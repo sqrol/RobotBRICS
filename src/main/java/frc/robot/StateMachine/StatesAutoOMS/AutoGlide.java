@@ -64,19 +64,29 @@ public class AutoGlide implements IState {
 
             Main.sensorsMap.put("camTask", 2.0);
             
-            fruitPosY = Main.camMap.get("fruitPosY");
+            fruitPosY = Main.camMap.get("currentCenterY");
 
             if(branchNumber == 1 && !treeEnd) {
                 Main.motorControllerMap.put("glideMode", 0.0);
                 Main.motorControllerMap.put("targetLiftPos", 3.0);
-                Main.sensorsMap.put("targetGlidePos", 19.0);
+                Main.sensorsMap.put("targetGlidePos", 15.0);
                 treeEnd = Main.switchMap.get("glideStop") && StateMachine.iterationTime > 4;
             }
 
             if(branchNumber == 2 && !treeEnd) {
-                // добавить сюда выдвижение по Y !!!!!!
+                
                 Main.motorControllerMap.put("targetLiftPos", 20.0);
-                Main.sensorsMap.put("targetGlidePos", 21.0);
+                
+                if (fruitPosY == 0 && !flag) {
+                    glideServoSpeed = 0.15;
+                } else {
+                    flag = true; 
+                    glideServoSpeed = Functions.TransitionFunction(camMiddleForGrab - fruitPosY, speedForGlideServo); 
+                }
+    
+                Main.motorControllerMap.put("setGlideSpeed", glideServoSpeed);
+                glideStop = Functions.BooleanInRange(camMiddleForGrab - fruitPosY, -2, 2) || Main.switchMap.get("stopAutoGlide");
+    
                 treeEnd = Main.switchMap.get("glideStop") && StateMachine.iterationTime > 4;
             }
 
@@ -86,7 +96,7 @@ public class AutoGlide implements IState {
             }
 
             if(treeEnd) {
-                newStates.add(new AutoGrab(true));
+                newStates.add(new AutoGrab(true, branchNumber));
                 StateMachine.states.addAll(StateMachine.index + 1, newStates);
                 stateEnd = true;
             }
@@ -121,7 +131,7 @@ public class AutoGlide implements IState {
         //     stateEnd = true;
         // }
 
-        if ((glideStop && !treeMode && StateMachine.iterationTime > 2)) {
+        if (glideStop && !treeMode && StateMachine.iterationTime > 2) {
             SmartDashboard.putNumber("AUTOGLIDE CHECK", 333);
             newStates.add(new AutoGrab()); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);

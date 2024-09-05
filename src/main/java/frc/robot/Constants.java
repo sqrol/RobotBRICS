@@ -73,6 +73,9 @@ public final class Constants
     public static final String BIG_ROTTEN_APPLE                       = "BigRottenApple";
     public static final String SMALL_ROTTEN_APPLE                     = "SmallRottenApple";
     public static final String ROTTEN_PEAR                            = "RottenPear";
+
+    ///////////////////////
+    public static final int STOP_AUTO_GLIDE_THRESHOLD                 = 4900;
 }
 
 

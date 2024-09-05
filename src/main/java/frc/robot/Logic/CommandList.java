@@ -443,6 +443,7 @@ public class CommandList {
 
     if(currentCommandName.equals("MOVE_FROM_FIRST_LOZ_TO_FIRST_TZ")) {
         newStates.add(new ResetCameraValues());
+        newStates.add(new SimpleDrive(-5, 0));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
@@ -485,7 +486,8 @@ public class CommandList {
 
     if(currentCommandName.equals("MOVE_FROM_SECOND_LOZ_TO_SECOND_TZ")) {
         newStates.add(new ResetCameraValues());
-        newStates.add(new SetGripRotatePosition("FLOOR"));
+        newStates.add(new SimpleDrive(-5, 0));
+        // newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
@@ -528,7 +530,8 @@ public class CommandList {
 
     if(currentCommandName.equals("MOVE_FROM_THIRD_LOZ_TO_THIRD_TZ")) {
         newStates.add(new ResetCameraValues());
-        newStates.add(new SetGripRotatePosition("FLOOR"));
+        newStates.add(new SimpleDrive(-5, 0));
+        // newStates.add(new SetGripRotatePosition("FLOOR"));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }

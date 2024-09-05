@@ -109,21 +109,24 @@ public class AutoStart implements IState {
                 stateEnd = true;
             }
         } else {
-            Main.sensorsMap.put("camTask", 1.0);
+            Main.sensorsMap.put("camTask", 10.0);
+            if(Main.switchMap.get("targetColorFound")) {
+                Main.sensorsMap.put("camTask", 1.0);
 
-            if(Main.camMap.get("targetFound") == 1.0) {
-                if(treeMode) {
-                    newStates.add(new AutoRotate());
-                    StateMachine.states.addAll(StateMachine.index + 1, newStates);
-                    stateEnd = true;  
-                } else {
-                    Main.sensorsMap.put("camTask", 2.0);
-                    newStates.add(new AutoRotate());
-                    StateMachine.states.addAll(StateMachine.index + 1, newStates);
-                    stateEnd = true;
+                if(Main.camMap.get("targetFound") == 1.0) {
+                    if(treeMode) {
+                        newStates.add(new AutoRotate());
+                        StateMachine.states.addAll(StateMachine.index + 1, newStates);
+                        stateEnd = true;  
+                    } else {
+                        Main.sensorsMap.put("camTask", 2.0);
+                        newStates.add(new AutoRotate());
+                        StateMachine.states.addAll(StateMachine.index + 1, newStates);
+                        stateEnd = true;
+                    }
                 }
             }
-
+            
             if(StateMachine.iterationTime > 5) {
                 newStates.add(new AutoEnd());
                 StateMachine.states.addAll(StateMachine.index + 1, newStates);

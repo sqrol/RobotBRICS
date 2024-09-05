@@ -20,10 +20,13 @@ public class AutoGrab implements IState {
     private boolean flag = false;
     private boolean stateEnd = false;
     
-    private boolean objectСaptured = false;
+    private boolean treeEnd = false;
 
     private int index = 1;
     private int branchNumber = 0;
+
+    private double LIFT_POS = 0.0;
+    private double GRAB_POS = 79.0;
 
     private double lastUpdateTime = 0.0;
     private double startTime = 0.0;
@@ -63,8 +66,9 @@ public class AutoGrab implements IState {
 
     }
 
-    public AutoGrab(boolean treeMode) {
+    public AutoGrab(boolean treeMode, int branchNumber) {
         // this.treeMode = treeMode;
+        this.branchNumber = branchNumber;
         index = 2;
         this.flag = false;
         this.stateEnd = false;
@@ -80,43 +84,35 @@ public class AutoGrab implements IState {
 
     @Override
     public void execute() {
-        
-        // double targetLiftPos = LIFT_MAP.getOrDefault(Main.stringMap.get("detectedFruit"), 0.0);
-        // double targetGrabAngle = GRAB_MAP.getOrDefault(Main.stringMap.get("detectedFruit"), 0.0);
 
-        // SmartDashboard.putNumber("targetLiftPosGRAB", targetLiftPos);
-        // SmartDashboard.putNumber("targetGrabAngle", targetGrabAngle);
+        if(treeMode && !flag) {
+            if(branchNumber == 1) {
+                LIFT_POS = 3.0;
+            }
 
-        // if(targetLiftPos == 0.0 || targetGrabAngle == 0.0) {
-        //     flag = true;
-        //     newStates.add(new AutoEnd()); 
-        //     StateMachine.states.addAll(StateMachine.index + 1, newStates);
-        //     stateEnd = true;
+        } else {
+            LIFT_POS = 78.0;
+        }
 
-        // }
+        if(index == 1) {
+            Main.motorControllerMap.put("targetLiftPos", LIFT_POS);
+            if(Main.switchMap.get("liftStop") && StateMachine.iterationTime > 2) {
+                index++;
+            }
+        }
 
-        if(!flag) {
-
-            if(index == 1) {
-                Main.motorControllerMap.put("targetLiftPos", 78.0);
-                if(Main.switchMap.get("liftStop") && StateMachine.iterationTime > 2) {
+        if(index == 2) {
+            if(smoothServoMovement(GRAB_POS, DELAY)) {
+                if(StateMachine.iterationTime > 3) {
                     index++;
                 }
             }
+        }
 
-            if(index == 2) {
-                if(smoothServoMovement(79.0, DELAY)) {
-                    if(StateMachine.iterationTime > 3) {
-                        index++;
-                    }
-                }
-            }
-
-            if (index == 3) {
-                newStates.add(new AutoEnd()); 
-                StateMachine.states.addAll(StateMachine.index + 1, newStates);
-                stateEnd = true;
-            }
+        if (index == 3) {
+            newStates.add(new AutoEnd()); 
+            StateMachine.states.addAll(StateMachine.index + 1, newStates);
+            stateEnd = true;
         }
 
         // if(treeMode) {

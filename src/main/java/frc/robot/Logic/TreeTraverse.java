@@ -8,7 +8,7 @@ import frc.robot.Main;
 
 public class TreeTraverse {
 
-    private static final String[] TREE_ZONE_NAMES = {"LZ", "TZ", "LOZ", "RZ"};
+    private static final String[] TREE_ZONE_NAMES = {"LZ", "LOZ", "TZ", "RZ"};
     private static final String[] TREE_NUMBER = {"FIRST", "SECOND", "THIRD"};
 
     private static final HashMap<String, String> containersForFruits = new HashMap<String, String>() {
@@ -27,7 +27,7 @@ public class TreeTraverse {
         {
             put("LZ", "AUTO_GRAB_UPPER");
             put("RZ", "AUTO_GRAB_UPPER");
-            put("TZ", "AUTO_GRAB_UPPER");
+            put("TZ", "AUTO_GRAB_TREE");
             put("LOZ", "AUTO_GRAB_UPPER");
         }
     };
@@ -42,7 +42,7 @@ public class TreeTraverse {
 
     // Другие переменные
     private static boolean fristCall = true;
-    private static boolean fristStep = true;
+    private static boolean firstStep = true;
     private static boolean fruitFind = false;
     private static String findFruitName = "";
     private static String lastCMDWithZone = "";
@@ -54,7 +54,7 @@ public class TreeTraverse {
         String outCMD = "none";
         String currentTreeName = "";
         String currentTreeZoneName = "";
-        int kastilVar = 0;
+        int kastilVar = 1;
 
         findFruitName = Main.stringMap.get("detectedFruit");
         fruitFind = !Main.stringMap.get("detectedFruit").equals("none");
@@ -67,9 +67,9 @@ public class TreeTraverse {
                 currentTreeName = currentZone[currentZone.length - 2]; // Номер дерева
                 currentTreeZoneName = currentZone[currentZone.length - 1]; // Название зоны дерева
 
-                if (currentTreeName.equals("FIRST") || currentTreeZoneName.equals("LZ")) kastilVar = 1;  // Ебаный костыль!!! Я больше нечего не успел придумать(
+                if (currentTreeName.equals("FIRST") && currentTreeZoneName.equals("LZ")) kastilVar = 0;  // Ебаный костыль!!! Я больше нечего не успел придумать(
 
-                bestCPZone =  choosingBestZoneForCheck(currentTreeZoneName, currentTreeName);
+                bestCPZone = choosingBestZoneForCheck(currentTreeZoneName, currentTreeName);
 
                 deliveryCommand.add("MOVE_FROM_" + currentTreeName + "_" + currentTreeZoneName + "_TO_" + getConForFruit(findFruitName));
                 deliveryCommand.add("RESET_FRUIT");
@@ -81,10 +81,10 @@ public class TreeTraverse {
                 lastStepWasGrab = false;
 
                 // Сброс переменных
-                // fruitFind = false;
-                // findFruitName = "";
+                fruitFind = false;
+                findFruitName = "none";
                 // Сброс переменных
-                Main.stringMap.put("detectedFruit", "");
+                Main.stringMap.put("detectedFruit", "none");
             }
         }
 
@@ -95,11 +95,11 @@ public class TreeTraverse {
                     currentTreeName = TREE_NUMBER[i];
                     currentTreeZoneName = TREE_ZONE_NAMES[j];
 
-                    if (fristStep) { // Переход из зоны старта в зону первого дерева
+                    if (firstStep) { // Переход из зоны старта в зону первого дерева
                         bestCPZone = choosingBestZoneForCheck(currentTreeZoneName, currentTreeName);
                         logicCommand.add("MOVE_FROM_START_TO_" + bestCPZone);
                         logicCommand.add("MOVE_FROM_" + bestCPZone +"_TO_" + currentTreeName + "_" + currentTreeZoneName);
-                        fristStep = false;
+                        firstStep = false;
                     } else {
                         logicCommand.add("MOVE_FROM_"+ getLastTreeZone() +"_TO_" + currentTreeName + "_" + currentTreeZoneName);
                     }
@@ -112,12 +112,13 @@ public class TreeTraverse {
                     currentTreeName = TREE_NUMBER[i];
                     currentTreeZoneName = TREE_ZONE_NAMES[TREE_ZONE_NAMES.length - 1];
                     bestCPZone = choosingBestZoneForCheck(currentTreeZoneName, currentTreeName);
-                    logicCommand.add("MOVE_FROM_"+ getLastTreeZone() +"_TO_" + bestCPZone);
-                    logicCommand.add("MOVE_FROM_"+ bestCPZone +"_TO_" + TREE_NUMBER[i+1] + "_" + TREE_ZONE_NAMES[0]);
+                    logicCommand.add("MOVE_FROM_"+ getLastTreeZone() +"_TO_" + choosingBestZoneForCheck(TREE_ZONE_NAMES[0], TREE_NUMBER[i+1]));
+                    logicCommand.add("MOVE_FROM_"+ choosingBestZoneForCheck(TREE_ZONE_NAMES[0], TREE_NUMBER[i+1]) +"_TO_" + TREE_NUMBER[i+1] + "_" + TREE_ZONE_NAMES[0]);
                     setLastTreeZone(currentTreeName + "_" + currentTreeZoneName);
+                    setLastCheckpoint(choosingBestZoneForCheck(TREE_ZONE_NAMES[0], TREE_NUMBER[i+1]));
                 }
             }
-
+ 
             currentTreeName = TREE_NUMBER[TREE_NUMBER.length - 1];
             currentTreeZoneName = TREE_ZONE_NAMES[TREE_ZONE_NAMES.length - 1];
             logicCommand.add("MOVE_FROM_"+ getLastTreeZone() +"_TO_" + choosingBestZoneForCheck(currentTreeZoneName, currentTreeName));
@@ -129,7 +130,7 @@ public class TreeTraverse {
 
         outCMD = logicCommand.get(index);
 
-        if (outCMD.equals("AUTO_GRAB_UPPER")) { // Тут смотрю только один тип захвата
+        if (outCMD.equals("AUTO_GRAB_UPPER") || outCMD.equals("AUTO_GRAB_TREE")) {
             lastStepWasGrab = true;
         } else {
             lastCMDWithZone = outCMD;
@@ -233,5 +234,9 @@ public class TreeTraverse {
 
     private String getLastCheckpoint() {
         return TreeTraverse.lastCheckpoint;
+    }
+
+    private void setLastCheckpoint(String lastCP) {
+        TreeTraverse.lastCheckpoint = lastCP;
     }
 }

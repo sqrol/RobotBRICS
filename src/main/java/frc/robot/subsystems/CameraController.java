@@ -254,7 +254,7 @@ public class CameraController implements Runnable {
             Main.camMap.put("currentCenterY", 0.0);
         }
 
-        if(Viscad.ImageTrueArea(square) > 6200) {
+        if(Viscad.ImageTrueArea(square) > Constants.STOP_AUTO_GLIDE_THRESHOLD) {
             Main.switchMap.put("stopAutoGlide", true);
         } else {
             Main.switchMap.put("stopAutoGlide", false);
