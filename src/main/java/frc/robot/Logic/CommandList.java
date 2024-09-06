@@ -454,7 +454,7 @@ public class CommandList {
         newStates.add(new SimpleDrive(0, 90));
         newStates.add(new SimpleDrive(15, 0));
         newStates.add(new SimpleDrive(0, -90));
-        newStates.add(new SimpleDrive(15, 0));
+        newStates.add(new SimpleDrive(20, 0));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
@@ -1251,13 +1251,11 @@ public class CommandList {
 
 
     if(currentCommandName.equals("MOVE_FROM_CON4_TO_CH1")) {
-        newStates.add(new SimpleDrive(-100, 0));
+        newStates.add(new SimpleDrive(-130, 0));
         newStates.add(new SetGripRotatePosition("FLOOR"));
-        newStates.add(new SimpleDrive(0, 90));
-        newStates.add(new SimpleDrive(20, 0));
-        newStates.add(new SimpleDrive(0, 90));
-        newStates.add(new AlignSharp(14));
-        newStates.add(new SimpleDrive(0, 90));
+        newStates.add(new DriveSonic(7));
+        newStates.add(new SimpleDrive(0, -90));
+        newStates.add(new SimpleDrive(-30, 0));
         newStates.add(new DriveSonic(82));
         newStates.add(new Reset());
         newStates.add(new Transition());

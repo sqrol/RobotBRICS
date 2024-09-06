@@ -26,7 +26,7 @@ public class AutoGlide implements IState {
     private boolean treeEnd = false;
     private boolean glideStop = false;
     
-    private int camMiddleForGrab = 25;
+    private int camMiddleForGrab = 21;
     
     private static final double[][] speedForGlideServo = { { 0, 1, 4, 10, 20, 40, 60, 80, 100 }, { 0, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15} };
 
@@ -85,7 +85,7 @@ public class AutoGlide implements IState {
                 }
     
                 Main.motorControllerMap.put("setGlideSpeed", glideServoSpeed);
-                glideStop = Functions.BooleanInRange(camMiddleForGrab - fruitPosY, -2, 2) || Main.switchMap.get("stopAutoGlide");
+                glideStop = Functions.BooleanInRange(camMiddleForGrab - fruitPosY, -2, 2)  || Main.switchMap.get("stopAutoGlide");
     
                 treeEnd = Main.switchMap.get("glideStop") && StateMachine.iterationTime > 4;
             }
@@ -100,7 +100,6 @@ public class AutoGlide implements IState {
                 StateMachine.states.addAll(StateMachine.index + 1, newStates);
                 stateEnd = true;
             }
-            
         } else {
             fruitPosY = Main.camMap.get("currentCenterY");
 
@@ -112,7 +111,7 @@ public class AutoGlide implements IState {
             }
 
             Main.motorControllerMap.put("setGlideSpeed", glideServoSpeed);
-            glideStop = Functions.BooleanInRange(camMiddleForGrab - fruitPosY, -2, 2) || Main.switchMap.get("stopAutoGlide");
+            glideStop = Functions.BooleanInRange(camMiddleForGrab - fruitPosY, -2, 2) || fruitPosY > camMiddleForGrab || Main.switchMap.get("stopAutoGlide");
 
             SmartDashboard.putBoolean("glideStop", glideStop);
         }

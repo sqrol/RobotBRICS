@@ -120,7 +120,7 @@ public class AutoGrab implements IState {
         }
 
         if(StateMachine.iterationTime > 10) {
-            newStates.add(new AutoEnd(true)); 
+            newStates.add(new AutoEnd(treeMode)); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             stateEnd = true;
         }

@@ -1,5 +1,6 @@
 package frc.robot.Logic;
 
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -28,7 +29,7 @@ public class TreeTraverse {
         {
             put("LZ", "AUTO_GRAB_UPPER");
             put("RZ", "AUTO_GRAB_UPPER");
-            put("TZ", "AUTO_GRAB_TREE");
+            put("TZ", "AUTO_GRAB_UPPER");
             put("LOZ", "AUTO_GRAB_UPPER");
         }
     };
@@ -71,10 +72,10 @@ public class TreeTraverse {
                 currentTreeZoneName = currentZone[currentZone.length - 1]; // Название зоны дерева
 
                 
-                if (index > 3) {
-                    kastilVar = 2;
-                    SmartDashboard.putNumber("lastStepWasGrabCheck", 3);
-                }   // Ебаный костыль!!! Я больше нечего не успел придумать(
+                // if (index > 3) {
+                //     kastilVar = 2;
+                //     SmartDashboard.putNumber("lastStepWasGrabCheck", 3);
+                // }   // Ебаный костыль!!! Я больше нечего не успел придумать(
 
                 // if (currentTreeName.equals("FIRST") && currentTreeZoneName.equals("LZ")) {
                 //     kastilVar = 0;
@@ -161,6 +162,12 @@ public class TreeTraverse {
         } else {
             lastCMDWithZone = outCMD;
         }
+
+        System.out.println("!!!!!!!!!!!!!!");
+        for (String elem : logicCommand) {
+            System.out.println(elem);
+        } 
+        System.out.println("!!!!!!!!!!!!!!");
 
     // Debug
         if (outCMD.equals("MOVE_FROM_SECOND_TZ_TO_SECOND_LOZ")) {

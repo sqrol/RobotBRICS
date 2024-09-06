@@ -35,9 +35,9 @@ public class AutoRotate implements IState {
 
     // private static final double[][] arrForRotate = { { 1, 106, 213} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
     // private static final double[][] arrForRotate = { { 1, 50, 106, 260, 340} , { -60, -55, -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
-    private static final double[][] arrForRotate = { { 1, 50, 70, 106, 120, 165, 213, 300} , { -45, -30, -11, 0, 9, 20, 35, 45} };
+    private static final double[][] arrForRotate = { { 1, 50, 70, 90, 106, 120, 165, 190, 213, 300} , { -52, -34, -25, -11, 0, 14, 25, 34, 40, 45} };
     public AutoRotate() {
-        GRIP_ROTATE = Constants.GRIP_ROTATE_CHECK_ZONE; // 70
+        GRIP_ROTATE = Constants.GRIP_ROTATE_CHECK_ZONE; 
     }
 
     public AutoRotate(boolean treeMode, int branchNumber) {

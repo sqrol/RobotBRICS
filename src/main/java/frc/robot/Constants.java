@@ -57,7 +57,7 @@ public final class Constants
     public static final double GRAB_SMALL_APPLE                       = 79.0;
     public static final double GRAB_PEAR                              = 69.0;
 
-    public static final double GRIP_ROTATE_FLOOR                      = 140.0;
+    public static final double GRIP_ROTATE_FLOOR                      = 139.0;
     public static final double GRIP_ROTATE_DROP                       = 82.0;
     public static final double GRIP_ROTATE_CHECK_ZONE                 = 131.0;
     public static final double GRIP_ROTATE_CHECK_BRANCH               = 85.0;
@@ -67,7 +67,6 @@ public final class Constants
     public static final double INDICATION_IN_PROGRESS                 = 2.0;
     public static final double INDICATION_FINISHED                    = 3.0;
     public static final double INDICATION_REACTION                    = 4.0;
-
 
     ///////////////////////
 
@@ -82,7 +81,7 @@ public final class Constants
     public static final String ROTTEN_PEAR                            = "RottenPear";
 
     ///////////////////////
-    public static final int STOP_AUTO_GLIDE_THRESHOLD                 = 4900;
+    public static final int STOP_AUTO_GLIDE_THRESHOLD                 = 7000;
 }
 
 

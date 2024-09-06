@@ -78,7 +78,7 @@ public class CameraController implements Runnable {
         middleBranch = CameraServer.getInstance().putVideo("middleBranch", 640, 480);
         lowerBranch = CameraServer.getInstance().putVideo("lowerBranch", 640, 480);
 
-        settingCameraParameters(); // На пробу)
+        settingCameraParameters();
 
         while (true) {
             double startTime = Timer.getFPGATimestamp();
@@ -111,7 +111,7 @@ public class CameraController implements Runnable {
                 }
 
                 if (Main.sensorsMap.get("camTask") == 2.0) {
-                    searchForGrab(source, 80, Main.camMap.get("currentColorIndex"));
+                    searchForGrab(source, 90, Main.camMap.get("currentColorIndex"));
                 }
 
                 if(Main.sensorsMap.get("camTask") == 3.0) {
@@ -258,6 +258,12 @@ public class CameraController implements Runnable {
             Main.camMap.put("currentCenterY", 0.0);
         }
 
+        if(colorIndex == 1.0) {
+            if(Viscad.ImageTrueArea(square) > 300) {
+                Main.stringMap.put("detectedFruit", Constants.SMALL_ROTTEN_APPLE);
+            }
+        }
+
         if(Viscad.ImageTrueArea(square) > Constants.STOP_AUTO_GLIDE_THRESHOLD) {
             Main.switchMap.put("stopAutoGlide", true);
         } else {
@@ -310,14 +316,13 @@ public class CameraController implements Runnable {
         outHSV.putFrame(mask);
 
         if (centreSearch.x == 0 && centreSearch.y == 0) {
-            // Освобождение памяти и опять по новой
             releaseMats(resizedSource, blur, hsvImage, mask, outPA);
             return;
         }
 
         lowestObjectCordinate = findLowestObject(mask, currentCordinate);
 
-        if (lowestObjectCordinate.x != 0 && lowestObjectCordinate.y != 0 && maskArea > 100) {
+        if (lowestObjectCordinate.x != 0 && lowestObjectCordinate.y != 0 && maskArea > 50) {
             Main.camMap.put("targetFound", 1.0);
 
             Main.camMap.put("currentCenterX", lowestObjectCordinate.x);

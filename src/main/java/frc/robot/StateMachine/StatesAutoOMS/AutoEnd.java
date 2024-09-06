@@ -21,7 +21,7 @@ public class AutoEnd implements IState {
         if(Main.camMap.get("targetFound") == 1.0) {
             Main.sensorsMap.put("camTask", 11.0);
         }
-
+        
         Main.switchMap.put("liftStop", false);
         Main.switchMap.put("rotateStop", false);
         Main.switchMap.put("glideStop", false);        
