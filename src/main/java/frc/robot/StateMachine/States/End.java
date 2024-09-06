@@ -1,5 +1,6 @@
 package frc.robot.StateMachine.States;
 
+import frc.robot.Constants;
 import frc.robot.Main;
 import frc.robot.StateMachine.CoreEngine.IState;
 
@@ -7,7 +8,7 @@ public class End implements IState {
 
     @Override
     public void initialize() {
-       Main.sensorsMap.put("indicationMode", 3.0);
+       Main.sensorsMap.put("indicationMode", Constants.INDICATION_FINISHED);
     }
 
     @Override

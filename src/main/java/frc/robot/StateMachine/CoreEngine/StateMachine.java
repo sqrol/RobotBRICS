@@ -21,8 +21,10 @@ public class StateMachine {
 
     public void initStates() { 
         states.add(new StartPos());
-        states.add(new Transition());
-        // states.add(new AutoStart(true, 1));
+        // states.add(new InitLogic());
+        // states.add(new CheckRotten());
+        // states.add(new Transition());
+        // states.add(new AutoStart());
         states.add(new End());
     }
 

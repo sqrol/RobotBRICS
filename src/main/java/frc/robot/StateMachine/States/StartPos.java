@@ -1,6 +1,7 @@
 package frc.robot.StateMachine.States;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Main;
 import frc.robot.StateMachine.CoreEngine.IState;
 import frc.robot.StateMachine.CoreEngine.StateMachine;
@@ -15,7 +16,7 @@ public class StartPos implements IState {
         Main.motorControllerMap.put("resetEncs", 1.0);
         Main.motorControllerMap.put("resetPID", 1.0);
         Main.motorControllerMap.put("glideMode", 0.0);
-        Main.sensorsMap.put("indicationMode", 1.0);
+        Main.sensorsMap.put("indicationMode", Constants.INDICATION_WAITING);
     }
 
     @Override
@@ -44,12 +45,12 @@ public class StartPos implements IState {
         Main.switchMap.put("initLift", false);
         Main.switchMap.put("initGlide", false);
         Main.motorControllerMap.put("resetEncLift", 0.0);
-        Main.sensorsMap.put("indicationMode", 2.0);
+        Main.sensorsMap.put("indicationMode", Constants.INDICATION_IN_PROGRESS);
     }
 
     @Override
     public boolean isFinished() {
-        return succesInit && StateMachine.iterationTime > 0.5;
+        return succesInit && StateMachine.iterationTime > 0.5 && Main.switchMap.get("startButton");
         // return false;
     }
 }

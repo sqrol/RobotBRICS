@@ -63,7 +63,7 @@ public class Transition implements IState {
 
     @Override
     public boolean isFinished() {
-        return !flag && end;
+        return !flag;
         // return !flag && StateMachine.iterationTime > 2;
     }
 }

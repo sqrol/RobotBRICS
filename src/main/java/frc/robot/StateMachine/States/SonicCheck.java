@@ -1,5 +1,6 @@
 package frc.robot.StateMachine.States;
 
+import frc.robot.Constants;
 import frc.robot.Main;
 
 import frc.robot.StateMachine.CoreEngine.IState;
@@ -12,24 +13,25 @@ public class SonicCheck implements IState {
     public void initialize() {
         Main.motorControllerMap.put("speedX", 0.0);
         Main.motorControllerMap.put("speedZ", 0.0);
+        Main.sensorsMap.put("indicationMode", Constants.INDICATION_WAITING);
     }
 
     @Override
     public void execute() {
         if (Main.sensorsMap.get("sonicLeft") < 20 || Main.sensorsMap.get("sonicRight") < 20) {
-            Main.sensorsMap.put("indicationMode", 2.0);
+            Main.sensorsMap.put("indicationMode", Constants.INDICATION_REACTION);
             if(Main.switchMap.get("startButton")) {
                 exit = true;
             }
         }
         else {
-            Main.sensorsMap.put("indicationMode", 1.0); 
+            Main.sensorsMap.put("indicationMode", Constants.INDICATION_WAITING); 
         }
     }
 
     @Override
     public void finilize() {
-        Main.sensorsMap.put("indicationMode", 1.0);
+        Main.sensorsMap.put("indicationMode", Constants.INDICATION_WAITING);
     }
 
     @Override

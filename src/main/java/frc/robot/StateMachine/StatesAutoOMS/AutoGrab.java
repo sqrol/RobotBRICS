@@ -75,6 +75,7 @@ public class AutoGrab implements IState {
 
     @Override
     public void initialize() {
+        index = 1;
         this.flag = false;
         this.stateEnd = false;
         Main.switchMap.put("liftStop", false);
@@ -105,7 +106,7 @@ public class AutoGrab implements IState {
 
         if(index == 2) {
             if(smoothServoMovement(GRAB_POS, DELAY)) {
-                if(StateMachine.iterationTime > 2) {
+                if(StateMachine.iterationTime > 3) {
                     index++;
                 }
             }
@@ -118,7 +119,7 @@ public class AutoGrab implements IState {
             stateEnd = true;
         }
 
-        if(StateMachine.iterationTime > 7) {
+        if(StateMachine.iterationTime > 10) {
             newStates.add(new AutoEnd(true)); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             stateEnd = true;

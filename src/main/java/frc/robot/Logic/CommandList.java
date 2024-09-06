@@ -41,7 +41,7 @@ public class CommandList {
     if(currentCommandName.equals("C1")) {
 
         // Проезд на 1 метр вперед
-        newStates.add(new SimpleDrive(105, 0));
+        newStates.add(new SimpleDrive(103, 0));
         newStates.add(new StartPos());
 
 
@@ -61,9 +61,9 @@ public class CommandList {
         newStates.add(new SimpleDrive(65, 0));
         newStates.add(new SimpleDrive(0, -90));
 
-        newStates.add(new SimpleDrive(71, 0));
+        newStates.add(new SimpleDrive(76, 0));
         newStates.add(new SimpleDrive(0, 90));
-        newStates.add(new SimpleDrive(60, 0));
+        newStates.add(new SimpleDrive(20, 0));  
         newStates.add(new StartPos());
 
 

@@ -56,7 +56,7 @@ public class TreeTraverse {
         String outCMD = "none";
         String currentTreeName = "";
         String currentTreeZoneName = "";
-        int kastilVar = 2;
+        int kastilVar = 0;
 
         findFruitName = Main.stringMap.get("detectedFruit");
         fruitFind = !Main.stringMap.get("detectedFruit").equals("none");
@@ -70,10 +70,16 @@ public class TreeTraverse {
                 currentTreeName = currentZone[currentZone.length - 2]; // Номер дерева
                 currentTreeZoneName = currentZone[currentZone.length - 1]; // Название зоны дерева
 
-                if (currentTreeName.equals("FIRST") && currentTreeZoneName.equals("LZ")) {
-                    kastilVar = 0;
+                
+                if (index > 3) {
+                    kastilVar = 2;
                     SmartDashboard.putNumber("lastStepWasGrabCheck", 3);
                 }   // Ебаный костыль!!! Я больше нечего не успел придумать(
+
+                // if (currentTreeName.equals("FIRST") && currentTreeZoneName.equals("LZ")) {
+                //     kastilVar = 0;
+                //     SmartDashboard.putNumber("lastStepWasGrabCheck", 3);
+                // }   // Ебаный костыль!!! Я больше нечего не успел придумать(
                     SmartDashboard.putNumber("lastStepWasGrabCheck", 4);
                 bestCPZone = choosingBestZoneForCheck(currentTreeZoneName, currentTreeName);
 

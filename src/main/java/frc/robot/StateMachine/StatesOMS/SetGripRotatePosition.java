@@ -26,16 +26,13 @@ public class SetGripRotatePosition implements IState{
                 Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_FLOOR);
                 break;
             case "BRANCH":
-                Main.motorControllerMap.put("servoGripRotate", 20.0);
+                Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_CHECK_BRANCH);
                 break;
-            case "ANGLE":
-                Main.motorControllerMap.put("servoGripRotate", 70.0);
+            case "CHECK ZONE":
+                Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_CHECK_ZONE);
                 break;
             case "FOR DROP":
-                Main.motorControllerMap.put("servoGripRotate", 20.0);
-                break;
-            case "SMALL ANGLE":
-                Main.motorControllerMap.put("servoGripRotate", 52.0);
+                Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_DROP);
                 break;
         }
     }

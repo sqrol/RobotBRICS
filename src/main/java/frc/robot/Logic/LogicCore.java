@@ -18,8 +18,8 @@ public class LogicCore {
 
     private boolean firstCallForSubPath = false;
 
-    private final boolean C1Flag = false;
-    private final boolean C2Flag = false;
+    private final boolean C1Flag = true;
+    private final boolean C2Flag = true;
 
     private final boolean autonomousMode = true; // если true, то едет до финиша,
                                                  // если false, то до контейнера и прыгает в END

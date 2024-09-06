@@ -219,22 +219,22 @@ public class SensorController implements Runnable{
 
     /**
      * Устанавливает индикацию в соответствии с выбранным режимом
-     * @param mode 1.0 - WAITING, 2.0 - IN PROCESS, 3.0 - FINISHED, 4.0 - FOR CHECK
+     * @param mode 1.0 - WAITING, 2.0 - IN PROGRESS, 3.0 - FINISHED, 4.0 - FOR CHECK
      */
     private void setIndicationMode(double mode) {
-        if(mode == 1.0) {
+        if(mode == Constants.INDICATION_WAITING) {
             setRedLED(true);
             setGreenLED(false);
         }
-        if(mode == 2.0) {
+        if(mode == Constants.INDICATION_IN_PROGRESS) {
             setRedLED(true);
             setGreenLED(true);
         }
-        if(mode == 3.0) {
+        if(mode == Constants.INDICATION_FINISHED) {
             setRedLED(false);
             setGreenLED(false);
         }
-        if(mode == 4.0) {
+        if(mode == Constants.INDICATION_REACTION) {
             setRedLED(false);
             setGreenLED(true);
         }

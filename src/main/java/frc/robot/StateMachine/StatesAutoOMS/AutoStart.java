@@ -99,6 +99,7 @@ public class AutoStart implements IState {
                 if(Main.switchMap.get("targetColorFound")) {
                     Main.sensorsMap.put("camTask", 1.0);
                     if(Main.camMap.get("currentCenterX") != 0.0) {
+                        flag = true;
                         newStates.add(new AutoRotate(true, branchNumber));
                         StateMachine.states.addAll(StateMachine.index + 1, newStates);
                         stateEnd = true;
@@ -119,8 +120,9 @@ public class AutoStart implements IState {
             Main.sensorsMap.put("camTask", 10.0);
             if(Main.switchMap.get("targetColorFound")) {
                 Main.sensorsMap.put("camTask", 1.0);
-
+                flag = true;
                 if(Main.camMap.get("targetFound") == 1.0) {
+                    
                     if(treeMode) {
                         newStates.add(new AutoRotate());
                         StateMachine.states.addAll(StateMachine.index + 1, newStates);
@@ -140,7 +142,7 @@ public class AutoStart implements IState {
                 stateEnd = true;
             }
 
-            if (!flag && StateMachine.iterationTime > 10) {
+            if (!flag && StateMachine.iterationTime > 5) {
                 newStates.add(new AutoEnd()); 
                 StateMachine.states.addAll(StateMachine.index + 1, newStates);
                 stateEnd = true;
