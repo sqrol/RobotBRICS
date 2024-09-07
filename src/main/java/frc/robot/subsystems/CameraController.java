@@ -150,6 +150,7 @@ public class CameraController implements Runnable {
                 Main.sensorsMap.put("updateTimeCamera", cameraUpdateTime);
                 outStream.putFrame(source);
                 source.release();
+                Thread.sleep(10);
             } catch (Exception e) {
                 System.err.println("!!!An error occurred in CameraController: " + e.getMessage());
                 e.printStackTrace();
@@ -544,7 +545,7 @@ public class CameraController implements Runnable {
         } else if(Viscad.ImageTrueArea(square) >= 20000 && colorIndex == 3.0) {
             Main.stringMap.put("detectedFruit", Constants.BIG_RED_APPLE);
             Main.camMap.put("targetFound", 1.0);
-        } else if(colorIndex == 2.0 && Viscad.ImageTrueArea(square) > 15000) {
+        } else if(colorIndex == 2.0 && Viscad.ImageTrueArea(square) > 1000) {
             Main.stringMap.put("detectedFruit", Constants.YELLOW_PEAR);
             Main.camMap.put("targetFound", 1.0);
         } else if(colorIndex == 1.0 && Viscad.ImageTrueArea(square) > 100){
@@ -554,6 +555,7 @@ public class CameraController implements Runnable {
             Main.camMap.put("targetFound", 0.0);
             Main.stringMap.put("detectedFruit", "none");
         }
+        releaseMats(blur, hsvImage, mask, square);
         SmartDashboard.putNumber("grippedFruitImageArea", Viscad.ImageTrueArea(square));
     }
 

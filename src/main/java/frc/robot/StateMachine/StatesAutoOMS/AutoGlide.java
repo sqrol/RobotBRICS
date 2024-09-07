@@ -59,7 +59,8 @@ public class AutoGlide implements IState {
 
     @Override
     public void execute() {
-        
+        SmartDashboard.putNumber("AUTOGLIDE CHECK", 000);
+
         if(treeMode) {
 
             Main.sensorsMap.put("camTask", 2.0);
@@ -74,8 +75,6 @@ public class AutoGlide implements IState {
             }
 
             if(branchNumber == 2 && !treeEnd) {
-                
-                Main.motorControllerMap.put("targetLiftPos", 20.0);
                 
                 if (fruitPosY == 0 && !flag) {
                     glideServoSpeed = 0.15;
@@ -116,7 +115,7 @@ public class AutoGlide implements IState {
             SmartDashboard.putBoolean("glideStop", glideStop);
         }
 
-        if (Main.sensorsMap.get("currentGlidePos") > MAX_GLIDE_POS || StateMachine.iterationTime > 25) {
+        if (Main.sensorsMap.get("currentGlidePos") > MAX_GLIDE_POS || StateMachine.iterationTime > 50) {
             SmartDashboard.putNumber("AUTOGLIDE CHECK", 111);
             newStates.add(new AutoEnd()); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);

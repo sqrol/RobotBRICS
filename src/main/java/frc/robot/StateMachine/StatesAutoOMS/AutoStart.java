@@ -89,7 +89,7 @@ public class AutoStart implements IState {
             if (branchNumber == 3 && !treeEnd) {
                 SmartDashboard.putNumber("branchNumberCheck", 3);
                 Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_CHECK_BRANCH);
-                Main.motorControllerMap.put("targetLiftPos", 50.0);
+                Main.motorControllerMap.put("targetLiftPos", 81.0);
                 Main.motorControllerMap.put("targetRotateDegree", 0.0);
                 treeEnd = Main.switchMap.get("rotateStop") && Main.switchMap.get("liftStop") && StateMachine.iterationTime > 3; 
             }
@@ -104,14 +104,14 @@ public class AutoStart implements IState {
                         StateMachine.states.addAll(StateMachine.index + 1, newStates);
                         stateEnd = true;
                     }
-                } else if(!Main.switchMap.get("targetColorFound") && branchNumber < 4 && StateMachine.iterationTime > 6) {
+                } else if(!Main.switchMap.get("targetColorFound") && branchNumber < 3 && StateMachine.iterationTime > 6) {
                     newStates.add(new AutoStart(true, branchNumber + 1));
                     StateMachine.states.addAll(StateMachine.index + 1, newStates);
                     stateEnd = true;
                 }
             }
 
-            if (!flag && StateMachine.iterationTime > 10) {
+            if(!flag && StateMachine.iterationTime > 10) {
                 newStates.add(new AutoEnd()); 
                 StateMachine.states.addAll(StateMachine.index + 1, newStates);
                 stateEnd = true;

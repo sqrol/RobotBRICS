@@ -23,9 +23,10 @@ public class StateMachine {
         states.add(new StartPos());
         // states.add(new InitLogic());
         // states.add(new CheckRotten());
-        states.add(new Transition());
-        // states.add(new AutoStart());
-        states.add(new End());
+        // states.add(new Transition());
+        states.add(new AutoStart());
+        // states.add(new ThreshCheck());
+        states.add(new ThreshCheck());
     }
 
     public void executeStates() {
@@ -35,8 +36,9 @@ public class StateMachine {
             currentState = states.get(index);
             currentState.initialize();
         }
-        currentState.execute();
         iterationTime = Timer.getFPGATimestamp() - startTime;
+        currentState.execute();
+        
         if (currentState.isFinished()) { 
             currentState.finilize();
             firstIteration = true;

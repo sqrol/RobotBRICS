@@ -35,7 +35,7 @@ public class AutoRotate implements IState {
 
     // private static final double[][] arrForRotate = { { 1, 106, 213} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
     // private static final double[][] arrForRotate = { { 1, 50, 106, 260, 340} , { -60, -55, -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
-    private static final double[][] arrForRotate = { { 1, 50, 70, 90, 106, 120, 165, 190, 213, 300} , { -52, -34, -25, -11, 0, 14, 25, 34, 40, 45} };
+    private static final double[][] arrForRotate = { { 1, 25, 50, 70, 90, 106, 120, 165, 178, 200 } , { -52, -38, -32, -25, -11, 0, 9, 19, 34, 40 } };
     public AutoRotate() {
         GRIP_ROTATE = Constants.GRIP_ROTATE_CHECK_ZONE; 
     }
@@ -79,7 +79,7 @@ public class AutoRotate implements IState {
             stateEnd = true;
         }
 
-        if (rotateStop && treeMode && StateMachine.iterationTime > 3) {
+        if (rotateStop && treeMode && StateMachine.iterationTime > 1) {
             newStates.add(new AutoGlide(true, branchNumber));
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             stateEnd = true;

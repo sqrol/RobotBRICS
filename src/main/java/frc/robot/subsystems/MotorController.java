@@ -407,7 +407,7 @@ public class MotorController implements Runnable {
                 currentGlidePosition--;
             }
 
-        Main.sensorsMap.put("currentGlidePos", (double) currentGlidePosition);
+        Main.sensorsMap.put("currentGlidePos", currentGlidePosition);
     }
 
     private void setGlidePosition(double targetGlidePosition) {
@@ -419,7 +419,7 @@ public class MotorController implements Runnable {
         if(Main.switchMap.get("initGlide")) {
             glideSpeed = 0.32;
             if(limitSwitchGlide) {
-                glideSpeed = 0;
+                glideSpeed = 0.0;
                 Main.switchMap.put("initGlide", false);
             }
         }
@@ -430,14 +430,15 @@ public class MotorController implements Runnable {
         }
 
         if(limitSwitchGlide && glideSpeed > 0) {
-            currentGlidePosition = 0;
-            setGlideServoSpeed(0);
+            targetGlidePosition = 0.0;
+            currentGlidePosition = 0.0;
+            glideSpeed = 0.0;
             glideStop = true;
         } 
 
         if (targetGlidePosition > currentGlidePosition) {
             countGlidePosition(true);
-        } else if(targetGlidePosition < currentGlidePosition && targetGlidePosition != 0){
+        } else if(targetGlidePosition < currentGlidePosition && targetGlidePosition != 0.0){
             countGlidePosition(false);
         }
 
@@ -458,6 +459,8 @@ public class MotorController implements Runnable {
         if(inSpeed < 0 && Main.switchMap.get("limitSwitchGlide")) {
             glideSpeed = 0;
             currentGlidePosition = 0;
+            glideStop = true;
+            return;
         }
 
         if (inSpeed > 0.0) {

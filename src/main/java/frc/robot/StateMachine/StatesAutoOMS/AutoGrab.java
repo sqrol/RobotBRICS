@@ -69,8 +69,6 @@ public class AutoGrab implements IState {
     public AutoGrab(boolean treeMode, int branchNumber) {
         this.treeMode = treeMode;
         this.branchNumber = branchNumber;
-        this.flag = false;
-        this.stateEnd = false;
     }
 
     @Override
@@ -84,7 +82,7 @@ public class AutoGrab implements IState {
 
     @Override
     public void execute() {
-
+    
         if(treeMode) {
             if(branchNumber == 1) {
                 LIFT_POS = 3.0;
@@ -99,27 +97,32 @@ public class AutoGrab implements IState {
 
         if(index == 1) {
             Main.motorControllerMap.put("targetLiftPos", LIFT_POS);
-            if(Main.switchMap.get("liftStop") && StateMachine.iterationTime > 2) {
+            SmartDashboard.putNumber("AUTOGRAB CHECK", 111);
+            if(Main.switchMap.get("liftStop")) {
                 index++;
             }
         }
 
         if(index == 2) {
             if(smoothServoMovement(GRAB_POS, DELAY)) {
-                if(StateMachine.iterationTime > 3) {
+                SmartDashboard.putNumber("AUTOGRAB CHECK", 222);
+                
                     index++;
-                }
+                
             }
         }
 
         if (index == 3) {
-            
+            SmartDashboard.putNumber("AUTOGRAB CHECK", 333);
             newStates.add(new AutoEnd(treeMode)); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             stateEnd = true;
         }
-
+            
+        
+        
         if(StateMachine.iterationTime > 10) {
+            SmartDashboard.putNumber("AUTOGRAB CHECK", 444);
             newStates.add(new AutoEnd(treeMode)); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             stateEnd = true;

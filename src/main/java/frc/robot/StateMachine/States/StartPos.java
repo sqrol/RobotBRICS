@@ -50,7 +50,7 @@ public class StartPos implements IState {
 
     @Override
     public boolean isFinished() {
-        return succesInit && StateMachine.iterationTime > 0.5 ;
+        return succesInit && StateMachine.iterationTime > 0.5;
         // return false;
     }
 }

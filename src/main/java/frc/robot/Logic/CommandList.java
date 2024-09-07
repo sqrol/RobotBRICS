@@ -34,6 +34,7 @@ public class CommandList {
 
     if(currentCommandName.equals("RESET_FRUIT")) {
         newStates.add(new SetGrabPosition("OPEN", true));
+        newStates.add(new SetRotatePosition(0));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
@@ -1002,6 +1003,7 @@ public class CommandList {
         newStates.add(new SimpleDrive(-8, 0));
         newStates.add(new SimpleDrive(0, 90));
         newStates.add(new AlignSharp(14));
+        newStates.add(new SetRotatePosition(-20));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }

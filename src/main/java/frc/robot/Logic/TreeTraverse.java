@@ -81,7 +81,7 @@ public class TreeTraverse {
                 //     kastilVar = 0;
                 //     SmartDashboard.putNumber("lastStepWasGrabCheck", 3);
                 // }   // Ебаный костыль!!! Я больше нечего не успел придумать(
-                    SmartDashboard.putNumber("lastStepWasGrabCheck", 4);
+                SmartDashboard.putNumber("lastStepWasGrabCheck", 4);
                 bestCPZone = choosingBestZoneForCheck(currentTreeZoneName, currentTreeName);
 
                 deliveryCommand.add("MOVE_FROM_" + currentTreeName + "_" + currentTreeZoneName + "_TO_" + getConForFruit(findFruitName));
