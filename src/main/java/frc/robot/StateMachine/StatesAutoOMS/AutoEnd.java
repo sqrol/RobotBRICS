@@ -8,8 +8,7 @@ import frc.robot.StateMachine.CoreEngine.StateMachine;
 
 public class AutoEnd implements IState {
     private boolean finish, treeMode = false;
-    
-    private double lastGlidePos = 0.0;
+
     public AutoEnd() {
 
     }
@@ -23,27 +22,35 @@ public class AutoEnd implements IState {
         if(Main.camMap.get("targetFound") == 1.0 && Main.camMap.get("currentColorIndex") != 1.0) {
             Main.sensorsMap.put("camTask", 11.0);
         }
-        lastGlidePos = Main.sensorsMap.get("currentGlidePos");
         Main.switchMap.put("liftStop", false);
         Main.switchMap.put("rotateStop", false);
-        Main.switchMap.put("glideStop", false);        
+        Main.switchMap.put("glideStop", false);    
     }
 
     @Override
     public void execute() {
         if(treeMode) {
             Main.motorControllerMap.put("targetLiftPos", 0.0);
-            Main.sensorsMap.put("targetGlidePos", 0.0);
-            Main.motorControllerMap.put("targetRotateDegree", 0.0);
+            if(Main.switchMap.get("limitSwitchLift")) {
+                Main.motorControllerMap.put("glideMode", 0.0);
+                Main.sensorsMap.put("targetGlidePos", 0.0);
+                if(Main.switchMap.get("limitSwitchGlide")) {
+                    Main.motorControllerMap.put("targetRotateDegree", 0.0);
+                    finish = true;
+                }
+            } 
         } else {
-            Main.motorControllerMap.put("targetLiftPos", 60.0);
-            Main.motorControllerMap.put("glideMode", 1.0);
-            Main.motorControllerMap.put("setGlideSpeed", -0.32);
-            if(Main.switchMap.get("limitSwitchGlide")) {
+            if(!Main.switchMap.get("limitSwitchGlide")) {
+                Main.motorControllerMap.put("targetLiftPos", 60.0);
+                if(Main.switchMap.get("liftStop")) {
+                    Main.motorControllerMap.put("glideMode", 0.0);
+                    Main.motorControllerMap.put("targetGlidePos", 0.0);
+                } 
+            } else {
                 Main.motorControllerMap.put("setGlideSpeed", 0.0); 
                 Main.motorControllerMap.put("targetLiftPos", 0.0);
-                Main.motorControllerMap.put("targetRotateDegree", 0.0);
                 if(Main.switchMap.get("limitSwitchLift")) {
+                    Main.motorControllerMap.put("targetRotateDegree", 0.0);
                     finish = true;
                 }
             }

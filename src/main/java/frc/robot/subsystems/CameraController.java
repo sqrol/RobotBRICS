@@ -401,7 +401,8 @@ public class CameraController implements Runnable {
             Point center = new Point(lowestX, lowestY);
     
             Imgproc.circle(inImage, center, 5, new Scalar(255, 0, 0), -1);
-    
+            
+            thresh.putFrame(inImage);
             return center;
         }
         return null;

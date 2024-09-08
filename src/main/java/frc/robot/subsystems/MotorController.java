@@ -278,7 +278,7 @@ public class MotorController implements Runnable {
         double rotateDegree = Functions.TransitionFunction(currentRotatePos, arrOfPosForRotate);
         double rotateSpeed = Functions.TransitionFunction(rotateDegree - degree, speedForRotate);
         
-        rotateStop = Functions.BooleanInRange(degree - rotateDegree, -1, 1);
+        rotateStop = Functions.BooleanInRange(degree - rotateDegree, -0.5, 0.5);
 
         Main.motorControllerMap.put("currentRotateDegree", rotateDegree);
 

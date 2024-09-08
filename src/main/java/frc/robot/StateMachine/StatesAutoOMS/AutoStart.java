@@ -26,6 +26,10 @@ public class AutoStart implements IState {
     
     private double GRIP_ROTATE, CAM_TASK = 0.0;
 
+    private final double LIFT_POS_FIRST_BRANCH = 3.0;
+    private final double LIFT_POS_SECOND_BRANCH = 41.0;
+    private final double LIFT_POS_THIRD_BRANCH = 81.0;
+
     private static double startTime = 0;
 
     private static double realStartTime = 0.0;
@@ -73,6 +77,7 @@ public class AutoStart implements IState {
         if(treeMode) {
             if (branchNumber == 1 && !treeEnd) {
                 Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_CHECK_BRANCH);
+                Main.motorControllerMap.put("targetLiftPos", Constants.LIFT_POS_FIRST_BRANCH);
                 Main.motorControllerMap.put("targetRotateDegree", 26.0);
                 SmartDashboard.putNumber("branchNumberCheck", 1);
                 treeEnd = Main.switchMap.get("rotateStop") && StateMachine.iterationTime > 2; 
@@ -80,16 +85,16 @@ public class AutoStart implements IState {
 
             if (branchNumber == 2 && !treeEnd) {
                 SmartDashboard.putNumber("branchNumberCheck", 2);
-                Main.motorControllerMap.put("targetLiftPos", 39.0);
+                Main.motorControllerMap.put("targetLiftPos", Constants.LIFT_POS_SECOND_BRANCH);
                 Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_CHECK_BRANCH);
-                Main.motorControllerMap.put("targetRotateDegree", -24.0);
+                Main.motorControllerMap.put("targetRotateDegree", -26.0);
                 treeEnd = Main.switchMap.get("rotateStop") && Main.switchMap.get("liftStop") && StateMachine.iterationTime > 2; 
             }
 
             if (branchNumber == 3 && !treeEnd) {
                 SmartDashboard.putNumber("branchNumberCheck", 3);
                 Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_CHECK_BRANCH);
-                Main.motorControllerMap.put("targetLiftPos", 81.0);
+                Main.motorControllerMap.put("targetLiftPos", Constants.LIFT_POS_CHECK_THIRD_BRANCH);
                 Main.motorControllerMap.put("targetRotateDegree", 0.0);
                 treeEnd = Main.switchMap.get("rotateStop") && Main.switchMap.get("liftStop") && StateMachine.iterationTime > 3; 
             }
@@ -100,7 +105,7 @@ public class AutoStart implements IState {
                     Main.sensorsMap.put("camTask", 1.0);
                     if(Main.camMap.get("currentCenterX") != 0.0) {
                         flag = true;
-                        newStates.add(new AutoRotate(true, branchNumber));
+                        newStates.add(new AutoGlide(true, branchNumber));
                         StateMachine.states.addAll(StateMachine.index + 1, newStates);
                         stateEnd = true;
                     }

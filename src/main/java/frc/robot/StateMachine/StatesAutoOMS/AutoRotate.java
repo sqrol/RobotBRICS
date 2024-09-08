@@ -35,7 +35,8 @@ public class AutoRotate implements IState {
 
     // private static final double[][] arrForRotate = { { 1, 106, 213} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
     // private static final double[][] arrForRotate = { { 1, 50, 106, 260, 340} , { -60, -55, -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
-    private static final double[][] arrForRotate = { { 1, 25, 50, 70, 90, 106, 120, 165, 178, 200 } , { -52, -38, -32, -25, -11, 0, 9, 19, 34, 40 } };
+    private static final double[][] arrForRotate = { { 1, 25, 50, 70, 90, 106, 115, 120, 140, 165, 182, 200 } , 
+                                                    { -52, -41.2, -32, -26.5, -11, -4, 0, 2, 7, 23.4, 34, 40 } };
     public AutoRotate() {
         GRIP_ROTATE = Constants.GRIP_ROTATE_CHECK_ZONE; 
     }
@@ -47,7 +48,7 @@ public class AutoRotate implements IState {
         GRIP_ROTATE = Constants.GRIP_ROTATE_DROP;
     }
 
-    @Override 
+    @Override
     public void initialize() {
         Main.motorControllerMap.put("servoGripRotate", GRIP_ROTATE);
         Main.switchMap.put("rotateStop", false); 

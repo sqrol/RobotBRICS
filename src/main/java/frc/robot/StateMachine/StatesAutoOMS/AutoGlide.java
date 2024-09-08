@@ -18,7 +18,7 @@ public class AutoGlide implements IState {
     private final int MAX_GLIDE_POS = 30;
 
     private double glideServoSpeed, GRIP_ROTATE = 0; 
-    
+
     private boolean treeMode = false;
 
     private boolean flag, stateEnd = false; 
@@ -38,7 +38,7 @@ public class AutoGlide implements IState {
     public AutoGlide(boolean treeMode, int branchNumber) {
         this.treeMode = treeMode;
         this.branchNumber = branchNumber;
-        if(branchNumber == 2 || branchNumber == 3) {
+        if(branchNumber == 3) {
             GRIP_ROTATE = Constants.GRIP_ROTATE_FLOOR;
         } else {
             GRIP_ROTATE = Constants.GRIP_ROTATE_DROP;
@@ -62,35 +62,25 @@ public class AutoGlide implements IState {
         SmartDashboard.putNumber("AUTOGLIDE CHECK", 000);
 
         if(treeMode) {
-
             Main.sensorsMap.put("camTask", 2.0);
-            
             fruitPosY = Main.camMap.get("currentCenterY");
 
             if(branchNumber == 1 && !treeEnd) {
                 Main.motorControllerMap.put("glideMode", 0.0);
-                Main.motorControllerMap.put("targetLiftPos", 3.0);
                 Main.sensorsMap.put("targetGlidePos", 15.0);
                 treeEnd = Main.switchMap.get("glideStop") && StateMachine.iterationTime > 4;
             }
 
             if(branchNumber == 2 && !treeEnd) {
-                
-                if (fruitPosY == 0 && !flag) {
-                    glideServoSpeed = 0.15;
-                } else {
-                    flag = true; 
-                    glideServoSpeed = Functions.TransitionFunction(camMiddleForGrab - fruitPosY, speedForGlideServo); 
-                }
-    
-                Main.motorControllerMap.put("setGlideSpeed", glideServoSpeed);
-                glideStop = Functions.BooleanInRange(camMiddleForGrab - fruitPosY, -2, 2)  || Main.switchMap.get("stopAutoGlide");
-    
+                Main.motorControllerMap.put("glideMode", 0.0);
+                Main.sensorsMap.put("targetGlidePos", 15.0);
                 treeEnd = Main.switchMap.get("glideStop") && StateMachine.iterationTime > 4;
             }
 
             if(branchNumber == 3 && !treeEnd) {
-                Main.sensorsMap.put("targetGlidePos", 13.0);
+                Main.motorControllerMap.put("targetLiftPos", 30.0);
+                Main.motorControllerMap.put("glideMode", 0.0);
+                Main.sensorsMap.put("targetGlidePos", 24.0);
                 treeEnd = Main.switchMap.get("glideStop") && StateMachine.iterationTime > 4;
             }
 

@@ -82,6 +82,13 @@ public final class Constants
 
     ///////////////////////
     public static final int STOP_AUTO_GLIDE_THRESHOLD                 = 7000;
+
+    ///////////////////////
+
+    public static final double LIFT_POS_FIRST_BRANCH                 = 3.0;
+    public static final double LIFT_POS_SECOND_BRANCH                = 44.0;
+    public static final double LIFT_POS_CHECK_THIRD_BRANCH           = 81.0;
+    public static final double LIFT_POS_THIRD_BRANCH                 = 35.0;
 }
 
 

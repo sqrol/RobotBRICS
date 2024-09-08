@@ -85,11 +85,11 @@ public class AutoGrab implements IState {
     
         if(treeMode) {
             if(branchNumber == 1) {
-                LIFT_POS = 3.0;
+                LIFT_POS = Constants.LIFT_POS_FIRST_BRANCH;
             } else if(branchNumber == 2) {
-                LIFT_POS = 34.0;
+                LIFT_POS = Constants.LIFT_POS_SECOND_BRANCH;
             } else if(branchNumber == 3) {
-                LIFT_POS = 50.0;
+                LIFT_POS = Constants.LIFT_POS_THIRD_BRANCH;
             }
         } else {
             LIFT_POS = 78.0;
