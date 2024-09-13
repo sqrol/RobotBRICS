@@ -48,7 +48,7 @@ public class AutoEnd implements IState {
                 } 
             } else {
                 Main.motorControllerMap.put("setGlideSpeed", 0.0); 
-                Main.motorControllerMap.put("targetLiftPos", 0.0);
+                Main.switchMap.put("initLift", true);
                 if(Main.switchMap.get("limitSwitchLift")) {
                     Main.motorControllerMap.put("targetRotateDegree", 0.0);
                     finish = true;
@@ -67,6 +67,9 @@ public class AutoEnd implements IState {
             Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_FLOOR);
         }
         Main.sensorsMap.put("camTask", 0.0);
+        Main.camMap.put("currentColorIndex", 0.0);
+        Main.motorControllerMap.put("targetLiftPos", 0.0);
+        Main.switchMap.put("initLift", false);
     }
 
     @Override

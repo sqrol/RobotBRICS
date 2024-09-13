@@ -89,6 +89,8 @@ public class Robot extends TimedRobot {
 
     Main.switchMap.put("targetColorFound", false);
 
+    Main.switchMap.put("trackAutoGlide", false);
+
     Main.sensorsMap.put("indicationMode", 1.0);
 
     Main.sensorsMap.put("sharpRight", 0.0);
@@ -197,6 +199,8 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putNumber("sharpRight", Main.sensorsMap.get("sharpRight"));
     SmartDashboard.putNumber("sharpLeft", Main.sensorsMap.get("sharpLeft"));
+
+    SmartDashboard.putBoolean("trackAutoGlide", Main.switchMap.get("trackAutoGlide"));
 
     SmartDashboard.putNumber("sonicLeft", Main.sensorsMap.get("sonicLeft"));
     SmartDashboard.putNumber("sonicRight", Main.sensorsMap.get("sonicRight"));

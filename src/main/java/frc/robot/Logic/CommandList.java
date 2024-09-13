@@ -59,7 +59,7 @@ public class CommandList {
         newStates.add(new SimpleDrive(75, 0));
         newStates.add(new SimpleDrive(0, -90));
 
-        newStates.add(new SimpleDrive(65, 0));
+        newStates.add(new SimpleDrive(62, 0));
         newStates.add(new SimpleDrive(0, -90));
 
         newStates.add(new SimpleDrive(76, 0));
@@ -80,7 +80,8 @@ public class CommandList {
 
         // Распознавание объекта
         newStates.add(new CheckFruit());
-        newStates.add(new End());
+        newStates.add(new Transition());
+        // newStates.add(new End());
 
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
@@ -88,6 +89,7 @@ public class CommandList {
     if(currentCommandName.equals("C2")) {
 
         // Идентификация и отображение
+        newStates.add(new StartPos());
         newStates.add(new CheckRotten());
         newStates.add(new StartPos());
 
@@ -143,6 +145,7 @@ public class CommandList {
 
     if(currentCommandName.equals("ROTATE_-45")) {
         newStates.add(new SetRotatePosition(-45));
+        
         newStates.add(new AutoStart());
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);

@@ -1,6 +1,7 @@
 package frc.robot.StateMachine.StatesOMS;
 
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Constants;
 import frc.robot.Main;
 import frc.robot.Maths.Common.Functions;
 import frc.robot.StateMachine.CoreEngine.IState;
@@ -37,7 +38,7 @@ public class SetGrabPosition implements IState{
     @Override
     public void execute() {
         if(fruit.equals("OPEN")) {
-            endMovement = smoothServoMovement(55.0, 0.01);
+            endMovement = smoothServoMovement(Constants.GRAB_OPEN, 0.01);
         }
     }
 
@@ -48,7 +49,7 @@ public class SetGrabPosition implements IState{
 
     @Override
     public boolean isFinished() {
-        return StateMachine.iterationTime > 1 && endMovement;
+        return endMovement;
     }
 
     private boolean smoothServoMovement(double targetPosition, double DELAY) {

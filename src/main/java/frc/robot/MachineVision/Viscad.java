@@ -13,6 +13,13 @@ public class Viscad {
 
         return inImage;
     }
+
+    public static Mat ConvertBGR2GRAY(Mat src) {
+        Mat inImage = new Mat();
+        Imgproc.cvtColor(src, inImage, Imgproc.COLOR_BGR2GRAY);
+
+        return inImage;
+    }
     
     public static Mat RotateImage(Mat src, double deg) {
         Mat dst = new Mat(src.rows(), src.cols(), src.type());
@@ -86,6 +93,29 @@ public class Viscad {
         return dst;
     }
 
+    public static Point getLowestObjectPoint(Mat orig) {
+        
+        List<MatOfPoint> contours = new ArrayList<>();
+        Mat hierarchy = new Mat();
+        Imgproc.findContours(orig, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+        
+        Point lowestPoint = null;
+        for (MatOfPoint contour : contours) {
+            for (Point point : contour.toArray()) {
+                if (lowestPoint == null || point.y > lowestPoint.y) {
+                    lowestPoint = point;
+                }
+            }
+        }
+
+        if (lowestPoint != null) {
+            return lowestPoint;
+        } else {
+            hierarchy.release();
+            return null;
+        }
+        
+    }
 
     public static Mat ImageErdilCAD(Mat src, int power) { // !
         Mat dst = new Mat();

@@ -52,15 +52,15 @@ public final class Constants
     ///////////////////////
 
     public static final double GRAB_OPEN                              = 55.0;
-    public static final double GRAB_CLOSE                             = 79.0;
+    public static final double GRAB_CLOSE                             = 90.0;
     public static final double GRAB_BIG_APPLE                         = 69.0;
-    public static final double GRAB_SMALL_APPLE                       = 79.0;
+    public static final double GRAB_SMALL_APPLE                       = 85.0;
     public static final double GRAB_PEAR                              = 69.0;
 
-    public static final double GRIP_ROTATE_FLOOR                      = 139.0;
-    public static final double GRIP_ROTATE_DROP                       = 82.0;
-    public static final double GRIP_ROTATE_CHECK_ZONE                 = 131.0;
-    public static final double GRIP_ROTATE_CHECK_BRANCH               = 85.0;
+    public static final double GRIP_ROTATE_FLOOR                      = 139.0; // 139
+    public static final double GRIP_ROTATE_DROP                       = 82.0; // FLOOR - 57
+    public static final double GRIP_ROTATE_CHECK_ZONE                 = 131.0; // FLOOR + 2
+    public static final double GRIP_ROTATE_CHECK_BRANCH               = 85.0; // FLOOR - 54
 
     ///////////////////////
     public static final double INDICATION_WAITING                     = 1.0;
@@ -86,7 +86,7 @@ public final class Constants
     ///////////////////////
 
     public static final double LIFT_POS_FIRST_BRANCH                 = 3.0;
-    public static final double LIFT_POS_SECOND_BRANCH                = 44.0;
+    public static final double LIFT_POS_SECOND_BRANCH                = 53.0;
     public static final double LIFT_POS_CHECK_THIRD_BRANCH           = 81.0;
     public static final double LIFT_POS_THIRD_BRANCH                 = 35.0;
 }

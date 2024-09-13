@@ -1,5 +1,8 @@
 package frc.robot;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.util.HashMap;
 
 import edu.wpi.first.wpilibj.RobotBase;
@@ -39,6 +42,12 @@ public final class Main {
     Thread cameraControllerThread = new Thread(cameraControllerRunnable);
     cameraControllerThread.setDaemon(true);
     cameraControllerThread.start();
+
+    // try {
+    //   System.setErr(new PrintStream(new File("/home/pi/Desktop/log.txt")));
+    // } catch (FileNotFoundException e) {
+    //     e.printStackTrace();
+    // }
 
     RobotBase.startRobot(Robot::new);
   }

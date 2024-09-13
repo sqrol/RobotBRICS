@@ -18,24 +18,24 @@ public class LogicCore {
 
     private boolean firstCallForSubPath = false;
 
-    private final boolean C1Flag = true;
-    private final boolean C2Flag = true;
+    private final boolean C1Flag = false;
+    private final boolean C2Flag = false;
 
     private final boolean autonomousMode = true; // если true, то едет до финиша,
-                                                 // если false, то до контейнера и прыгает в END
+                                                 // если false, то до контейнера и END
 
     // Зона 1
-    private static final String[] firstTree = { "null", "null", "null"}; // AppleBigRipe на верхней
+    private static final String[] firstTree = { "null", "null", "null"}; 
     private static final String[][] firstTreeZone =
             {
                     //  1  | 2  |                      | 3  |  4
-                    { "AppleSmallRipe", "2", "null", "null", "null", "3", "4" },
+                    { "1", "PearRipe", "null", "null", "null", "3", "4" },
                     //   5  |   6   |   7   |   8   |   9   |   10  |   11
-                    { "5", "6", "7", "8", "9", "10", "11" },
+                    { "5", "6", "7", "8", "9", "AppleSmallRipe", "11" },
                     //  12  |   13   |   14   |   15   |   16   |   17  |   18
                     { "12", "13", "14", "15", "16", "17", "18" },
                     //  19  |   20   |   21   |   22   |   23   |   24  |   25
-                    { "19", "20", "21", "22", "23", "24", "25" } }; 
+                    { "19", "20", "21", "AppleBigRipe", "23", "24", "25" } }; 
 
     // Зона 2
     private static final String[] secondTree = { "null", "null", "null"};
@@ -46,9 +46,9 @@ public class LogicCore {
                     //   5  |   6   |   7   |   8   |   9   |   10  |   11
                     {   "5", "6", "7", "8", "9", "10", "11" },
                     //  12  |   13   |   14   |   15   |   16   |   17  |   18
-                    { "12", "AppleSmallRipe", "14", "15", "PearRipe", "17", "18" },
+                    { "12", "13", "14", "15", "16", "17", "18" },
                     //  19  |   20   |   21   |   22   |   23   |   24  |   25
-                    { "19", "20", "21", "22", "23", "24", "25" } };
+                    { "19", "20", "21", "RottenBigApple", "23", "24", "25" } };
 
     // Зона 3
     private static final String[] thirdTree = { "null", "null", "null"};
@@ -59,7 +59,7 @@ public class LogicCore {
                     //   5  |   6   |   7   |   8   |   9   |   10  |   11
                     { "5", "6", "7", "8", "9", "10", "11" },
                     //  12  |   13   |   14   |   15   |   16   |   17  |   18
-                    { "RottenPear", "13", "14", "15", "16", "17", "18" },
+                    { "12", "13", "14", "15", "16", "17", "PearRipe" },
                     //  19  |   20   |   21   |   22   |   23   |   24  |   25
                     { "19", "20", "21", "22", "23", "24", "25" } };
 
@@ -75,12 +75,12 @@ public class LogicCore {
     // Назначаем контейнеры для определенного типа фруктов
     HashMap<String, String> containersForFruits = new HashMap<String, String>() {
         {
-            put("RottenSmallApple", "CON3");
-            put("RottenBigApple", "CON3");
-            put("RottenPear", "CON3");
-            put("AppleSmallRipe", "CON2");
+            put("RottenSmallApple", "CON2");
+            put("RottenBigApple", "CON2");
+            put("RottenPear", "CON2");
+            put("AppleSmallRipe", "CON1");
             put("AppleBigRipe", "CON4");
-            put("PearRipe", "CON1");
+            put("PearRipe", "CON3");
         }
     };
 

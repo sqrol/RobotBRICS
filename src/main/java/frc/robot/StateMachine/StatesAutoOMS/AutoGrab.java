@@ -26,7 +26,7 @@ public class AutoGrab implements IState {
     private int branchNumber = 0;
 
     private double LIFT_POS = 0.0;
-    private double GRAB_POS = 79.0;
+    private double GRAB_POS = Constants.GRAB_CLOSE;
 
     private double lastUpdateTime = 0.0;
     private double startTime = 0.0;

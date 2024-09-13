@@ -54,7 +54,7 @@ public class MotorController implements Runnable {
 
     private static final double[][] arrOfPosForLift = { { 0, 4, 15, 30, 40, 50, 60, 70, 80, 90}, { 0, 600, 900, 1200, 1500, 1800, 2100, 2400, 2900, 3200 } };
 
-    private static final double[][] speedForLift = { { 0, 30, 50, 100, 200, 330, 500, 700, 850, 1000 }, { 0, 8, 15, 20, 25, 35, 40, 50, 60, 100 } };
+    private static final double[][] speedForLift = { { 0, 30, 50, 100, 200, 330, 500, 700, 850, 1000 }, { 0, 8, 15, 20, 25, 35, 40, 50, 60, 80 } };
 
     private static final double[][] arrOfPosForRotate = { { 0, 500, 1500, 2000 }, { 0, 45, 90, 110 } };
 
@@ -243,10 +243,12 @@ public class MotorController implements Runnable {
             if (Main.switchMap.get("limitSwitchLift")) {
                 targetPosition = 0.0;
                 outLiftSpeed = 0.0;
-                liftStop = true;
+                // liftStop = true;
                 ENC_LIFT.reset();
+                
             } else {
                 outLiftSpeed = 60.0; 
+                liftStop = false;
             }
         } else {
             double convertPosToEncs = Functions.TransitionFunction(targetPosition, arrOfPosForLift);
@@ -414,6 +416,7 @@ public class MotorController implements Runnable {
         boolean limitSwitchGlide = Main.switchMap.get("limitSwitchGlide");
         double glideDiff = currentGlidePosition - targetGlidePosition;
         double glideSpeed = Functions.TransitionFunction(glideDiff, speedForGlideServo);
+        
         glideStop = targetGlidePosition == currentGlidePosition;
 
         if(Main.switchMap.get("initGlide")) {

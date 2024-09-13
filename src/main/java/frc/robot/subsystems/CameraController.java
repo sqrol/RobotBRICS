@@ -32,7 +32,7 @@ public class CameraController implements Runnable {
     private String currentColor = "";
 
     private double startTime = -1; // Время начала ожидания
-    private double colorIndex = 0; 
+    private static double colorIndex = 0; 
     private double maxColorIndex = 4; 
     // private double colorIndex = 0.0;
 
@@ -78,7 +78,7 @@ public class CameraController implements Runnable {
         middleBranch = CameraServer.getInstance().putVideo("middleBranch", 640, 480);
         lowerBranch = CameraServer.getInstance().putVideo("lowerBranch", 640, 480);
 
-        settingCameraParameters();
+        settingCameraParameters(true);
 
         while (true) {
             double startTime = Timer.getFPGATimestamp();
@@ -96,11 +96,12 @@ public class CameraController implements Runnable {
                     // Main.camMap.put("currentColorIndex", 0.0);
                     Main.camMap.put("targetFound", 0.0);
                     Main.camMap.put("currentCenterX", 0.0);
-                    Main.camMap.put("currentCenterY", 0.0);
+                    Main.camMap.put("currentCenterY", 0.0); settingCameraParameters(true);
                 }
 
                 // лайтовая очистка: координаты, флаги нахождения фруктов и прочего.
                 if (Main.sensorsMap.get("camTask") == 0.0) {
+                    colorIndex = 0; settingCameraParameters(true);
                     Main.camMap.put("targetFound", 0.0);
                     Main.camMap.put("currentCenterX", 0.0);
                     Main.camMap.put("currentCenterY", 0.0);
@@ -147,6 +148,13 @@ public class CameraController implements Runnable {
                     checkFruit(source);
                 }
 
+                if(Main.sensorsMap.get("camTask") == -2) {
+                    trackLowestPointBGR(source, Main.camMap.get("currentColorIndex"));
+                }
+                if(Main.sensorsMap.get("camTask") == -3.0) {
+                    trackLowestPointGRAY(source);
+                }
+
                 Main.sensorsMap.put("updateTimeCamera", cameraUpdateTime);
                 outStream.putFrame(source);
                 source.release();
@@ -164,11 +172,9 @@ public class CameraController implements Runnable {
         }
     }
 
-    
-
     private void searchDominantColorMask(Mat source) {
         double scanningTime = 1;
-
+        
         Mat resizedSource = Viscad.ReduceResolutionImage(source, 3);
         Mat blur = Viscad.Blur(resizedSource, 4);
         Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
@@ -198,14 +204,19 @@ public class CameraController implements Runnable {
         }
     }
 
-    private static void settingCameraParameters() {
+    private static void settingCameraParameters(boolean mode) {
         // camera.setWhiteBalanceAuto(); // Устанавливается баланс белого
         // camera.setExposureManual(100);; // Устанавливается яркость камеры
         // camera.setBrightness(1);
-        camera.getProperty("focus_auto").set(1);
-        camera.getProperty("white_balance_temperature_auto").set(0);
-        camera.getProperty("brightness").set(15);
-        camera.getProperty("focus_auto").set(0);
+        if(mode) {
+            camera.getProperty("focus_auto").set(1);
+            camera.getProperty("white_balance_temperature_auto").set(0);
+            camera.getProperty("brightness").set(15);
+            camera.getProperty("focus_auto").set(0);
+        } else {
+            camera.getProperty("brightness").set(41);
+        }
+        
     }
 
     private static ColorRange setPointsForColors(double colorIndex) {
@@ -214,7 +225,7 @@ public class CameraController implements Runnable {
         // красный 
         if (colorIndex == 3.0) { outRange = new ColorRange(new Point(0, 10), new Point(200, 255), new Point(156, 255)); }
         // желтый
-        if (colorIndex == 2.0) { outRange = new ColorRange(new Point(19, 30), new Point(196, 255), new Point(139, 254)); }
+        if (colorIndex == 2.0) { outRange = new ColorRange(new Point(23, 30), new Point(196, 255), new Point(78, 254)); }
         // фиолетовый
         if (colorIndex == 1.0) { outRange = new ColorRange(new Point(123, 200), new Point(67, 255), new Point(12, 255)); }
         
@@ -345,33 +356,24 @@ public class CameraController implements Runnable {
 
         double stop = 0;
 
-        ColorRange currentColor = setPointsForColors(colorIndex);
+        ColorRange currentColor = setPointsForColors(3);
 
         Mat resizedImage = Viscad.ReduceResolutionImage(orig, 3);
 
         Mat blur = Viscad.Blur(resizedImage, 4);
-        Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
+        Mat hsvImage = Viscad.ConvertBGR2GRAY(blur);
         Mat mask = createMask(hsvImage, currentColor);
 
+        // Mat thrGRAY = Viscad.ThresholdGray(hsvImage, new Point(0, 255));
+        Imgproc.Canny(hsvImage, hsvImage, 300, 200, 5, true);
         Mat square = cropSquareFromCenter(mask, 65);
-
-        if(Main.stringMap.get("detectedFruit").equals(Constants.BIG_RED_APPLE)) {
-            stop = 3700;
-        } 
-
-        if(Main.stringMap.get("detectedFruit").equals(Constants.SMALL_RED_APPLE)) {
-            stop = 2200;
-        }
-
-        if(Main.stringMap.get("detectedFruit").equals(Constants.YELLOW_PEAR)) {
-            stop = 4100;
-        }
 
         keepTrack = !(Viscad.ImageTrueArea(square) >= stop); // не менять
 
         Main.switchMap.put("trackImageArea", keepTrack);
         SmartDashboard.putNumber("trackedImageArea", Viscad.ImageTrueArea(square));
-        outRect.putFrame(square);
+
+        outRect.putFrame(hsvImage);
 
         releaseMats(resizedImage, blur, hsvImage, mask, square);        
     }
@@ -601,9 +603,53 @@ public class CameraController implements Runnable {
         } else {
             Main.stringMap.put("detectedFruit", "none");
         }
-        releaseMats(blur, hsvImage, redApple);
+        releaseMats(blur, hsvImage, redApple, yellowPear, greenPear, greenApple);
+    }
+    // работает, но можно лучше и надежнее
+    private static void trackLowestPointBGR(Mat orig, double colorIndex) {
+        double trackStop = 470;
+
+        ColorRange currentColor = setPointsForColors(colorIndex);
+        settingCameraParameters(false);
+
+        Mat blur = Viscad.Blur(orig, 4);
+        Mat hsvImage = Viscad.ConvertBGR2HSV(blur);
+        boolean trackAutoGlide = false;
+        Mat mask = createMask(hsvImage, currentColor);
+        
+        Point lowestCoord = Viscad.getLowestObjectPoint(mask);
+        outHSV.putFrame(mask);
+
+
+        if(lowestCoord != null) {
+            SmartDashboard.putNumber("lowestCoord check", 222);
+            if(lowestCoord.y > trackStop) {
+                trackAutoGlide = true;
+            } else {
+                trackAutoGlide = false;
+            }
+        } else {
+            SmartDashboard.putNumber("lowestCoord check", 111);
+        }
+        releaseMats(blur, hsvImage, mask);
+        Main.switchMap.put("trackAutoGlide", trackAutoGlide);
+        SmartDashboard.putNumber("trackStopLOWEST", trackStop);
+        SmartDashboard.putNumber("lowestCoord.y", lowestCoord.y);
     }
 
+    private static void trackLowestPointGRAY(Mat orig) {
+
+        double red1 = SmartDashboard.getNumber("RED1", 0.0);
+        double red2 = SmartDashboard.getNumber("RED2", 0.0);
+        settingCameraParameters(false);
+        Mat blur = Viscad.Blur(orig, 4);
+        Mat gray = Viscad.ConvertBGR2GRAY(blur);
+        Mat thrGRAY = Viscad.ThresholdGray(gray, new Point(red1, red2));
+        thresh.putFrame(thrGRAY);
+
+
+        releaseMats(blur, gray, thrGRAY);
+    }
 
     private static void checkRotten(Mat orig) {
         ColorRange rottenColor = setPointsForColors(1.0);

@@ -21,8 +21,6 @@ public class Transition implements IState {
         cmdList = new CommandList();
         flag = true;
         end = false;
-
-        
     }
 
     @Override

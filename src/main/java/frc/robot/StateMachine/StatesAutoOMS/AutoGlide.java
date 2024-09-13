@@ -26,7 +26,7 @@ public class AutoGlide implements IState {
     private boolean treeEnd = false;
     private boolean glideStop = false;
     
-    private int camMiddleForGrab = 21;
+    private int camMiddleForGrab = 35;
     
     private static final double[][] speedForGlideServo = { { 0, 1, 4, 10, 20, 40, 60, 80, 100 }, { 0, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15} };
 
@@ -61,30 +61,13 @@ public class AutoGlide implements IState {
     public void execute() {
         SmartDashboard.putNumber("AUTOGLIDE CHECK", 000);
 
-        if(treeMode) {
-            Main.sensorsMap.put("camTask", 2.0);
-            fruitPosY = Main.camMap.get("currentCenterY");
+        if(treeMode && branchNumber != 3) {
+            Main.sensorsMap.put("camTask", -2.0);
 
-            if(branchNumber == 1 && !treeEnd) {
-                Main.motorControllerMap.put("glideMode", 0.0);
-                Main.sensorsMap.put("targetGlidePos", 15.0);
-                treeEnd = Main.switchMap.get("glideStop") && StateMachine.iterationTime > 4;
-            }
-
-            if(branchNumber == 2 && !treeEnd) {
-                Main.motorControllerMap.put("glideMode", 0.0);
-                Main.sensorsMap.put("targetGlidePos", 15.0);
-                treeEnd = Main.switchMap.get("glideStop") && StateMachine.iterationTime > 4;
-            }
-
-            if(branchNumber == 3 && !treeEnd) {
-                Main.motorControllerMap.put("targetLiftPos", 30.0);
-                Main.motorControllerMap.put("glideMode", 0.0);
-                Main.sensorsMap.put("targetGlidePos", 24.0);
-                treeEnd = Main.switchMap.get("glideStop") && StateMachine.iterationTime > 4;
-            }
-
-            if(treeEnd) {
+            if(!Main.switchMap.get("trackAutoGlide")) {
+                Main.motorControllerMap.put("setGlideSpeed", 0.15);
+            } else {
+                Main.motorControllerMap.put("setGlideSpeed", 0.0);
                 newStates.add(new AutoGrab(true, branchNumber));
                 StateMachine.states.addAll(StateMachine.index + 1, newStates);
                 stateEnd = true;
@@ -105,7 +88,7 @@ public class AutoGlide implements IState {
             SmartDashboard.putBoolean("glideStop", glideStop);
         }
 
-        if (Main.sensorsMap.get("currentGlidePos") > MAX_GLIDE_POS || StateMachine.iterationTime > 50) {
+        if (Main.sensorsMap.get("currentGlidePos") > MAX_GLIDE_POS || StateMachine.iterationTime > 25) {
             SmartDashboard.putNumber("AUTOGLIDE CHECK", 111);
             newStates.add(new AutoEnd()); 
             StateMachine.states.addAll(StateMachine.index + 1, newStates);

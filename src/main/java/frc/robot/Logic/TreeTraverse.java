@@ -29,7 +29,7 @@ public class TreeTraverse {
         {
             put("LZ", "AUTO_GRAB_UPPER");
             put("RZ", "AUTO_GRAB_UPPER");
-            put("TZ", "AUTO_GRAB_UPPER");
+            put("TZ", "AUTO_GRAB_TREE");
             put("LOZ", "AUTO_GRAB_UPPER");
         }
     };
@@ -66,6 +66,8 @@ public class TreeTraverse {
             SmartDashboard.putNumber("lastStepWasGrabCheck", 1);
             deliveryCommand.clear(); // Чистим массив с командами
             if(fruitFind) { // Строим путь для доставки фрукта в контейнер если нашли что-нибудь
+                System.err.println("fruitFind: " + fruitFind);
+                System.err.println("findFruitName: " + findFruitName);
                 SmartDashboard.putNumber("lastStepWasGrabCheck", 2);
                 String[] currentZone = lastCMDWithZone.split("_"); // Разделяем строку по символу "_" (последние два элемента)
                 currentTreeName = currentZone[currentZone.length - 2]; // Номер дерева
@@ -169,11 +171,29 @@ public class TreeTraverse {
         } 
         System.out.println("!!!!!!!!!!!!!!");
 
-    // Debug
-        if (outCMD.equals("MOVE_FROM_SECOND_TZ_TO_SECOND_LOZ")) {
-           fruitFind = true;
-           findFruitName = "SmallRedApple";
+        System.err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!! LogicCommand Array !!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        for(String cmd : logicCommand) {
+            System.err.println(cmd);
         }
+        System.err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!! deliveryCommand Array !!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        for(String cmd : deliveryCommand) {
+            System.err.println(cmd);
+        }
+        System.err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+    // Debug
+        // if (outCMD.equals("MOVE_FROM_SECOND_TZ_TO_SECOND_LOZ")) {
+        //    fruitFind = true;
+        //    findFruitName = "SmallRedApple";
+        // }
+        
+        System.err.println("Command: " + outCMD);
+        System.err.println("index: " + index);
+        System.err.println("count: " + count);
+        
+        System.err.println("detectedFruit from HashMap: " + Main.stringMap.getOrDefault("detectedFruit", "none"));
+        System.err.println("\n");
         return outCMD;
     }
 
