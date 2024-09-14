@@ -51,13 +51,13 @@ public final class Constants
 
     ///////////////////////
 
-    public static final double GRAB_OPEN                              = 68.0;
-    public static final double GRAB_CLOSE                             = 90.0;
+    public static final double GRAB_OPEN                              = 75.0;
+    public static final double GRAB_CLOSE                             = 95.0;
     public static final double GRAB_BIG_APPLE                         = 69.0;
     public static final double GRAB_SMALL_APPLE                       = 85.0;
     public static final double GRAB_PEAR                              = 69.0;
 
-    public static final double GRIP_ROTATE_FLOOR                      = 139.0; // 139
+    public static final double GRIP_ROTATE_FLOOR                      = 94.0; // 139
     public static final double GRIP_ROTATE_DROP                       = 82.0; // FLOOR - 57
     public static final double GRIP_ROTATE_CHECK_ZONE                 = 131.0; // FLOOR + 2
     public static final double GRIP_ROTATE_CHECK_BRANCH               = 85.0; // FLOOR - 54

@@ -3,6 +3,7 @@ package frc.robot.StateMachine.CoreEngine;
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Constants;
 import frc.robot.StateMachine.States.*;
 import frc.robot.StateMachine.StatesAutoOMS.*;
 import frc.robot.StateMachine.StatesOMS.*;
@@ -24,7 +25,8 @@ public class StateMachine {
         // states.add(new InitLogic());
         // states.add(new CheckFruit());
         // states.add(new SimpleDrive(-100, 0));
-        states.add(new Transition());
+        // states.add(new Transition());
+        states.add(new SetGrabPosition(Constants.GRAB_OPEN));
         // states.add(new CheckRotten());
         // states.add(new Transition());
         // states.add(new ThreshCheck());
