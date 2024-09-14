@@ -1122,6 +1122,7 @@ public class CommandList {
     }
 
     if(currentCommandName.equals("MOVE_FROM_THIRD_RZ_TO_CON4")) {
+        newStates.add(new SimpleDrive(-100, 0));
         newStates.add(new DriveSonic(90));
         newStates.add(new SimpleDrive(0, 90));
         newStates.add(new AlignSharp(14));

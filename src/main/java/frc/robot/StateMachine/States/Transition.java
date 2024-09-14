@@ -15,7 +15,7 @@ public class Transition implements IState {
     private boolean end = false;
 
     private boolean autonomousMode = true;
-
+    
     @Override
     public void initialize() {
         cmdList = new CommandList();

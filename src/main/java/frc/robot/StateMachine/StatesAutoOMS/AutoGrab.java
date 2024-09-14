@@ -106,9 +106,7 @@ public class AutoGrab implements IState {
         if(index == 2) {
             if(smoothServoMovement(GRAB_POS, DELAY)) {
                 SmartDashboard.putNumber("AUTOGRAB CHECK", 222);
-                
-                    index++;
-                
+                index++;
             }
         }
 

@@ -51,7 +51,7 @@ public final class Constants
 
     ///////////////////////
 
-    public static final double GRAB_OPEN                              = 55.0;
+    public static final double GRAB_OPEN                              = 68.0;
     public static final double GRAB_CLOSE                             = 90.0;
     public static final double GRAB_BIG_APPLE                         = 69.0;
     public static final double GRAB_SMALL_APPLE                       = 85.0;
