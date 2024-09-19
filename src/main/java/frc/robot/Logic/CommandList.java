@@ -26,6 +26,13 @@ public class CommandList {
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }
 
+    if(currentCommandName.equals("AUTO_GRAB_UPPER_LZ")) {
+        newStates.add(new SetRotatePosition(-15));
+        // newStates.add(new AutoStart("LZ"));
+        newStates.add(new Transition());
+        StateMachine.states.addAll(StateMachine.index + 1, newStates);
+    }
+
     if(currentCommandName.equals("AUTO_GRAB_TREE")) {
         newStates.add(new AutoStart(true, 1));
         newStates.add(new Transition());
@@ -70,12 +77,10 @@ public class CommandList {
 
         // Работа ультразвуковых датчиков
         newStates.add(new SonicCheck());
-        newStates.add(new StartPos());
 
 
         // Работа инфракрасных датчиков
         newStates.add(new SharpCheck());
-        newStates.add(new StartPos());
 
 
         // Распознавание объекта

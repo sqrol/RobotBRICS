@@ -33,10 +33,12 @@ public class AutoRotate implements IState {
     
     private int branchNumber = 0;
 
+    private String treeZoneName = null;
+
     // private static final double[][] arrForRotate = { { 1, 106, 213} , { -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
     // private static final double[][] arrForRotate = { { 1, 50, 106, 260, 340} , { -60, -55, -45, 0, 45} }; // Тут в первом массиве мы закладываем параметры исходной картинки
-    private static final double[][] arrForRotate = { { 1, 25, 50, 70, 90, 106, 115, 120, 140, 165, 182, 200 } , 
-                                                    { -52, -41.2, -32, -26.5, -11, -4, 0, 2, 7, 26.4, 34, 40 } };
+    private static final double[][] arrForRotate = { { 1, 12, 25, 50, 70, 90, 110, 120, 140, 165, 173 } , 
+                                                   { -52, -48.35, -40, -32.58, -15, -6.84, 0, 4, 18, 29, 31.1 } };
     public AutoRotate() {
         GRIP_ROTATE = Constants.GRIP_ROTATE_CHECK_ZONE; 
     }
@@ -44,14 +46,24 @@ public class AutoRotate implements IState {
     public AutoRotate(boolean treeMode, int branchNumber) {
         this.treeMode = treeMode;
         this.branchNumber = branchNumber;
+        LIFT_POS = 60.0;
+        GRIP_ROTATE = Constants.GRIP_ROTATE_DROP; 
+    }
 
-        GRIP_ROTATE = Constants.GRIP_ROTATE_DROP;
+    public AutoRotate(String treeZoneName) {
+        
+        this.treeZoneName = treeZoneName;
+        if(treeZoneName != null) {
+            LIFT_POS = 0.0;
+        }
+       
     }
 
     @Override
     public void initialize() {
         Main.motorControllerMap.put("servoGripRotate", GRIP_ROTATE);
         Main.switchMap.put("rotateStop", false); 
+        Main.switchMap.put("liftStop", false); 
         flag = false;
         stateEnd = false;
     }
@@ -68,7 +80,7 @@ public class AutoRotate implements IState {
             }
         } else {
             currentTargetDegree = Functions.TransitionFunction(fruitPosX, arrForRotate);
-            SmartDashboard.putNumber("currentTargetDegree", currentTargetDegree);
+            SmartDashboard.putNumber("currentTargetDegreeTS", currentTargetDegree);
             SmartDashboard.putNumber("lastRotateDegree + currentTargetDegree", currentTargetDegree + lastRotateDegree);
             Main.motorControllerMap.put("targetRotateDegree", currentTargetDegree + lastRotateDegree); // Прибавляем к текущему нужный градус
             rotateStop = Main.switchMap.get("rotateStop");    
@@ -84,7 +96,17 @@ public class AutoRotate implements IState {
             newStates.add(new AutoGlide(true, branchNumber));
             StateMachine.states.addAll(StateMachine.index + 1, newStates);
             stateEnd = true;
-        } else if(rotateStop && !treeMode) {
+        } else if(rotateStop && !treeMode && treeZoneName != null) {
+            
+            Main.motorControllerMap.put("targetLiftPos", LIFT_POS);
+            Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_FLOOR);
+            if(StateMachine.iterationTime > 3) {
+                newStates.add(new AutoGlide(treeZoneName)); 
+                StateMachine.states.addAll(StateMachine.index + 1, newStates);
+                stateEnd = true;
+            } 
+        } else {
+            
             Main.motorControllerMap.put("targetLiftPos", LIFT_POS);
             Main.motorControllerMap.put("servoGripRotate", Constants.GRIP_ROTATE_FLOOR);
             if(StateMachine.iterationTime > 3) {

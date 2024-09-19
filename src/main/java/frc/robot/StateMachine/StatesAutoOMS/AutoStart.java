@@ -34,7 +34,8 @@ public class AutoStart implements IState {
 
     private static double realStartTime = 0.0;
 
-    
+    private static String treeZoneName = null;
+    private double rotateDegree = 0.0;
 
     private ArrayList<IState> newStates = new ArrayList<>();
     
@@ -50,6 +51,12 @@ public class AutoStart implements IState {
         oneTimeFlag = true;
         GRIP_ROTATE = Constants.GRIP_ROTATE_DROP;
         CAM_TASK = 0.0;
+    }
+
+    public AutoStart(String treeZoneName) {
+        this.treeZoneName = treeZoneName;
+      
+        GRIP_ROTATE = Constants.GRIP_ROTATE_CHECK_ZONE;
     }
 
     @Override
@@ -125,6 +132,7 @@ public class AutoStart implements IState {
                 stateEnd = true;
             }
         } else {
+            // Main.motorControllerMap.put("targetRotateDegree", rotateDegree);
             Main.sensorsMap.put("camTask", 10.0);
             if(Main.switchMap.get("targetColorFound")) {
                 Main.sensorsMap.put("camTask", 1.0);
@@ -137,7 +145,8 @@ public class AutoStart implements IState {
                         stateEnd = true;  
                     } else {
                         Main.sensorsMap.put("camTask", 2.0);
-                        newStates.add(new AutoRotate());
+                        newStates.add(new AutoRotate(treeZoneName));
+                        // newStates.add(new AutoRotate());
                         StateMachine.states.addAll(StateMachine.index + 1, newStates);
                         stateEnd = true;
                     }

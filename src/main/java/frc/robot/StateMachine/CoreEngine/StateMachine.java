@@ -23,16 +23,21 @@ public class StateMachine {
     public void initStates() {
         states.add(new StartPos());
         // states.add(new InitLogic());
-        // states.add(new CheckFruit());
+        // states.add(new InitLogic());
         // states.add(new SimpleDrive(-100, 0));
         // states.add(new Transition());
-        states.add(new SetGrabPosition(Constants.GRAB_OPEN));
+        // states.add(new SetRotatePosition(-20));
+        states.add(new AutoStart());
+        // states.add(new OI());
+        // states.add(new AutoStart());
+        // states.add(new SetGrabPosition(Constants.GRAB_OPEN));
         // states.add(new CheckRotten());
         // states.add(new Transition());
         // states.add(new ThreshCheck());
-        // states.add(new SetGripRotatePosition("FLOOR"));
+        // states.add(new SetGripRotatePosition("CHECK ZONE"));
         // states.add(new AutoStart());
         states.add(new End());
+        // states.add(new ThreshCheck());
         // states.add(new ThreshCheck());
         // states.add(new ThreshCheck());
     }

@@ -37,10 +37,10 @@ public class SetGrabPosition implements IState{
 
     @Override
     public void execute() {
-        // if(fruit.equals("OPEN")) {
-        //     endMovement = smoothServoMovement(Constants.GRAB_OPEN, 0.01);
-        // }
-        Main.motorControllerMap.put("servoGrab", val);
+        if(fruit.equals("OPEN")) {
+            endMovement = smoothServoMovement(Constants.GRAB_OPEN, 0.01);
+        }
+        
     }
 
     @Override
@@ -50,7 +50,7 @@ public class SetGrabPosition implements IState{
 
     @Override
     public boolean isFinished() {
-        return true;
+        return endMovement;
     }
 
     private boolean smoothServoMovement(double targetPosition, double DELAY) {

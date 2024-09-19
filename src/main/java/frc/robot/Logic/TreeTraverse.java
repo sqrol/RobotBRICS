@@ -27,7 +27,7 @@ public class TreeTraverse {
 
     private static final HashMap<String, String> grabTypeForZones = new HashMap<String, String>() {
         {
-            put("LZ", "AUTO_GRAB_UPPER");
+            put("LZ", "AUTO_GRAB_UPPER_LZ");
             put("RZ", "AUTO_GRAB_UPPER");
             put("TZ", "AUTO_GRAB_TREE");
             put("LOZ", "AUTO_GRAB_UPPER");
@@ -158,7 +158,7 @@ public class TreeTraverse {
 
         outCMD = logicCommand.get(index);
 
-        if (outCMD.equals("AUTO_GRAB_UPPER") || outCMD.equals("AUTO_GRAB_TREE")) {
+        if (outCMD.equals("AUTO_GRAB_UPPER") || outCMD.equals("AUTO_GRAB_TREE") || outCMD.equals("AUTO_GRAB_UPPER_LZ")) {
             SmartDashboard.putNumber("firstCallCheck", 10);
             lastStepWasGrab = true;
         } else {
@@ -290,5 +290,11 @@ public class TreeTraverse {
 
     private static String getLastCheckpoint() {
         return TreeTraverse.lastCheckpoint;
+    }
+
+    private void addIfNotDuplicate(String command) {
+        if (!logicCommand.contains(command)) {
+            logicCommand.add(command);
+        }
     }
 }

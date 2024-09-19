@@ -26,8 +26,10 @@ public class AutoGlide implements IState {
     private boolean treeEnd = false;
     private boolean glideStop = false;
     
-    private int camMiddleForGrab = 35;
+    private int camMiddleForGrab = 28;
     
+    private String treeZoneName = "";
+
     private static final double[][] speedForGlideServo = { { 0, 1, 4, 10, 20, 40, 60, 80, 100 }, { 0, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15} };
 
     public AutoGlide() {
@@ -43,6 +45,11 @@ public class AutoGlide implements IState {
         } else {
             GRIP_ROTATE = Constants.GRIP_ROTATE_DROP;
         }
+    }
+
+    public AutoGlide(String treeZoneName) {
+        this.treeZoneName = treeZoneName;
+        GRIP_ROTATE = Constants.GRIP_ROTATE_FLOOR;
     }
 
     @Override

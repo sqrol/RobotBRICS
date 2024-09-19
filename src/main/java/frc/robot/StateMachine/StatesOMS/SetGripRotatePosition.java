@@ -44,6 +44,6 @@ public class SetGripRotatePosition implements IState{
 
     @Override
     public boolean isFinished() {
-        return true;
+        return StateMachine.iterationTime > 0.5;
     }
 }

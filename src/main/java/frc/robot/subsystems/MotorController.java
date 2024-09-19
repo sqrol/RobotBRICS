@@ -254,6 +254,7 @@ public class MotorController implements Runnable {
             double convertPosToEncs = Functions.TransitionFunction(targetPosition, arrOfPosForLift);
             outLiftSpeed = Functions.TransitionFunction(liftEncoder - convertPosToEncs, speedForLift);
             liftStop = Functions.BooleanInRange(liftEncoder - convertPosToEncs, -5, 5);
+            
         }
 
         if (outLiftSpeed > 0.0 && Main.switchMap.get("limitSwitchLift")) {

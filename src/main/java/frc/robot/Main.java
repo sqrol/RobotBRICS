@@ -5,12 +5,12 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.HashMap;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.subsystems.MotorController;
 import frc.robot.subsystems.SensorController;
 import frc.robot.Logic.LogicCore;
 import frc.robot.Logic.TreeTraverse;
-import frc.robot.StateMachine.States.OI;
 import frc.robot.subsystems.CameraController;
 
 public final class Main {
@@ -25,7 +25,7 @@ public final class Main {
 
   public static TreeTraverse traverse = new TreeTraverse();
   public static LogicCore logic = new LogicCore();
-  public static OI joystick = new OI();
+  public static Joystick joystick = new Joystick(GamepadConstants.DRIVE_USB_PORT);
   
   public static void main(String... args) {
     Runnable motorControllerRunnable = new MotorController();

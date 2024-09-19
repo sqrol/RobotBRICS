@@ -114,7 +114,6 @@ public class Robot extends TimedRobot {
     Main.motorControllerMap.put("currentLiftPos", 0.0); // Строка 124
     
     Main.motorControllerMap.put("targetRotateDegree", 0.0);
-    Main.motorControllerMap.put("currentRotateDegree", 0.0);
 
     Main.motorControllerMap.put("encRight", 0.0);
     Main.motorControllerMap.put("encLeft", 0.0);
@@ -192,7 +191,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("detectedFruit", Main.stringMap.get("detectedFruit"));
 
     SmartDashboard.putNumber("targetAngle", Main.camMap.get("targetAngle"));
-    
+    SmartDashboard.putNumber("currentRotateDegree", Main.motorControllerMap.get("currentRotateDegree"));
     SmartDashboard.putBoolean("targetFound", Main.camMap.get("targetFound") == 1.0);
     SmartDashboard.putNumber("currentCenterX", Main.camMap.get("currentCenterX"));
     SmartDashboard.putNumber("currentCenterY", Main.camMap.get("currentCenterY"));
