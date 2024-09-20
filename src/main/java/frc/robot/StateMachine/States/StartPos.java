@@ -48,7 +48,7 @@ public class StartPos implements IState {
             e.printStackTrace();
         }
         
-    }    
+    } 
 
     @Override
     public void finilize() {

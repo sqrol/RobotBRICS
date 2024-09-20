@@ -182,6 +182,9 @@ public class Robot extends TimedRobot {
     Main.motorControllerMap.put("lastGlidePosition", 0.0);
     Main.motorControllerMap.put("currentRotateDegree", 0.0);
 
+    Main.joystickMap.put("sonicDistance", 0.0);
+    Main.joystickMap.put("sharpDistance", 0.0);
+    Main.joystickMap.put("targetZ", 0.0);
   }
 
   private void sendSmartDashBoard() {

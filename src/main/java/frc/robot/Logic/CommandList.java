@@ -28,7 +28,7 @@ public class CommandList {
 
     if(currentCommandName.equals("AUTO_GRAB_UPPER_LZ")) {
         newStates.add(new SetRotatePosition(-15));
-        // newStates.add(new AutoStart("LZ"));
+        newStates.add(new AutoStart("LZ"));
         newStates.add(new Transition());
         StateMachine.states.addAll(StateMachine.index + 1, newStates);
     }

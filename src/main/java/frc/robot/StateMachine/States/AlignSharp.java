@@ -19,9 +19,6 @@ public class AlignSharp implements IState {
     private static double[][] XArray = { { 0, 0.1, 2.5, 5, 10, 15, 25, 30 },
                                           { 0, 0.4, 5, 12, 20, 36, 60, 80 } };
 
-    // private static double[][] XArray = { { 0, 0.1, 2.5, 5, 10, 15, 25, 30 },
-    //                                       { 0, 0.4, 4, 6, 10, 15, 20, 30 } };
-
     private static double[][] degFunction = { { 0.1, 2, 4, 8, 12, 15, 20, 25 },
                                                { 3, 9, 11, 18, 24, 26, 33, 35 } };
 

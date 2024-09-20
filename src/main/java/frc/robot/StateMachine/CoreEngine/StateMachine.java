@@ -27,8 +27,8 @@ public class StateMachine {
         // states.add(new SimpleDrive(-100, 0));
         // states.add(new Transition());
         // states.add(new SetRotatePosition(-20));
-        states.add(new AutoStart());
-        // states.add(new OI());
+        // states.add(new AutoStart());
+        states.add(new OI());
         // states.add(new AutoStart());
         // states.add(new SetGrabPosition(Constants.GRAB_OPEN));
         // states.add(new CheckRotten());
