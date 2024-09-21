@@ -34,7 +34,7 @@ public class AutoStart implements IState {
 
     private static double realStartTime = 0.0;
 
-    private static String treeZoneName = null;
+    private String treeZoneName = null;
     private double rotateDegree = 0.0;
 
     private ArrayList<IState> newStates = new ArrayList<>();
@@ -168,6 +168,7 @@ public class AutoStart implements IState {
     }
     @Override
     public void finilize() {
+        treeZoneName = null;
     }
 
     @Override

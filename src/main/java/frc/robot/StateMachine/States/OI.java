@@ -21,6 +21,7 @@ public class OI implements IState {
     private boolean drive = false;
     
     // // SonicDrive
+    private boolean isFirstIterSonic = true;
     private double sonicX = 0;
     private double sonicDiffX, sonicDiffZ = 0;
     private double sonicLastGyro = 0;
@@ -53,7 +54,7 @@ public class OI implements IState {
     private boolean firstIterSimpleDrive = true;
 
     private double XPosition, ZPosition = 0;
-    private double posX = 0;
+    private double posX, posZ = 0;
     private double speedX, speedZ = 0;
 
     private boolean finishX, finishZ = false;
@@ -84,6 +85,7 @@ public class OI implements IState {
 
     @Override
     public void execute() {
+
         if(getDriveYButton()) {
             drive = true;
             IR = false;
@@ -99,31 +101,56 @@ public class OI implements IState {
         }
 
         if(getDriveAButton()) {
+            isFirstIterSharp = true;
+            isFirstIterSonic = true;
+            Main.motorControllerMap.put("resetDriveEncs", 1.0);
             drive = false;
             IR = false;
             US = false;
+            posX = 0.0;
+            posZ = 0.0;
+            SmartDashboard.putNumber("sonicDistance", 0.0);
+            SmartDashboard.putNumber("sharpDistance", 0.0);
+            SmartDashboard.putNumber("targetZ", 0.0);
+            SmartDashboard.putNumber("distX", 0.0);
+            Main.motorControllerMap.put("speedX", 0.0);
+            Main.motorControllerMap.put("speedZ", 0.0);
+            Main.sensorsMap.put("resetGyro", 1.0);
+            Main.sensorsMap.put("resetGyro", 0.0);
         }
 
         if(drive) {
             posX = ((Main.motorControllerMap.get("encRight") - Main.motorControllerMap.get("encLeft")) / 2) / 48;
-
+            
             Main.motorControllerMap.put("speedX", -getRightDriveY() * 100);
+            Main.motorControllerMap.put("speedZ", -getLeftDriveX() * 100);
+
+            if(getDriveLeftBumper()) posZ = -90;
+
+            if(getDriveDPadX()) posZ = 90;
+            
             if (getDriveRightBumper()) {
                 try {
-                    System.err.println("newStates.add(new SimpleDrive(" + Math.round(posX) + ", 0));");
+                    if(posX != 0 && posZ == 0.0) {
+                        System.err.println("newStates.add(new SimpleDrive(" + Math.round(posX) + ", " + 0 + "));");
+                    } else {
+                        System.err.println("newStates.add(new SimpleDrive(" + 0 + ", " + posZ + "));");
+                    }
                     System.err.flush();
                     Thread.sleep(500);
                     
                 } catch (Exception e) {
-                
+                    
                 }
             }
+            SmartDashboard.putNumber("posZJOY", posZ);
+            SmartDashboard.putNumber("posXJOY", posX);
         }
 
         if(IR) {
             double distToWall = SmartDashboard.getNumber("sharpDistance", 0.0);
             sharpAlign(distToWall);
-
+            SmartDashboard.putBoolean("isFirstSHARP!!!!", isFirstIterSharp);
             if (getDriveRightBumper()) {
                 try {
                     System.err.println("newStates.add(new AlignSharp(" + distToWall + "));");
@@ -138,7 +165,8 @@ public class OI implements IState {
 
         if(US) {
             double distToWall = SmartDashboard.getNumber("sonicDistance", 0.0);
-
+            SmartDashboard.putBoolean("isFirstSONIC!!!!", isFirstIterSonic);
+            driveSonic(distToWall);
             if (getDriveRightBumper()) {
                 try {
                     System.err.println("newStates.add(new DriveSonic(" + distToWall + "));");
@@ -165,71 +193,83 @@ public class OI implements IState {
     }
     // только вот это починить и добавить поворот и будет работать
     private boolean driveSonic(double distToWall) {
+        
         if(distToWall != 0.0) {
-            double backSonicDist = Main.sensorsMap.get("sonicRight");
-
-            sonicDiffX = distToWall - backSonicDist;
-            sonicDiffZ = sonicLastGyro - Main.sensorsMap.get("srcGyro");
+            if(isFirstIterSonic) {
+                sonicLastGyro = Main.sensorsMap.get("srcGyro");
+                Main.motorControllerMap.put("resetDriveEncs", 1.0);
+                isFirstIterSonic = false;
+            } else {
+                SmartDashboard.putNumber("sonicLastGyro!!!!!", sonicLastGyro);
+                double backSonicDist = Main.sensorsMap.get("sonicRight");
     
-            double speedX = Functions.TransitionFunction(sonicDiffX, sonicArray);
-            double speedZ = Functions.TransitionFunction(sonicDiffZ, sonicDegFunction);
-    
-            Main.motorControllerMap.put("speedX", speedX);
-            Main.motorControllerMap.put("speedZ", -speedZ);
-            
-            finishXSonic = Functions.BooleanInRange(sonicX - backSonicDist, -0.5, 0.5);
-            finishZSonic = Functions.BooleanInRange(sonicLastGyro - Main.sensorsMap.get("srcGyro"), -0.2, 0.2);
-        } else {
-            finishZ = true;
-            finishX = true;
-        }
-        if(finishX && finishZ) {
-            Main.motorControllerMap.put("speedX", 0.0);
-            Main.motorControllerMap.put("speedZ", 0.0);
+                sonicDiffX = distToWall - backSonicDist;
+                sonicDiffZ = sonicLastGyro - Main.sensorsMap.get("srcGyro");
+        
+                double speedX = Functions.TransitionFunction(sonicDiffX, sonicArray);
+                double speedZ = Functions.TransitionFunction(sonicDiffZ, sonicDegFunction);
+        
+                Main.motorControllerMap.put("speedX", speedX);
+                Main.motorControllerMap.put("speedZ", -speedZ);
+                
+                finishXSonic = Functions.BooleanInRange(sonicX - backSonicDist, -0.5, 0.5);
+                finishZSonic = Functions.BooleanInRange(sonicLastGyro - Main.sensorsMap.get("srcGyro"), -0.2, 0.2);
+            }
+            if(finishX && finishZ) {
+                Main.motorControllerMap.put("resetEncRight", 1.0);
+                Main.motorControllerMap.put("resetEncLeft", 1.0);
+                Main.sensorsMap.put("resetGyro", 1.0);
+                isFirstIterSonic = true;
+                Main.motorControllerMap.put("speedX", 0.0);
+                Main.motorControllerMap.put("speedZ", 0.0);
+                Main.sensorsMap.put("resetGyro", 0.0);
+            }
         }
         return finishX && finishZ;
         
     }
 
     private boolean sharpAlign(double distToWall) {
-        if(isFirstIterSharp) {
-            sharpLastGyro = Main.sensorsMap.get("posZ");
-            Main.motorControllerMap.put("resetDriveEncs", 1.0);
-            isFirstIterSharp = false;
-        }
+        
         if(distToWall != 0.0) {
-            sharpCoefForTime = Functions.TransitionFunction(StateMachine.iterationTime, sharpArrayForTime);
-            
-            double leftSharp = Main.sensorsMap.get("sharpLeft");
-            double rightSharp = Main.sensorsMap.get("sharpRight");
-    
-            sharpDiffX = distToWall - Math.min(leftSharp, rightSharp);
-            sharpSpeedX = Functions.TransitionFunction(sharpDiffX, SharpXArray);
-    
-            if (Math.min(leftSharp, rightSharp) < 30) {
-                sharpDiff = leftSharp - rightSharp;
-                sharpSpeedZ = Functions.TransitionFunction(sharpDiff, sharpDegFunction);
-            } else {
-                sharpSpeedZ = (sharpLastGyro - Main.sensorsMap.get("srcGyro"));
-            }
-    
-            Main.motorControllerMap.put("speedX", -sharpSpeedX * sharpCoefForTime);
-            Main.motorControllerMap.put("speedZ", -sharpSpeedZ);
-    
-            sharpFinishX = Functions.BooleanInRange(sharpSpeedX, -0.5, 0.5);
-            sharpFinishZ = Functions.BooleanInRange(sharpSpeedZ, -0.2, 0.2);
-        } else {
-            sharpFinishX = true;
-            sharpFinishZ = true;
-        }
-        if(sharpFinishZ && sharpFinishX) {
-            Main.motorControllerMap.put("resetEncRight", 1.0);
-            Main.motorControllerMap.put("resetEncLeft", 1.0);
-            Main.sensorsMap.put("resetGyro", 1.0);
 
-            Main.motorControllerMap.put("speedX", 0.0);
-            Main.motorControllerMap.put("speedZ", 0.0);
-        }
+            if(isFirstIterSharp) {
+                sharpLastGyro = Main.sensorsMap.get("srcGyro");
+                Main.motorControllerMap.put("resetDriveEncs", 1.0);
+                isFirstIterSharp = false;
+            } else {
+                sharpCoefForTime = Functions.TransitionFunction(StateMachine.iterationTime, sharpArrayForTime);
+            
+                double leftSharp = Main.sensorsMap.get("sharpLeft");
+                double rightSharp = Main.sensorsMap.get("sharpRight");
+        
+                sharpDiffX = distToWall - Math.min(leftSharp, rightSharp);
+                sharpSpeedX = Functions.TransitionFunction(sharpDiffX, SharpXArray);
+        
+                if (Math.min(leftSharp, rightSharp) < 30) {
+                    sharpDiff = leftSharp - rightSharp;
+                    sharpSpeedZ = Functions.TransitionFunction(sharpDiff, sharpDegFunction);
+                } else {
+                    sharpSpeedZ = (sharpLastGyro - Main.sensorsMap.get("srcGyro"));
+                }
+        
+                Main.motorControllerMap.put("speedX", -sharpSpeedX * sharpCoefForTime);
+                Main.motorControllerMap.put("speedZ", -sharpSpeedZ);
+        
+                sharpFinishX = Functions.BooleanInRange(sharpSpeedX, -0.5, 0.5);
+                sharpFinishZ = Functions.BooleanInRange(sharpSpeedZ, -0.2, 0.2);
+
+                if(sharpFinishZ && sharpFinishX) {
+                    Main.motorControllerMap.put("resetEncRight", 1.0);
+                    Main.motorControllerMap.put("resetEncLeft", 1.0);
+                    Main.sensorsMap.put("resetGyro", 1.0);
+                    isFirstIterSharp = true;
+                    Main.motorControllerMap.put("speedX", 0.0);
+                    Main.motorControllerMap.put("speedZ", 0.0);
+                }
+            }
+            
+        }  
         return sharpFinishX && sharpFinishZ;
     }
 
