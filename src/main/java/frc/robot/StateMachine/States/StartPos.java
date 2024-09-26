@@ -17,15 +17,17 @@ public class StartPos implements IState {
     @Override
     public void initialize() {
         Main.sensorsMap.put("resetGyro", 1.0);
-        Main.motorControllerMap.put("resetEncs", 1.0);
         Main.motorControllerMap.put("resetPID", 1.0);
         Main.motorControllerMap.put("glideMode", 0.0);
+        Main.motorControllerMap.put("resetEncLift", 1.0);
+        Main.motorControllerMap.put("resetAllEncoders", 1.0);
         Main.sensorsMap.put("indicationMode", Constants.INDICATION_WAITING);
     }
 
     @Override
     public void execute() {
-
+        Main.motorControllerMap.put("speedX", 0.0);
+        Main.motorControllerMap.put("speedZ", 0.0);
         if (!Main.switchMap.get("limitSwitchGlide")) {
             Main.switchMap.put("initGlide", true);
         }
@@ -38,15 +40,10 @@ public class StartPos implements IState {
             Main.switchMap.put("initGlide", false);
             Main.motorControllerMap.put("resetEncLift", 1.0);
             succesInit = Main.switchMap.get("limitSwitchLift") && Main.switchMap.get("limitSwitchGlide");
+            
         }
-        Main.motorControllerMap.put("speedX", 0.0);
-        Main.motorControllerMap.put("speedZ", 0.0);
-
-        try {
-            System.setErr(new PrintStream(new File("/home/pi/Desktop/log.txt")));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        
+       
         
     } 
 

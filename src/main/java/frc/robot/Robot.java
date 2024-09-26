@@ -218,7 +218,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("encRight", Main.motorControllerMap.get("encRight"));
     SmartDashboard.putNumber("encLeft", Main.motorControllerMap.get("encLeft"));
     SmartDashboard.putNumber("encRotate", Main.motorControllerMap.get("encRotate"));
-    SmartDashboard.putNumber("encLift", Main.motorControllerMap.get("encLift"));
+    SmartDashboard.putNumber("encLift11", Main.motorControllerMap.get("encLift"));
 
     SmartDashboard.putNumber("speedX", Main.motorControllerMap.get("speedX"));
     SmartDashboard.putNumber("speedZ", Main.motorControllerMap.get("speedZ"));
@@ -256,7 +256,7 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putNumber("objectFind", Main.sensorsMap.get("objectFind"));
     SmartDashboard.putBoolean("stopAutoGlide", Main.switchMap.get("stopAutoGlide"));
-    SmartDashboard.putNumber("currentColorIndex", Main.camMap.get("currentColorIndex"));
+    SmartDashboard.putNumber("currentColorIndex1111", Main.camMap.get("currentColorIndex"));
 
     SmartDashboard.putNumber("iterationTime", StateMachine.iterationTime);
     SmartDashboard.putNumber("index", StateMachine.index);

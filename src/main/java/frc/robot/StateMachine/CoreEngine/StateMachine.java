@@ -22,13 +22,41 @@ public class StateMachine {
 
     public void initStates() {
         states.add(new StartPos());
-        // states.add(new InitLogic());
-        // states.add(new InitLogic());
-        // states.add(new SimpleDrive(-100, 0));
-        states.add(new Transition());
-        // states.add(new SetRotatePosition(-20));
+        
+        // states.add(new AlignSharp(14.0));
+        // states.add(new SimpleDrive(0, 90.0));
+
+        // поправить перед сдачей MOVE_FROM_CH1_TO_FIRST_RZ
+        // states.add(new DriveSonic(80.0));
+        // states.add(new SimpleDrive(0, 90.0));
+        // states.add(new DriveSonic(53.0));
+        // states.add(new SimpleDrive(0, -90.0));
+        // states.add(new SimpleDrive(190 , 0));
+        // states.add(new SimpleDrive(0, -90.0));
+        // states.add(new AlignSharp(25.0));
+        // states.add(new SimpleDrive(0, -90.0));
+        // states.add(new SimpleDrive(28, 0));
+        // проверить перед сдачей MOVE_FROM_FIRST_TZ_TO_FIRST_RZ
+
+    
         // states.add(new AutoStart());
         // states.add(new OI());
+        // states.add(new InitLogic());
+        states.add(new Transition());
+        // states.add(new ThreshCheck());
+        // states.add(new CheckRotten());
+        // states.add(new SetRotatePosition(-20));
+        // states.add(new AutoStart());
+        
+        // states.add(new AlignSharp(14.0));
+        // states.add(new SimpleDrive(0, 90.0));
+
+        // ch1_to_first_rz_ fixxx
+
+
+
+        // states.add(new CheckFruit());
+        
         // states.add(new SetGripRotatePosition("FLOOR"));
         // states.add(new AutoStart());
         // states.add(new SetGrabPosition(Constants.GRAB_OPEN));

@@ -92,7 +92,7 @@ public class AutoGrab implements IState {
                 LIFT_POS = Constants.LIFT_POS_THIRD_BRANCH;
             }
         } else {
-            LIFT_POS = 78.0;
+            LIFT_POS = 80.0;
         }
 
         if(index == 1) {

@@ -33,7 +33,7 @@ public class CameraController implements Runnable {
 
     private double startTime = -1; // Время начала ожидания
     private static double colorIndex = 0; 
-    private double maxColorIndex = 4; 
+    private double maxColorIndex = 6; 
     // private double colorIndex = 0.0;
 
     private static final double MAX_Y = 0;
@@ -228,7 +228,10 @@ public class CameraController implements Runnable {
         if (colorIndex == 2.0) { outRange = new ColorRange(new Point(23, 30), new Point(196, 255), new Point(78, 254)); }
         // фиолетовый
         if (colorIndex == 1.0) { outRange = new ColorRange(new Point(123, 200), new Point(67, 255), new Point(12, 255)); }
-        
+        // зеленый для груш
+        if (colorIndex == 5.0) { outRange = new ColorRange(new Point(32, 36), new Point(231, 255), new Point(98, 255)); }
+        // зеленый для яблок
+        if(colorIndex == 4.0) { outRange = new ColorRange(new Point(35, 45), new Point(123, 255), new Point(125, 255)); }
         return outRange;
     }
 
@@ -273,6 +276,12 @@ public class CameraController implements Runnable {
         if(colorIndex == 1.0) {
             if(Viscad.ImageTrueArea(square) > 300) {
                 Main.stringMap.put("detectedFruit", Constants.SMALL_ROTTEN_APPLE);
+            }
+        }
+
+        if(colorIndex == 4.0) {
+            if(Viscad.ImageTrueArea(square) > 100) {
+                Main.stringMap.put("detectedFruit", Constants.SMALL_GREEN_APPLE);
             }
         }
 
@@ -554,6 +563,12 @@ public class CameraController implements Runnable {
         } else if(colorIndex == 1.0 && Viscad.ImageTrueArea(square) > 100){
             Main.stringMap.put("detectedFruit", Constants.SMALL_ROTTEN_APPLE);
             Main.camMap.put("targetFound", 1.0);
+        } else if(colorIndex == 5.0 && Viscad.ImageTrueArea(square) > 100) {
+            Main.stringMap.put("detectedFruit", Constants.GREEN_PEAR);
+            Main.camMap.put("targetFound", 1.0);
+        } else if(colorIndex == 4.0 && Viscad.ImageTrueArea(square) > 100) {
+            Main.stringMap.put("detectedFruit", Constants.SMALL_GREEN_APPLE);
+            Main.camMap.put("targetFound", 1.0); 
         } else {
             Main.camMap.put("targetFound", 0.0);
             Main.stringMap.put("detectedFruit", "none");
@@ -582,12 +597,16 @@ public class CameraController implements Runnable {
         Mat yellowPear = Viscad.Threshold(hsvImage, new Point(19, 26), new Point(196, 255), new Point(139, 254));
         int areaYellowPear = Viscad.ImageTrueArea(yellowPear);
 
-        Mat greenPear = Viscad.Threshold(hsvImage, new Point(0, 32), new Point(222, 255), new Point(89, 189));
+        Mat greenPear = Viscad.Threshold(hsvImage, new Point(32, 36), new Point(231, 255), new Point(98, 255));
         int areaGreenPear = Viscad.ImageTrueArea(greenPear);
 
-        Mat greenApple = Viscad.Threshold(hsvImage, new Point(34, 123), new Point(190, 255), new Point(99, 254));
+        Mat greenApple = Viscad.Threshold(hsvImage, new Point(39, 45), new Point(156, 255), new Point(125, 255));
         int areaGreenApple = Viscad.ImageTrueArea(greenApple);
 
+        Mat rotten = Viscad.Threshold(hsvImage, new Point(123, 200), new Point(67, 255), new Point(12, 255));
+        int imgArearotten = Viscad.ImageTrueArea(rotten);
+
+        
         if(areaRedApple > 15000) {
             Main.stringMap.put("detectedFruit", Constants.BIG_RED_APPLE);
         } else if(areaRedApple > 1000 && areaRedApple < 12000) {
@@ -600,9 +619,15 @@ public class CameraController implements Runnable {
             Main.stringMap.put("detectedFruit", Constants.BIG_GREEN_APPLE);
         } else if (areaGreenApple > 1900) {
             Main.stringMap.put("detectedFruit", Constants.SMALL_GREEN_APPLE);
-        } else {
+        }
+         else if(imgArearotten > 1000) {
+            Main.stringMap.put("detectedFruit", Constants.BIG_ROTTEN_APPLE);
+        }
+        else {
             Main.stringMap.put("detectedFruit", "none");
         }
+        thresh.putFrame(redApple);
+        SmartDashboard.putNumber("areaRedAPPLEEE!!", areaRedApple);
         releaseMats(blur, hsvImage, redApple, yellowPear, greenPear, greenApple);
     }
     // работает, но можно лучше и надежнее

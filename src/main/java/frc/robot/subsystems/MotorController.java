@@ -38,6 +38,7 @@ public class MotorController implements Runnable {
     private double encRightResetValue = 0;
     private double encLeftResetValue = 0;
     private double encRotateResetValue = 0;
+    private double encLiftResetValue = 0;
 
     // Переменные для функции setGlidePosition()
     private boolean flag = false;
@@ -183,6 +184,7 @@ public class MotorController implements Runnable {
             resetEncRight();
             resetEncLeft();
             resetEncRotate();
+            
             Main.motorControllerMap.put("resetAllEncoders", 0.0);
         }
 
@@ -192,6 +194,7 @@ public class MotorController implements Runnable {
         }
 
         if(Main.motorControllerMap.get("resetEncLift") == 1.0) {
+            resetEncLift();
             Main.motorControllerMap.put("resetEncLift", 0.0);
         }
 
@@ -217,7 +220,7 @@ public class MotorController implements Runnable {
     }
 
     private double getEncLift() {
-        return -ENC_LIFT.getEncoderDistance();
+        return -ENC_LIFT.getEncoderDistance() - encLiftResetValue;
     }
 
     private void resetEncRight() {
@@ -231,6 +234,9 @@ public class MotorController implements Runnable {
     private void resetEncRotate() {
         ENC_ROTATE.reset();
     }
+    private void resetEncLift() {
+        encLiftResetValue = -ENC_LIFT.getEncoderDistance();
+    }
 
     private void setLiftPosition(double targetPosition) {
 
@@ -240,14 +246,15 @@ public class MotorController implements Runnable {
         SmartDashboard.putNumber("targetPosition", targetPosition);
 
         if (Main.switchMap.get("initLift")) {
+            // resetEncLift();
             if (Main.switchMap.get("limitSwitchLift")) {
                 targetPosition = 0.0;
                 outLiftSpeed = 0.0;
                 // liftStop = true;
-                ENC_LIFT.reset();
-                
+                resetEncLift();
+                return;
             } else {
-                outLiftSpeed = 60.0; 
+                outLiftSpeed = 50.0; 
                 liftStop = false;
             }
         } else {

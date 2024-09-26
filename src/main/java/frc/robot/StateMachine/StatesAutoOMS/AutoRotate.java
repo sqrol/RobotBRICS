@@ -54,7 +54,7 @@ public class AutoRotate implements IState {
         
         this.treeZoneName = treeZoneName;
         if(treeZoneName != null) {
-            LIFT_POS = 0.0;
+            LIFT_POS = 60.0;
         }
        
     }

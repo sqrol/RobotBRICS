@@ -40,8 +40,8 @@ public final class Constants
     public static final int START_BUTTON                              = 0;
     public static final int EMS_BUTTON                                = 1;
 
-    public static final int RED_LED                                   = 20;
-    public static final int GREEN_LED                                 = 21;
+    public static final int RED_LED                                   = 21;
+    public static final int GREEN_LED                                 = 20;
 
     public static final int SONIC_ECHO_RIGHT                          = 10;
     public static final int SONIC_PING_RIGHT                          = 11;
@@ -51,7 +51,7 @@ public final class Constants
 
     ///////////////////////
 
-    public static final double GRAB_OPEN                              = 73.0;
+    public static final double GRAB_OPEN                              = 75.0;
     public static final double GRAB_CLOSE                             = 99.0;
     public static final double GRAB_BIG_APPLE                         = 69.0;
     public static final double GRAB_SMALL_APPLE                       = 85.0;

@@ -75,7 +75,8 @@ public class OI implements IState {
         SmartDashboard.putNumber("sharpDistance", 0.0);
         SmartDashboard.putNumber("targetZ", 0.0);
         SmartDashboard.putNumber("distX", 0.0);
-
+        Main.motorControllerMap.put("speedX", 0.0);
+        Main.motorControllerMap.put("speedZ", 0.0);
         try {
             System.setErr(new PrintStream(new File("/home/pi/Desktop/PATHS.txt")));
         } catch (FileNotFoundException e) {

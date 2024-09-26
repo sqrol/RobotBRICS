@@ -125,6 +125,8 @@ public class AutoGlide implements IState {
 
         Main.motorControllerMap.put("speedX", 0.0);
         Main.motorControllerMap.put("speedZ", 0.0);
+        Main.sensorsMap.put("currentGlidePos", 0.0);
+        glideStop = false;
     }
 
     @Override

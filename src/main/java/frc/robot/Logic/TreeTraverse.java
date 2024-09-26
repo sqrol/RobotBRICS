@@ -15,13 +15,16 @@ public class TreeTraverse {
 
     private static final HashMap<String, String> containersForFruits = new HashMap<String, String>() {
         {
-            put(Constants.ROTTEN_PEAR, "CON2");
-            put(Constants.BIG_ROTTEN_APPLE, "CON2");
-            put(Constants.SMALL_ROTTEN_APPLE, "CON2");
+            put(Constants.ROTTEN_PEAR, "CON3");
+            put(Constants.BIG_ROTTEN_APPLE, "CON3");
+            put(Constants.SMALL_ROTTEN_APPLE, "CON3");
 
-            put(Constants.BIG_RED_APPLE, "CON4");
+            put(Constants.BIG_RED_APPLE, "CON1");
             put(Constants.SMALL_RED_APPLE, "CON1");
-            put(Constants.YELLOW_PEAR, "CON3");
+            put(Constants.YELLOW_PEAR, "CON2");
+            put(Constants.GREEN_PEAR, "CON2");
+            put(Constants.BIG_GREEN_APPLE, "CON4");
+            put(Constants.SMALL_GREEN_APPLE, "CON4");
         }
     };
 
@@ -86,11 +89,11 @@ public class TreeTraverse {
                 SmartDashboard.putNumber("lastStepWasGrabCheck", 4);
                 bestCPZone = choosingBestZoneForCheck(currentTreeZoneName, currentTreeName);
 
-                addIfNotDuplicate("MOVE_FROM_" + currentTreeName + "_" + currentTreeZoneName + "_TO_" + getConForFruit(findFruitName), deliveryCommand);
-                addIfNotDuplicate("RESET_FRUIT", deliveryCommand);
-                addIfNotDuplicate("MOVE_FROM_"+ getConForFruit(findFruitName) +"_TO_" + bestCPZone, deliveryCommand);
-                addIfNotDuplicate("MOVE_FROM_"+ bestCPZone +"_TO_" + currentTreeName + "_" + currentTreeZoneName, deliveryCommand);
-                addIfNotDuplicate("AUTO_GRAB_UPPER", deliveryCommand);
+                deliveryCommand.add("MOVE_FROM_" + currentTreeName + "_" + currentTreeZoneName + "_TO_" + getConForFruit(findFruitName));
+                deliveryCommand.add("RESET_FRUIT");
+                deliveryCommand.add("MOVE_FROM_"+ getConForFruit(findFruitName) +"_TO_" + bestCPZone);
+                deliveryCommand.add("MOVE_FROM_"+ bestCPZone +"_TO_" + currentTreeName + "_" + currentTreeZoneName);
+                deliveryCommand.add("AUTO_GRAB_UPPER");
 
                 logicCommand.addAll(index+kastilVar, deliveryCommand);
                 lastStepWasGrab = false;
@@ -118,23 +121,23 @@ public class TreeTraverse {
                     if (firstStep) { 
                         SmartDashboard.putNumber("firstCallCheck", 2);// Переход из зоны старта в зону первого дерева
                         bestCPZone = choosingBestZoneForCheck(currentTreeZoneName, currentTreeName);
-                        addIfNotDuplicate("MOVE_FROM_START_TO_" + bestCPZone, logicCommand);
-                        addIfNotDuplicate("MOVE_FROM_" + bestCPZone +"_TO_" + currentTreeName + "_" + currentTreeZoneName, logicCommand);
+                        logicCommand.add("MOVE_FROM_START_TO_" + bestCPZone);
+                        logicCommand.add("MOVE_FROM_" + bestCPZone +"_TO_" + currentTreeName + "_" + currentTreeZoneName);
                         firstStep = false;
                     } else {
                         SmartDashboard.putNumber("firstCallCheck", 3);
                         if (treeChange) {
                             SmartDashboard.putNumber("firstCallCheck", 4);
-                            addIfNotDuplicate("MOVE_FROM_"+ getLastCheckpoint() +"_TO_" + currentTreeName + "_" + currentTreeZoneName, logicCommand);
+                            logicCommand.add("MOVE_FROM_"+ getLastCheckpoint() +"_TO_" + currentTreeName + "_" + currentTreeZoneName);
                             treeChange = false;
                         } else {
                             SmartDashboard.putNumber("firstCallCheck", 5);
-                            addIfNotDuplicate("MOVE_FROM_"+ getLastTreeZone() +"_TO_" + currentTreeName + "_" + currentTreeZoneName, logicCommand);
+                            logicCommand.add("MOVE_FROM_"+ getLastTreeZone() +"_TO_" + currentTreeName + "_" + currentTreeZoneName);
                         }
                     }
 
                     SmartDashboard.putNumber("firstCallCheck", 6);
-                    addIfNotDuplicate(getGrabModeInArray(currentTreeZoneName), logicCommand);
+                    logicCommand.add(getGrabModeInArray(currentTreeZoneName));
                     setLastTreeZone(currentTreeName + "_" + currentTreeZoneName);
                 }
 
@@ -249,16 +252,16 @@ public class TreeTraverse {
                     out = "CH2";
                     break;
                 case "RZ":
-                    out = "CH3";
+                    out = "CH2";
                     break;
                 case "LOZ":
-                    out = "CH3";
+                    out = "CH2";
                     break;
                 case "TZ":
-                    out = "CH3";
+                    out = "CH2";
                     break;
                 case "START":
-                    out = "CH3";
+                    out = "CH2";
                     break;
                 default:
                     out = "null";
